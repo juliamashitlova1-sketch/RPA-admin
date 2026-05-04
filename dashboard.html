@@ -1448,6 +1448,7 @@
             const API_BASE = "https://api-gateway.juliamashitlova1.workers.dev";
             let currentUser = null;
             let currentPage = "dashboard";
+            let projectsData = {};
 
             // 初始化
             document.addEventListener("DOMContentLoaded", () => {
@@ -2304,6 +2305,67 @@
                 return date.toLocaleString("zh-CN");
             }
 
+            // ==================== 图片处理工具 ====================
+
+            // 将图片压缩为16:9比例的base64
+            function compressImage(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            const canvas = document.createElement("canvas");
+                            canvas.width = 1280;
+                            canvas.height = 720;
+                            const ctx = canvas.getContext("2d");
+
+                            const sourceRatio = img.width / img.height;
+                            const targetRatio = 16 / 9;
+                            let sx, sy, sw, sh;
+
+                            if (sourceRatio > targetRatio) {
+                                sh = img.height;
+                                sw = sh * targetRatio;
+                                sx = (img.width - sw) / 2;
+                                sy = 0;
+                            } else {
+                                sw = img.width;
+                                sh = sw / targetRatio;
+                                sx = 0;
+                                sy = (img.height - sh) / 2;
+                            }
+
+                            ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 1280, 720);
+                            resolve(canvas.toDataURL("image/jpeg", 0.8));
+                        };
+                        img.onerror = reject;
+                        img.src = e.target.result;
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            // 文件选择后预览图片
+            async function previewImage(input) {
+                const file = input.files[0];
+                if (!file) return;
+                try {
+                    const base64 = await compressImage(file);
+                    const container = input.parentElement;
+                    const preview = container.querySelector("img");
+                    const placeholder = container.querySelector(
+                        "[id$='-placeholder']",
+                    );
+                    preview.src = base64;
+                    preview.classList.remove("hidden");
+                    if (placeholder) placeholder.classList.add("hidden");
+                    input.dataset.base64 = base64;
+                } catch (err) {
+                    alert("图片处理失败: " + err.message);
+                }
+            }
+
             // ==================== 项目管理 ====================
 
             // 加载项目列表
@@ -2313,6 +2375,11 @@
                         "/api/projects?page=1&pageSize=100",
                     );
                     if (!result || !result.success) return;
+
+                    projectsData = {};
+                    result.data.forEach((p) => {
+                        projectsData[p.project_id] = p;
+                    });
 
                     const container = document.getElementById("projects-grid");
                     if (result.data.length === 0) {
@@ -2351,7 +2418,7 @@
               <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-slate-400">${project.tutorialCount || 0} 个教程</span>
                 <div class="flex gap-2">
-                  <button onclick="editProject('${project.project_id}', '${project.name}', '${project.description || ""}', '${project.poster_url || ""}')" class="text-slate-400 hover:text-indigo-600 transition-colors p-2 hover:bg-white rounded-lg shadow-sm border border-transparent hover:border-slate-100">
+                  <button onclick="editProject('${project.project_id}')" class="text-slate-400 hover:text-indigo-600 transition-colors p-2 hover:bg-white rounded-lg shadow-sm border border-transparent hover:border-slate-100">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                     </svg>
@@ -2388,8 +2455,18 @@
             <textarea id="project-description" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" rows="3"></textarea>
           </div>
           <div>
-            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">海报图片URL</label>
-            <input type="text" id="project-poster" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" placeholder="https://example.com/image.jpg">
+            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">海报图片 (16:9)</label>
+            <div class="mt-2 relative aspect-video rounded-xl overflow-hidden border-2 border-dashed border-slate-200 bg-slate-50 cursor-pointer hover:border-indigo-400 hover:bg-indigo-50/30 transition-all group" onclick="document.getElementById('project-poster-file').click()">
+              <input type="file" id="project-poster-file" accept="image/*" class="hidden" onchange="previewImage(this)">
+              <img class="absolute inset-0 w-full h-full object-cover hidden pointer-events-none" />
+              <div id="project-poster-placeholder" class="absolute inset-0 flex flex-col items-center justify-center gap-2 text-slate-400 group-hover:text-indigo-500 transition-colors">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                <span class="text-xs font-bold">点击上传图片</span>
+                <span class="text-[10px] text-slate-300">支持 JPG、PNG，自动裁剪为 16:9</span>
+              </div>
+            </div>
           </div>
         </div>
       `,
@@ -2399,8 +2476,10 @@
                         const description = document.getElementById(
                             "project-description",
                         ).value;
-                        const posterUrl =
-                            document.getElementById("project-poster").value;
+                        const fileInput = document.getElementById(
+                            "project-poster-file",
+                        );
+                        const posterUrl = fileInput.dataset.base64 || "";
 
                         if (!name) {
                             throw new Error("项目名称不能为空");
@@ -2429,22 +2508,35 @@
             }
 
             // 编辑项目
-            function editProject(projectId, name, description, posterUrl) {
+            function editProject(projectId) {
+                const project = projectsData[projectId];
+                if (!project) return;
+                const posterUrl = project.poster_url || "";
                 showModal(
                     "编辑项目",
                     `
         <div class="space-y-4">
           <div>
             <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">项目名称</label>
-            <input type="text" id="edit-project-name" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" value="${name}" required>
+            <input type="text" id="edit-project-name" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" value="${project.name}" required>
           </div>
           <div>
             <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">项目描述</label>
-            <textarea id="edit-project-description" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" rows="3">${description}</textarea>
+            <textarea id="edit-project-description" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" rows="3">${project.description || ""}</textarea>
           </div>
           <div>
-            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">海报图片URL</label>
-            <input type="text" id="edit-project-poster" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" value="${posterUrl}">
+            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">海报图片 (16:9)</label>
+            <div class="mt-2 relative aspect-video rounded-xl overflow-hidden border-2 border-dashed border-slate-200 bg-slate-50 cursor-pointer hover:border-indigo-400 hover:bg-indigo-50/30 transition-all group" onclick="document.getElementById('edit-project-poster-file').click()">
+              <input type="file" id="edit-project-poster-file" accept="image/*" class="hidden" onchange="previewImage(this)">
+              <img class="absolute inset-0 w-full h-full object-cover pointer-events-none" src="${posterUrl}" />
+              <div id="edit-project-poster-placeholder" class="absolute inset-0 flex flex-col items-center justify-center gap-2 text-slate-400 group-hover:text-indigo-500 transition-colors">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                <span class="text-xs font-bold">点击上传新图片</span>
+                <span class="text-[10px] text-slate-300">支持 JPG、PNG，自动裁剪为 16:9</span>
+              </div>
+            </div>
           </div>
         </div>
       `,
@@ -2454,9 +2546,10 @@
                         const newDescription = document.getElementById(
                             "edit-project-description",
                         ).value;
-                        const newPosterUrl = document.getElementById(
-                            "edit-project-poster",
-                        ).value;
+                        const fileInput = document.getElementById(
+                            "edit-project-poster-file",
+                        );
+                        const newPosterUrl = fileInput.dataset.base64 || posterUrl;
 
                         if (!newName) {
                             throw new Error("项目名称不能为空");
