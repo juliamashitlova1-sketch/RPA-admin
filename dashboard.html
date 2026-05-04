@@ -1,691 +1,1657 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>API Nexus - 控制中心</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              primary: '#4f46e5',
-              secondary: '#0f172a'
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>API Nexus - 控制中心</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            brand: {
+                                primary: "#4f46e5",
+                                secondary: "#0f172a",
+                            },
+                        },
+                        fontFamily: {
+                            sans: ["Inter", "system-ui", "sans-serif"],
+                            mono: ["JetBrains Mono", "monospace"],
+                        },
+                    },
+                },
+            };
+        </script>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            body {
+                font-family: "Inter", system-ui, sans-serif;
             }
-          },
-          fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace']
-          }
-        }
-      }
-    }
-  </script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Inter', system-ui, sans-serif; }
-    .font-mono { font-family: 'JetBrains Mono', monospace; }
-    .card-shadow { box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); }
-    .scrollbar-hide::-webkit-scrollbar { display: none; }
-    @keyframes pulse-dot {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-    .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
-  </style>
-</head>
-<body class="min-h-screen bg-[#FDFDFF] flex overflow-hidden font-sans">
-  <!-- Sidebar -->
-  <aside class="bg-slate-950 h-screen w-[280px] flex-shrink-0 relative z-50 shadow-2xl">
-    <div class="h-full flex flex-col p-8">
-      <div class="flex items-center gap-4 mb-12 px-2">
-        <div class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-indigo-600/30">
-          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-          </svg>
-        </div>
-        <div>
-          <h1 class="text-2xl font-black text-white tracking-tighter leading-none mb-1">API NEXUS</h1>
-          <div class="flex items-center gap-1.5">
-            <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 pulse-dot"></div>
-            <span class="text-[9px] text-slate-600 font-black uppercase tracking-widest">系统就绪</span>
-          </div>
-        </div>
-      </div>
+            .font-mono {
+                font-family: "JetBrains Mono", monospace;
+            }
+            .card-shadow {
+                box-shadow:
+                    0 1px 3px 0 rgb(0 0 0 / 0.1),
+                    0 1px 2px -1px rgb(0 0 0 / 0.1);
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            @keyframes pulse-dot {
+                0%,
+                100% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0.5;
+                }
+            }
+            .pulse-dot {
+                animation: pulse-dot 2s ease-in-out infinite;
+            }
 
-      <nav class="flex-1 space-y-3 overflow-y-auto scrollbar-hide">
-        <div class="mb-6">
-          <p class="text-[10px] font-black text-slate-700 uppercase tracking-[0.2em] mb-4 px-3">主控节点</p>
-          <div class="space-y-1.5">
-            <button onclick="showPage('dashboard')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 bg-indigo-600 text-white shadow-lg shadow-indigo-500/20" data-page="dashboard">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
-              </svg>
-              <span class="text-sm font-medium">控制面板</span>
-            </button>
-            <button onclick="showPage('users')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-400 hover:text-white hover:bg-white/5" data-page="users">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-              </svg>
-              <span class="text-sm font-medium">客户集群</span>
-            </button>
-            <button onclick="showPage('tokens')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-400 hover:text-white hover:bg-white/5" data-page="tokens">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
-              </svg>
-              <span class="text-sm font-medium">密钥管理</span>
-            </button>
-            <button onclick="showPage('usage')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-400 hover:text-white hover:bg-white/5" data-page="usage">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-              </svg>
-              <span class="text-sm font-medium">流量指数</span>
-            </button>
-          </div>
-        </div>
-        
-        <div>
-          <p class="text-[10px] font-black text-slate-700 uppercase tracking-[0.2em] mb-4 px-3">高级运维</p>
-          <div class="space-y-1.5">
-            <button onclick="showPage('pricing')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-400 hover:text-white hover:bg-white/5" data-page="pricing">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <span class="text-sm font-medium">定价策略</span>
-            </button>
-            <button onclick="showPage('logs')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-400 hover:text-white hover:bg-white/5" data-page="logs">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <span class="text-sm font-medium">系统审计</span>
-            </button>
-          </div>
-        </div>
-        
-        <div>
-          <p class="text-[10px] font-black text-slate-700 uppercase tracking-[0.2em] mb-4 px-3">内容管理</p>
-          <div class="space-y-1.5">
-            <button onclick="showPage('projects')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-400 hover:text-white hover:bg-white/5" data-page="projects">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-              </svg>
-              <span class="text-sm font-medium">项目大全</span>
-            </button>
-            <button onclick="showPage('tutorials')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-400 hover:text-white hover:bg-white/5" data-page="tutorials">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-              </svg>
-              <span class="text-sm font-medium">使用说明</span>
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      <div class="mt-auto pt-8 border-t border-white/5">
-        <div class="flex items-center gap-4 p-3 rounded-2xl bg-white/[0.03] border border-white/5 cursor-pointer group">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center text-white font-black shadow-lg">
-            A
-          </div>
-          <div class="flex-1 overflow-hidden">
-            <p class="text-sm font-bold text-white truncate px-1" id="sidebar-username">Admin</p>
-            <p class="text-[10px] text-slate-600 font-bold uppercase tracking-widest px-1">管理员</p>
-          </div>
-          <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
-        </div>
-      </div>
-    </div>
-  </aside>
-
-  <!-- Content Wrapper -->
-  <div class="flex-1 flex flex-col h-screen overflow-hidden relative">
-    <div class="absolute top-0 right-0 w-1/3 h-1/3 bg-indigo-500/5 blur-[120px] pointer-events-none"></div>
-
-    <!-- Header -->
-    <header class="h-24 px-10 flex items-center justify-between sticky top-0 z-40 bg-white/60 backdrop-blur-2xl border-b border-slate-100/80">
-      <div class="flex items-center gap-6">
-        <div class="hidden lg:flex items-center bg-slate-50 rounded-2xl px-5 py-3 gap-3 ring-1 ring-slate-200/50">
-          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
-          <input type="text" placeholder="搜索资源、用户、日志..." class="bg-transparent border-none text-xs font-bold text-slate-800 focus:ring-0 w-64 placeholder-slate-400">
-        </div>
-      </div>
-
-      <div class="flex items-center gap-4">
-        <button class="w-12 h-12 flex items-center justify-center hover:bg-slate-50 rounded-2xl text-slate-600 transition-colors relative">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
-          </svg>
-          <div class="absolute top-3 right-3 w-3 h-3 bg-indigo-600 rounded-full border-[2.5px] border-white shadow-sm"></div>
-        </button>
-        
-        <button onclick="logout()" class="h-12 bg-slate-900 hover:bg-red-600 text-white px-6 rounded-2xl transition-all font-black text-[11px] uppercase tracking-[0.1em] flex items-center gap-3 shadow-lg shadow-slate-900/10 hover:shadow-red-600/20 active:scale-95">
-          退出
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-          </svg>
-        </button>
-      </div>
-    </header>
-
-    <!-- Content View -->
-    <div class="flex-1 overflow-y-auto scroll-smooth scrollbar-hide px-10 py-12">
-      <div class="max-w-7xl mx-auto min-h-full">
-        <!-- Dashboard -->
-        <div id="page-dashboard" class="page-content">
-          <div class="space-y-8">
-            <div class="flex flex-col gap-1">
-              <h2 class="text-4xl font-black text-slate-900 tracking-tight">控制中心</h2>
-              <p class="text-slate-500 font-medium">实时系统健康度与 API 消费流量看板</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div class="bg-white p-6 rounded-2xl border border-slate-100 card-shadow">
-                <div class="flex justify-between items-start mb-4">
-                  <div class="p-3 rounded-xl bg-indigo-600 shadow-xl shadow-indigo-200">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                    </svg>
-                  </div>
+            /* 3D Flip Card Navigation */
+            .nav-card {
+                overflow: visible;
+                width: 100%;
+                height: 48px;
+                cursor: pointer;
+            }
+            .nav-card .content {
+                width: 100%;
+                height: 100%;
+                transform-style: preserve-3d;
+                transition: transform 300ms;
+                border-radius: 12px;
+                position: relative;
+            }
+            .nav-card .front,
+            .nav-card .back {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                backface-visibility: hidden;
+                -webkit-backface-visibility: hidden;
+                border-radius: 12px;
+                overflow: hidden;
+            }
+            /* Back face - visible by default (normal nav state) */
+            .nav-card .back {
+                background: transparent;
+            }
+            .nav-card .back .back-content {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 0 16px;
+                color: #94a3b8;
+                transition: all 200ms;
+                border-radius: 12px;
+            }
+            .nav-card.nav-active .back .back-content {
+                background-color: #4f46e5;
+                color: white;
+                box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.2);
+            }
+            /* Front face - hidden by default, shown on hover with gradient border */
+            .nav-card .front {
+                transform: rotateY(180deg);
+            }
+            .nav-card .front::before {
+                position: absolute;
+                content: " ";
+                display: block;
+                width: 120px;
+                height: 160%;
+                left: calc(50% - 60px);
+                top: -30%;
+                background: linear-gradient(
+                    90deg,
+                    transparent,
+                    #ff9966,
+                    #ff9966,
+                    #ff9966,
+                    #ff9966,
+                    transparent
+                );
+                animation: rotation_481 5000ms infinite linear;
+            }
+            .nav-card .front .front-content {
+                position: absolute;
+                width: calc(100% - 6px);
+                height: calc(100% - 6px);
+                top: 3px;
+                left: 3px;
+                background-color: #1e1b4b;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 0 16px;
+                color: white;
+                font-weight: 600;
+                font-size: 14px;
+                z-index: 1;
+            }
+            .nav-card.nav-active .front .front-content {
+                background-color: #4f46e5;
+            }
+            .nav-card:hover .content {
+                transform: rotateY(180deg);
+            }
+            @keyframes rotation_481 {
+                0% {
+                    transform: rotateZ(0deg);
+                }
+                100% {
+                    transform: rotateZ(360deg);
+                }
+            }
+        </style>
+    </head>
+    <body class="min-h-screen bg-[#FDFDFF] flex overflow-hidden font-sans">
+        <!-- Sidebar -->
+        <aside
+            class="bg-slate-950 h-screen w-[280px] flex-shrink-0 relative z-50 shadow-2xl"
+        >
+            <div class="h-full flex flex-col p-8">
+                <div class="flex items-center gap-4 mb-12 px-2">
+                    <div
+                        class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-indigo-600/30"
+                    >
+                        <svg
+                            class="w-7 h-7 text-white"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                            ></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1
+                            class="text-2xl font-black text-white tracking-tighter leading-none mb-1"
+                        >
+                            API NEXUS
+                        </h1>
+                        <div class="flex items-center gap-1.5">
+                            <div
+                                class="w-1.5 h-1.5 rounded-full bg-emerald-500 pulse-dot"
+                            ></div>
+                            <span
+                                class="text-[9px] text-slate-600 font-black uppercase tracking-widest"
+                                >系统就绪</span
+                            >
+                        </div>
+                    </div>
                 </div>
-                <h3 class="text-slate-500 text-sm font-medium mb-1">今日调用量</h3>
-                <p class="text-2xl font-black text-slate-900 tracking-tight" id="stat-calls">0</p>
-              </div>
-              <div class="bg-white p-6 rounded-2xl border border-slate-100 card-shadow">
-                <div class="flex justify-between items-start mb-4">
-                  <div class="p-3 rounded-xl bg-violet-600 shadow-xl shadow-violet-200">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                  </div>
+
+                <nav class="flex-1 space-y-3 overflow-y-auto scrollbar-hide">
+                    <div class="mb-6">
+                        <p
+                            class="text-[10px] font-black text-slate-700 uppercase tracking-[0.2em] mb-4 px-3"
+                        >
+                            主控节点
+                        </p>
+                        <div class="space-y-1.5">
+                            <div
+                                class="nav-btn nav-card nav-active"
+                                onclick="showPage('dashboard')"
+                                data-page="dashboard"
+                            >
+                                <div class="content">
+                                    <div class="back">
+                                        <div class="back-content">
+                                            <svg
+                                                class="w-5 h-5 flex-shrink-0"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
+                                                ></path>
+                                            </svg>
+                                            <span class="text-sm"
+                                                >控制面板</span
+                                            >
+                                        </div>
+                                    </div>
+                                    <div class="front">
+                                        <div class="front-content">
+                                            <svg
+                                                class="w-5 h-5 flex-shrink-0"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
+                                                ></path>
+                                            </svg>
+                                            <span class="text-sm"
+                                                >控制面板</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                class="nav-btn nav-card"
+                                onclick="showPage('users')"
+                                data-page="users"
+                            >
+                                <div class="content">
+                                    <div class="back">
+                                        <div class="back-content">
+                                            <svg
+                                                class="w-5 h-5 flex-shrink-0"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                                                ></path>
+                                            </svg>
+                                            <span class="text-sm"
+                                                >客户集群</span
+                                            >
+                                        </div>
+                                    </div>
+                                    <div class="front">
+                                        <div class="front-content">
+                                            <svg
+                                                class="w-5 h-5 flex-shrink-0"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                                                ></path>
+                                            </svg>
+                                            <span class="text-sm"
+                                                >客户集群</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                class="nav-btn nav-card"
+                                onclick="showPage('tokens')"
+                                data-page="tokens"
+                            >
+                                <div class="content">
+                                    <div class="back">
+                                        <div class="back-content">
+                                            <svg
+                                                class="w-5 h-5 flex-shrink-0"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                                                ></path>
+                                            </svg>
+                                            <span class="text-sm"
+                                                >密钥管理</span
+                                            >
+                                        </div>
+                                    </div>
+                                    <div class="front">
+                                        <div class="front-content">
+                                            <svg
+                                                class="w-5 h-5 flex-shrink-0"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                                                ></path>
+                                            </svg>
+                                            <span class="text-sm"
+                                                >密钥管理</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                class="nav-btn nav-card"
+                                onclick="showPage('usage')"
+                                data-page="usage"
+                            >
+                                <div class="content">
+                                    <div class="back">
+                                        <div class="back-content">
+                                            <svg
+                                                class="w-5 h-5 flex-shrink-0"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                                                ></path>
+                                            </svg>
+                                            <span class="text-sm"
+                                                >流量指数</span
+                                            >
+                                        </div>
+                                    </div>
+                                    <div class="front">
+                                        <div class="front-content">
+                                            <svg
+                                                class="w-5 h-5 flex-shrink-0"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                                                ></path>
+                                            </svg>
+                                            <span class="text-sm"
+                                                >流量指数</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p
+                            class="text-[10px] font-black text-slate-700 uppercase tracking-[0.2em] mb-4 px-3"
+                        >
+                            高级运维
+                        </p>
+                        <div class="space-y-1.5">
+                            <div
+                                class="nav-btn nav-card"
+                                onclick="showPage('pricing')"
+                                data-page="pricing"
+                            >
+                                <div class="content">
+                                    <div class="back">
+                                        <div class="back-content">
+                                            <svg
+                                                class="w-5 h-5 flex-shrink-0"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                ></path>
+                                            </svg>
+                                            <span class="text-sm"
+                                                >定价策略</span
+                                            >
+                                        </div>
+                                    </div>
+                                    <div class="front">
+                                        <div class="front-content">
+                                            <svg
+                                                class="w-5 h-5 flex-shrink-0"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                ></path>
+                                            </svg>
+                                            <span class="text-sm"
+                                                >定价策略</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                class="nav-btn nav-card"
+                                onclick="showPage('logs')"
+                                data-page="logs"
+                            >
+                                <div class="content">
+                                    <div class="back">
+                                        <div class="back-content">
+                                            <svg
+                                                class="w-5 h-5 flex-shrink-0"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                ></path>
+                                            </svg>
+                                            <span class="text-sm"
+                                                >系统审计</span
+                                            >
+                                        </div>
+                                    </div>
+                                    <div class="front">
+                                        <div class="front-content">
+                                            <svg
+                                                class="w-5 h-5 flex-shrink-0"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                ></path>
+                                            </svg>
+                                            <span class="text-sm"
+                                                >系统审计</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p
+                            class="text-[10px] font-black text-slate-700 uppercase tracking-[0.2em] mb-4 px-3"
+                        >
+                            内容管理
+                        </p>
+                        <div class="space-y-1.5">
+                            <div
+                                class="nav-btn nav-card"
+                                onclick="showPage('projects')"
+                                data-page="projects"
+                            >
+                                <div class="content">
+                                    <div class="back">
+                                        <div class="back-content">
+                                            <svg
+                                                class="w-5 h-5 flex-shrink-0"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                                                ></path>
+                                            </svg>
+                                            <span class="text-sm"
+                                                >项目大全</span
+                                            >
+                                        </div>
+                                    </div>
+                                    <div class="front">
+                                        <div class="front-content">
+                                            <svg
+                                                class="w-5 h-5 flex-shrink-0"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                                                ></path>
+                                            </svg>
+                                            <span class="text-sm"
+                                                >项目大全</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                class="nav-btn nav-card"
+                                onclick="showPage('tutorials')"
+                                data-page="tutorials"
+                            >
+                                <div class="content">
+                                    <div class="back">
+                                        <div class="back-content">
+                                            <svg
+                                                class="w-5 h-5 flex-shrink-0"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                                                ></path>
+                                            </svg>
+                                            <span class="text-sm"
+                                                >使用说明</span
+                                            >
+                                        </div>
+                                    </div>
+                                    <div class="front">
+                                        <div class="front-content">
+                                            <svg
+                                                class="w-5 h-5 flex-shrink-0"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                                                ></path>
+                                            </svg>
+                                            <span class="text-sm"
+                                                >使用说明</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+
+                <div class="mt-auto pt-8 border-t border-white/5">
+                    <div
+                        class="flex items-center gap-4 p-3 rounded-2xl bg-white/[0.03] border border-white/5 cursor-pointer group"
+                    >
+                        <div
+                            class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center text-white font-black shadow-lg"
+                        >
+                            A
+                        </div>
+                        <div class="flex-1 overflow-hidden">
+                            <p
+                                class="text-sm font-bold text-white truncate px-1"
+                                id="sidebar-username"
+                            >
+                                Admin
+                            </p>
+                            <p
+                                class="text-[10px] text-slate-600 font-bold uppercase tracking-widest px-1"
+                            >
+                                管理员
+                            </p>
+                        </div>
+                        <svg
+                            class="w-4 h-4 text-slate-600"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M19 9l-7 7-7-7"
+                            ></path>
+                        </svg>
+                    </div>
                 </div>
-                <h3 class="text-slate-500 text-sm font-medium mb-1">今日消耗</h3>
-                <p class="text-2xl font-black text-slate-900 tracking-tight" id="stat-cost">¥0.00</p>
-              </div>
-              <div class="bg-white p-6 rounded-2xl border border-slate-100 card-shadow">
-                <div class="flex justify-between items-start mb-4">
-                  <div class="p-3 rounded-xl bg-blue-600 shadow-xl shadow-blue-200">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                    </svg>
-                  </div>
+            </div>
+        </aside>
+
+        <!-- Content Wrapper -->
+        <div class="flex-1 flex flex-col h-screen overflow-hidden relative">
+            <div
+                class="absolute top-0 right-0 w-1/3 h-1/3 bg-indigo-500/5 blur-[120px] pointer-events-none"
+            ></div>
+
+            <!-- Header -->
+            <header
+                class="h-24 px-10 flex items-center justify-between sticky top-0 z-40 bg-white/60 backdrop-blur-2xl border-b border-slate-100/80"
+            >
+                <div class="flex items-center gap-6">
+                    <div
+                        class="hidden lg:flex items-center bg-slate-50 rounded-2xl px-5 py-3 gap-3 ring-1 ring-slate-200/50"
+                    >
+                        <svg
+                            class="w-4 h-4 text-slate-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                            ></path>
+                        </svg>
+                        <input
+                            type="text"
+                            placeholder="搜索资源、用户、日志..."
+                            class="bg-transparent border-none text-xs font-bold text-slate-800 focus:ring-0 w-64 placeholder-slate-400"
+                        />
+                    </div>
                 </div>
-                <h3 class="text-slate-500 text-sm font-medium mb-1">活跃用户</h3>
-                <p class="text-2xl font-black text-slate-900 tracking-tight" id="stat-users">0</p>
-              </div>
-              <div class="bg-white p-6 rounded-2xl border border-slate-100 card-shadow">
-                <div class="flex justify-between items-start mb-4">
-                  <div class="p-3 rounded-xl bg-emerald-500 shadow-xl shadow-emerald-200">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                    </svg>
-                  </div>
+
+                <div class="flex items-center gap-4">
+                    <button
+                        class="w-12 h-12 flex items-center justify-center hover:bg-slate-50 rounded-2xl text-slate-600 transition-colors relative"
+                    >
+                        <svg
+                            class="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                            ></path>
+                        </svg>
+                        <div
+                            class="absolute top-3 right-3 w-3 h-3 bg-indigo-600 rounded-full border-[2.5px] border-white shadow-sm"
+                        ></div>
+                    </button>
+
+                    <button
+                        onclick="logout()"
+                        class="h-12 bg-slate-900 hover:bg-red-600 text-white px-6 rounded-2xl transition-all font-black text-[11px] uppercase tracking-[0.1em] flex items-center gap-3 shadow-lg shadow-slate-900/10 hover:shadow-red-600/20 active:scale-95"
+                    >
+                        退出
+                        <svg
+                            class="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                            ></path>
+                        </svg>
+                    </button>
                 </div>
-                <h3 class="text-slate-500 text-sm font-medium mb-1">成功率</h3>
-                <p class="text-2xl font-black text-slate-900 tracking-tight" id="stat-success">0%</p>
-              </div>
+            </header>
+
+            <!-- Content View -->
+            <div
+                class="flex-1 overflow-y-auto scroll-smooth scrollbar-hide px-10 py-12"
+            >
+                <div class="max-w-7xl mx-auto min-h-full">
+                    <!-- Dashboard -->
+                    <div id="page-dashboard" class="page-content">
+                        <div class="space-y-8">
+                            <div class="flex flex-col gap-1">
+                                <h2
+                                    class="text-4xl font-black text-slate-900 tracking-tight"
+                                >
+                                    控制中心
+                                </h2>
+                                <p class="text-slate-500 font-medium">
+                                    实时系统健康度与 API 消费流量看板
+                                </p>
+                            </div>
+
+                            <div
+                                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+                            >
+                                <div
+                                    class="bg-white p-6 rounded-2xl border border-slate-100 card-shadow"
+                                >
+                                    <div
+                                        class="flex justify-between items-start mb-4"
+                                    >
+                                        <div
+                                            class="p-3 rounded-xl bg-indigo-600 shadow-xl shadow-indigo-200"
+                                        >
+                                            <svg
+                                                class="w-6 h-6 text-white"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                                                ></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <h3
+                                        class="text-slate-500 text-sm font-medium mb-1"
+                                    >
+                                        今日调用量
+                                    </h3>
+                                    <p
+                                        class="text-2xl font-black text-slate-900 tracking-tight"
+                                        id="stat-calls"
+                                    >
+                                        0
+                                    </p>
+                                </div>
+                                <div
+                                    class="bg-white p-6 rounded-2xl border border-slate-100 card-shadow"
+                                >
+                                    <div
+                                        class="flex justify-between items-start mb-4"
+                                    >
+                                        <div
+                                            class="p-3 rounded-xl bg-violet-600 shadow-xl shadow-violet-200"
+                                        >
+                                            <svg
+                                                class="w-6 h-6 text-white"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                ></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <h3
+                                        class="text-slate-500 text-sm font-medium mb-1"
+                                    >
+                                        今日消耗
+                                    </h3>
+                                    <p
+                                        class="text-2xl font-black text-slate-900 tracking-tight"
+                                        id="stat-cost"
+                                    >
+                                        ¥0.00
+                                    </p>
+                                </div>
+                                <div
+                                    class="bg-white p-6 rounded-2xl border border-slate-100 card-shadow"
+                                >
+                                    <div
+                                        class="flex justify-between items-start mb-4"
+                                    >
+                                        <div
+                                            class="p-3 rounded-xl bg-blue-600 shadow-xl shadow-blue-200"
+                                        >
+                                            <svg
+                                                class="w-6 h-6 text-white"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                                                ></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <h3
+                                        class="text-slate-500 text-sm font-medium mb-1"
+                                    >
+                                        活跃用户
+                                    </h3>
+                                    <p
+                                        class="text-2xl font-black text-slate-900 tracking-tight"
+                                        id="stat-users"
+                                    >
+                                        0
+                                    </p>
+                                </div>
+                                <div
+                                    class="bg-white p-6 rounded-2xl border border-slate-100 card-shadow"
+                                >
+                                    <div
+                                        class="flex justify-between items-start mb-4"
+                                    >
+                                        <div
+                                            class="p-3 rounded-xl bg-emerald-500 shadow-xl shadow-emerald-200"
+                                        >
+                                            <svg
+                                                class="w-6 h-6 text-white"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                                                ></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <h3
+                                        class="text-slate-500 text-sm font-medium mb-1"
+                                    >
+                                        成功率
+                                    </h3>
+                                    <p
+                                        class="text-2xl font-black text-slate-900 tracking-tight"
+                                        id="stat-success"
+                                    >
+                                        0%
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                <div
+                                    class="lg:col-span-2 bg-white p-8 rounded-3xl border border-slate-100 card-shadow"
+                                >
+                                    <div
+                                        class="flex justify-between items-center mb-8"
+                                    >
+                                        <div>
+                                            <h3
+                                                class="font-black text-slate-900 text-lg"
+                                            >
+                                                用户消耗排名
+                                            </h3>
+                                            <p
+                                                class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1"
+                                            >
+                                                TOP 10 USERS
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div id="user-ranking" class="space-y-4">
+                                        <p class="text-slate-400 text-sm">
+                                            暂无数据
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="bg-white p-8 rounded-3xl border border-slate-100 card-shadow"
+                                >
+                                    <div class="mb-8">
+                                        <h3
+                                            class="font-black text-slate-900 text-lg"
+                                        >
+                                            模型使用分布
+                                        </h3>
+                                        <p
+                                            class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1"
+                                        >
+                                            MODEL DISTRIBUTION
+                                        </p>
+                                    </div>
+                                    <div id="model-stats" class="space-y-6">
+                                        <p class="text-slate-400 text-sm">
+                                            暂无数据
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Users Page -->
+                    <div id="page-users" class="page-content hidden">
+                        <div class="space-y-6">
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <h2
+                                        class="text-3xl font-extrabold text-slate-900 tracking-tight"
+                                    >
+                                        用户管理
+                                    </h2>
+                                    <p class="text-slate-500 text-sm">
+                                        管理系统中的所有接入客户与权限级别
+                                    </p>
+                                </div>
+                                <button
+                                    onclick="showAddUserModal()"
+                                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-indigo-500/20 hover:scale-105 active:scale-95"
+                                >
+                                    添加新用户
+                                </button>
+                            </div>
+
+                            <div
+                                class="bg-white rounded-2xl border border-slate-100 overflow-hidden card-shadow"
+                            >
+                                <div
+                                    class="p-5 border-b border-slate-50 flex flex-wrap gap-4 items-center"
+                                >
+                                    <div class="relative flex-1 min-w-[300px]">
+                                        <svg
+                                            class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                            ></path>
+                                        </svg>
+                                        <input
+                                            type="text"
+                                            id="user-search"
+                                            placeholder="搜索用户名、邮箱..."
+                                            class="w-full pl-11 pr-4 py-3 rounded-xl bg-slate-50 border-none text-sm focus:ring-2 focus:ring-indigo-500/20 transition-all font-medium"
+                                            onkeyup="loadUsers()"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left">
+                                        <thead class="bg-slate-50/50">
+                                            <tr
+                                                class="text-slate-400 text-[10px] font-black uppercase tracking-widest"
+                                            >
+                                                <th class="px-8 py-5">
+                                                    用户信息
+                                                </th>
+                                                <th class="px-6 py-5">邮箱</th>
+                                                <th
+                                                    class="px-6 py-5 text-right"
+                                                >
+                                                    余额 (CNY)
+                                                </th>
+                                                <th
+                                                    class="px-6 py-5 text-center"
+                                                >
+                                                    Token数
+                                                </th>
+                                                <th
+                                                    class="px-6 py-5 text-center"
+                                                >
+                                                    状态
+                                                </th>
+                                                <th
+                                                    class="px-6 py-5 text-right"
+                                                >
+                                                    操作
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody
+                                            id="users-table-body"
+                                            class="divide-y divide-slate-100"
+                                        ></tbody>
+                                    </table>
+                                </div>
+
+                                <div
+                                    id="users-pagination"
+                                    class="p-5 border-t border-slate-50 flex justify-between items-center"
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tokens Page -->
+                    <div id="page-tokens" class="page-content hidden">
+                        <div class="space-y-6">
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <h2
+                                        class="text-3xl font-extrabold text-slate-900 tracking-tight"
+                                    >
+                                        密钥管理
+                                    </h2>
+                                    <p class="text-slate-500 text-sm">
+                                        管理所有API访问密钥与配额
+                                    </p>
+                                </div>
+                                <button
+                                    onclick="showCreateTokenModal()"
+                                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-indigo-500/20 hover:scale-105 active:scale-95"
+                                >
+                                    创建新Token
+                                </button>
+                            </div>
+
+                            <div
+                                class="bg-white rounded-2xl border border-slate-100 overflow-hidden card-shadow"
+                            >
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left">
+                                        <thead class="bg-slate-50/50">
+                                            <tr
+                                                class="text-slate-400 text-[10px] font-black uppercase tracking-widest"
+                                            >
+                                                <th class="px-8 py-5">Token</th>
+                                                <th class="px-6 py-5">用户</th>
+                                                <th class="px-6 py-5">名称</th>
+                                                <th
+                                                    class="px-6 py-5 text-right"
+                                                >
+                                                    余额
+                                                </th>
+                                                <th
+                                                    class="px-6 py-5 text-center"
+                                                >
+                                                    状态
+                                                </th>
+                                                <th
+                                                    class="px-6 py-5 text-right"
+                                                >
+                                                    操作
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody
+                                            id="tokens-table-body"
+                                            class="divide-y divide-slate-100"
+                                        ></tbody>
+                                    </table>
+                                </div>
+                                <div
+                                    id="tokens-pagination"
+                                    class="p-5 border-t border-slate-50"
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Usage Page -->
+                    <div id="page-usage" class="page-content hidden">
+                        <div class="space-y-6">
+                            <div>
+                                <h2
+                                    class="text-3xl font-extrabold text-slate-900 tracking-tight"
+                                >
+                                    流量指数
+                                </h2>
+                                <p class="text-slate-500 text-sm">
+                                    API调用统计与消耗分析
+                                </p>
+                            </div>
+
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div
+                                    class="bg-white p-8 rounded-3xl border border-slate-100 card-shadow"
+                                >
+                                    <h3
+                                        class="font-black text-slate-900 text-lg mb-4"
+                                    >
+                                        每日消耗趋势
+                                    </h3>
+                                    <div
+                                        id="daily-usage-chart"
+                                        class="space-y-3"
+                                    >
+                                        <p class="text-slate-400 text-sm">
+                                            加载中...
+                                        </p>
+                                    </div>
+                                </div>
+                                <div
+                                    class="bg-white p-8 rounded-3xl border border-slate-100 card-shadow"
+                                >
+                                    <h3
+                                        class="font-black text-slate-900 text-lg mb-4"
+                                    >
+                                        软件消耗分布
+                                    </h3>
+                                    <div id="software-stats" class="space-y-4">
+                                        <p class="text-slate-400 text-sm">
+                                            加载中...
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div
+                                class="bg-white rounded-2xl border border-slate-100 overflow-hidden card-shadow"
+                            >
+                                <div class="p-5 border-b border-slate-50">
+                                    <h3 class="font-black text-slate-900">
+                                        详细调用记录
+                                    </h3>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left">
+                                        <thead class="bg-slate-50/50">
+                                            <tr
+                                                class="text-slate-400 text-[10px] font-black uppercase tracking-widest"
+                                            >
+                                                <th class="px-8 py-5">时间</th>
+                                                <th class="px-6 py-5">模型</th>
+                                                <th class="px-6 py-5">软件</th>
+                                                <th
+                                                    class="px-6 py-5 text-right"
+                                                >
+                                                    Tokens
+                                                </th>
+                                                <th
+                                                    class="px-6 py-5 text-right"
+                                                >
+                                                    费用
+                                                </th>
+                                                <th
+                                                    class="px-6 py-5 text-center"
+                                                >
+                                                    状态
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody
+                                            id="usage-table-body"
+                                            class="divide-y divide-slate-100"
+                                        ></tbody>
+                                    </table>
+                                </div>
+                                <div
+                                    id="usage-pagination"
+                                    class="p-5 border-t border-slate-50"
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pricing Page -->
+                    <div id="page-pricing" class="page-content hidden">
+                        <div class="space-y-6">
+                            <div>
+                                <h2
+                                    class="text-3xl font-extrabold text-slate-900 tracking-tight"
+                                >
+                                    定价策略
+                                </h2>
+                                <p class="text-slate-500 text-sm">
+                                    配置各模型的计费标准
+                                </p>
+                            </div>
+                            <div
+                                class="bg-white p-8 rounded-3xl border border-slate-100 card-shadow"
+                            >
+                                <div id="pricing-table"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Logs Page -->
+                    <div id="page-logs" class="page-content hidden">
+                        <div class="space-y-6">
+                            <div>
+                                <h2
+                                    class="text-3xl font-extrabold text-slate-900 tracking-tight"
+                                >
+                                    系统审计
+                                </h2>
+                                <p class="text-slate-500 text-sm">
+                                    操作日志与安全审计
+                                </p>
+                            </div>
+                            <div
+                                class="bg-white rounded-2xl border border-slate-100 overflow-hidden card-shadow"
+                            >
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left">
+                                        <thead class="bg-slate-50/50">
+                                            <tr
+                                                class="text-slate-400 text-[10px] font-black uppercase tracking-widest"
+                                            >
+                                                <th class="px-8 py-5">时间</th>
+                                                <th class="px-6 py-5">
+                                                    操作人
+                                                </th>
+                                                <th class="px-6 py-5">操作</th>
+                                                <th class="px-6 py-5">目标</th>
+                                                <th class="px-6 py-5">详情</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody
+                                            id="logs-table-body"
+                                            class="divide-y divide-slate-100"
+                                        ></tbody>
+                                    </table>
+                                </div>
+                                <div
+                                    id="logs-pagination"
+                                    class="p-5 border-t border-slate-50"
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Projects Page -->
+                    <div id="page-projects" class="page-content hidden">
+                        <div class="space-y-6">
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <h2
+                                        class="text-3xl font-extrabold text-slate-900 tracking-tight"
+                                    >
+                                        项目大全
+                                    </h2>
+                                    <p class="text-slate-500 text-sm">
+                                        管理所有项目信息与海报
+                                    </p>
+                                </div>
+                                <button
+                                    onclick="showAddProjectModal()"
+                                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-indigo-500/20 hover:scale-105 active:scale-95"
+                                >
+                                    添加新项目
+                                </button>
+                            </div>
+
+                            <div
+                                id="projects-grid"
+                                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                            >
+                                <!-- 项目卡片将在这里动态加载 -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tutorials Page -->
+                    <div id="page-tutorials" class="page-content hidden">
+                        <div class="space-y-6">
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <h2
+                                        class="text-3xl font-extrabold text-slate-900 tracking-tight"
+                                    >
+                                        使用说明
+                                    </h2>
+                                    <p class="text-slate-500 text-sm">
+                                        为每个项目添加视频教程和文字说明
+                                    </p>
+                                </div>
+                                <button
+                                    onclick="showAddTutorialModal()"
+                                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-indigo-500/20 hover:scale-105 active:scale-95"
+                                >
+                                    添加使用说明
+                                </button>
+                            </div>
+
+                            <div
+                                class="bg-white rounded-2xl border border-slate-100 overflow-hidden card-shadow"
+                            >
+                                <div
+                                    class="p-5 border-b border-slate-50 flex flex-wrap gap-4 items-center"
+                                >
+                                    <select
+                                        id="tutorial-project-filter"
+                                        class="bg-slate-50 border-none rounded-xl text-sm px-4 py-3 focus:ring-2 focus:ring-indigo-500/20 transition-all font-semibold text-slate-600 outline-none"
+                                        onchange="loadTutorials()"
+                                    >
+                                        <option value="">全部项目</option>
+                                    </select>
+                                </div>
+
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left">
+                                        <thead class="bg-slate-50/50">
+                                            <tr
+                                                class="text-slate-400 text-[10px] font-black uppercase tracking-widest"
+                                            >
+                                                <th class="px-8 py-5">项目</th>
+                                                <th class="px-6 py-5">标题</th>
+                                                <th class="px-6 py-5">视频</th>
+                                                <th class="px-6 py-5">
+                                                    计费说明
+                                                </th>
+                                                <th
+                                                    class="px-6 py-5 text-right"
+                                                >
+                                                    操作
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody
+                                            id="tutorials-table-body"
+                                            class="divide-y divide-slate-100"
+                                        ></tbody>
+                                    </table>
+                                </div>
+                                <div
+                                    id="tutorials-pagination"
+                                    class="p-5 border-t border-slate-50"
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div class="lg:col-span-2 bg-white p-8 rounded-3xl border border-slate-100 card-shadow">
-                <div class="flex justify-between items-center mb-8">
-                  <div>
-                    <h3 class="font-black text-slate-900 text-lg">用户消耗排名</h3>
-                    <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">TOP 10 USERS</p>
-                  </div>
+            <!-- Footer -->
+            <footer
+                class="px-10 py-6 border-t border-slate-100/80 bg-white/40 backdrop-blur-md flex justify-between items-center"
+            >
+                <div class="flex items-center gap-4">
+                    <p
+                        class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
+                    >
+                        © 2026 API Nexus Infrastructure
+                    </p>
+                    <div class="w-1 h-1 rounded-full bg-slate-300"></div>
+                    <p
+                        class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
+                    >
+                        Build 1.0.0
+                    </p>
                 </div>
-                <div id="user-ranking" class="space-y-4">
-                  <p class="text-slate-400 text-sm">暂无数据</p>
+                <div class="flex items-center gap-8">
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"
+                        ></div>
+                        <span
+                            class="text-[10px] font-black text-slate-600 uppercase tracking-widest"
+                            >核心节点响应正常</span
+                        >
+                    </div>
                 </div>
-              </div>
-              
-              <div class="bg-white p-8 rounded-3xl border border-slate-100 card-shadow">
-                <div class="mb-8">
-                  <h3 class="font-black text-slate-900 text-lg">模型使用分布</h3>
-                  <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">MODEL DISTRIBUTION</p>
-                </div>
-                <div id="model-stats" class="space-y-6">
-                  <p class="text-slate-400 text-sm">暂无数据</p>
-                </div>
-              </div>
-            </div>
-          </div>
+            </footer>
         </div>
 
-        <!-- Users Page -->
-        <div id="page-users" class="page-content hidden">
-          <div class="space-y-6">
-            <div class="flex justify-between items-end">
-              <div>
-                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">用户管理</h2>
-                <p class="text-slate-500 text-sm">管理系统中的所有接入客户与权限级别</p>
-              </div>
-              <button onclick="showAddUserModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-indigo-500/20 hover:scale-105 active:scale-95">
-                添加新用户
-              </button>
-            </div>
-
-            <div class="bg-white rounded-2xl border border-slate-100 overflow-hidden card-shadow">
-              <div class="p-5 border-b border-slate-50 flex flex-wrap gap-4 items-center">
-                <div class="relative flex-1 min-w-[300px]">
-                  <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                  </svg>
-                  <input type="text" id="user-search" placeholder="搜索用户名、邮箱..." class="w-full pl-11 pr-4 py-3 rounded-xl bg-slate-50 border-none text-sm focus:ring-2 focus:ring-indigo-500/20 transition-all font-medium" onkeyup="loadUsers()">
+        <!-- Modal -->
+        <div
+            id="modal"
+            class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50"
+        >
+            <div class="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl">
+                <h3
+                    id="modal-title"
+                    class="text-xl font-black text-slate-900 mb-4"
+                ></h3>
+                <div id="modal-content"></div>
+                <div class="mt-6 flex justify-end gap-3">
+                    <button
+                        type="button"
+                        onclick="closeModal()"
+                        class="px-5 py-2.5 border-2 border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors"
+                    >
+                        取消
+                    </button>
+                    <button
+                        type="button"
+                        id="modal-confirm"
+                        class="px-5 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-500/20"
+                    >
+                        确认
+                    </button>
                 </div>
-              </div>
-
-              <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                  <thead class="bg-slate-50/50">
-                    <tr class="text-slate-400 text-[10px] font-black uppercase tracking-widest">
-                      <th class="px-8 py-5">用户信息</th>
-                      <th class="px-6 py-5">邮箱</th>
-                      <th class="px-6 py-5 text-right">余额 (CNY)</th>
-                      <th class="px-6 py-5 text-center">Token数</th>
-                      <th class="px-6 py-5 text-center">状态</th>
-                      <th class="px-6 py-5 text-right">操作</th>
-                    </tr>
-                  </thead>
-                  <tbody id="users-table-body" class="divide-y divide-slate-100">
-                  </tbody>
-                </table>
-              </div>
-              
-              <div id="users-pagination" class="p-5 border-t border-slate-50 flex justify-between items-center">
-              </div>
             </div>
-          </div>
         </div>
 
-        <!-- Tokens Page -->
-        <div id="page-tokens" class="page-content hidden">
-          <div class="space-y-6">
-            <div class="flex justify-between items-end">
-              <div>
-                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">密钥管理</h2>
-                <p class="text-slate-500 text-sm">管理所有API访问密钥与配额</p>
-              </div>
-              <button onclick="showCreateTokenModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-indigo-500/20 hover:scale-105 active:scale-95">
-                创建新Token
-              </button>
-            </div>
+        <script>
+            const API_BASE = "https://api-gateway.juliamashitlova1.workers.dev";
+            let currentUser = null;
+            let currentPage = "dashboard";
 
-            <div class="bg-white rounded-2xl border border-slate-100 overflow-hidden card-shadow">
-              <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                  <thead class="bg-slate-50/50">
-                    <tr class="text-slate-400 text-[10px] font-black uppercase tracking-widest">
-                      <th class="px-8 py-5">Token</th>
-                      <th class="px-6 py-5">用户</th>
-                      <th class="px-6 py-5">名称</th>
-                      <th class="px-6 py-5 text-right">余额</th>
-                      <th class="px-6 py-5 text-center">状态</th>
-                      <th class="px-6 py-5 text-right">操作</th>
-                    </tr>
-                  </thead>
-                  <tbody id="tokens-table-body" class="divide-y divide-slate-100">
-                  </tbody>
-                </table>
-              </div>
-              <div id="tokens-pagination" class="p-5 border-t border-slate-50">
-              </div>
-            </div>
-          </div>
-        </div>
+            // 初始化
+            document.addEventListener("DOMContentLoaded", () => {
+                const savedUser = localStorage.getItem("admin_user");
+                if (!savedUser) {
+                    window.location.href = "/login.html";
+                    return;
+                }
+                currentUser = JSON.parse(savedUser);
+                document.getElementById("sidebar-username").textContent =
+                    currentUser.username;
+                loadPageData("dashboard");
+            });
 
-        <!-- Usage Page -->
-        <div id="page-usage" class="page-content hidden">
-          <div class="space-y-6">
-            <div>
-              <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">流量指数</h2>
-              <p class="text-slate-500 text-sm">API调用统计与消耗分析</p>
-            </div>
-            
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div class="bg-white p-8 rounded-3xl border border-slate-100 card-shadow">
-                <h3 class="font-black text-slate-900 text-lg mb-4">每日消耗趋势</h3>
-                <div id="daily-usage-chart" class="space-y-3">
-                  <p class="text-slate-400 text-sm">加载中...</p>
-                </div>
-              </div>
-              <div class="bg-white p-8 rounded-3xl border border-slate-100 card-shadow">
-                <h3 class="font-black text-slate-900 text-lg mb-4">软件消耗分布</h3>
-                <div id="software-stats" class="space-y-4">
-                  <p class="text-slate-400 text-sm">加载中...</p>
-                </div>
-              </div>
-            </div>
+            // API请求封装
+            async function api(path, options = {}) {
+                const headers = {
+                    "Content-Type": "application/json",
+                    ...options.headers,
+                };
 
-            <div class="bg-white rounded-2xl border border-slate-100 overflow-hidden card-shadow">
-              <div class="p-5 border-b border-slate-50">
-                <h3 class="font-black text-slate-900">详细调用记录</h3>
-              </div>
-              <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                  <thead class="bg-slate-50/50">
-                    <tr class="text-slate-400 text-[10px] font-black uppercase tracking-widest">
-                      <th class="px-8 py-5">时间</th>
-                      <th class="px-6 py-5">模型</th>
-                      <th class="px-6 py-5">软件</th>
-                      <th class="px-6 py-5 text-right">Tokens</th>
-                      <th class="px-6 py-5 text-right">费用</th>
-                      <th class="px-6 py-5 text-center">状态</th>
-                    </tr>
-                  </thead>
-                  <tbody id="usage-table-body" class="divide-y divide-slate-100">
-                  </tbody>
-                </table>
-              </div>
-              <div id="usage-pagination" class="p-5 border-t border-slate-50">
-              </div>
-            </div>
-          </div>
-        </div>
+                // 如果没有指定X-User-Id，则使用当前用户的ID
+                if (!headers["X-User-Id"] && currentUser) {
+                    headers["X-User-Id"] = currentUser.userId;
+                }
 
-        <!-- Pricing Page -->
-        <div id="page-pricing" class="page-content hidden">
-          <div class="space-y-6">
-            <div>
-              <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">定价策略</h2>
-              <p class="text-slate-500 text-sm">配置各模型的计费标准</p>
-            </div>
-            <div class="bg-white p-8 rounded-3xl border border-slate-100 card-shadow">
-              <div id="pricing-table"></div>
-            </div>
-          </div>
-        </div>
+                try {
+                    const response = await fetch(`${API_BASE}${path}`, {
+                        method: options.method || "GET",
+                        headers,
+                        body: options.body || undefined,
+                    });
 
-        <!-- Logs Page -->
-        <div id="page-logs" class="page-content hidden">
-          <div class="space-y-6">
-            <div>
-              <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">系统审计</h2>
-              <p class="text-slate-500 text-sm">操作日志与安全审计</p>
-            </div>
-            <div class="bg-white rounded-2xl border border-slate-100 overflow-hidden card-shadow">
-              <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                  <thead class="bg-slate-50/50">
-                    <tr class="text-slate-400 text-[10px] font-black uppercase tracking-widest">
-                      <th class="px-8 py-5">时间</th>
-                      <th class="px-6 py-5">操作人</th>
-                      <th class="px-6 py-5">操作</th>
-                      <th class="px-6 py-5">目标</th>
-                      <th class="px-6 py-5">详情</th>
-                    </tr>
-                  </thead>
-                  <tbody id="logs-table-body" class="divide-y divide-slate-100">
-                  </tbody>
-                </table>
-              </div>
-              <div id="logs-pagination" class="p-5 border-t border-slate-50">
-              </div>
-            </div>
-          </div>
-        </div>
+                    const data = await response.json();
 
-        <!-- Projects Page -->
-        <div id="page-projects" class="page-content hidden">
-          <div class="space-y-6">
-            <div class="flex justify-between items-end">
-              <div>
-                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">项目大全</h2>
-                <p class="text-slate-500 text-sm">管理所有项目信息与海报</p>
-              </div>
-              <button onclick="showAddProjectModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-indigo-500/20 hover:scale-105 active:scale-95">
-                添加新项目
-              </button>
-            </div>
+                    if (
+                        (response.status === 401 || response.status === 403) &&
+                        !path.includes("/login")
+                    ) {
+                        logout();
+                        return null;
+                    }
 
-            <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <!-- 项目卡片将在这里动态加载 -->
-            </div>
-          </div>
-        </div>
+                    return data;
+                } catch (err) {
+                    console.error("API Error:", err);
+                    throw new Error("网络请求失败，请检查网络连接");
+                }
+            }
 
-        <!-- Tutorials Page -->
-        <div id="page-tutorials" class="page-content hidden">
-          <div class="space-y-6">
-            <div class="flex justify-between items-end">
-              <div>
-                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">使用说明</h2>
-                <p class="text-slate-500 text-sm">为每个项目添加视频教程和文字说明</p>
-              </div>
-              <button onclick="showAddTutorialModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-indigo-500/20 hover:scale-105 active:scale-95">
-                添加使用说明
-              </button>
-            </div>
+            // 登出
+            function logout() {
+                localStorage.removeItem("admin_user");
+                window.location.href = "/login.html";
+            }
 
-            <div class="bg-white rounded-2xl border border-slate-100 overflow-hidden card-shadow">
-              <div class="p-5 border-b border-slate-50 flex flex-wrap gap-4 items-center">
-                <select id="tutorial-project-filter" class="bg-slate-50 border-none rounded-xl text-sm px-4 py-3 focus:ring-2 focus:ring-indigo-500/20 transition-all font-semibold text-slate-600 outline-none" onchange="loadTutorials()">
-                  <option value="">全部项目</option>
-                </select>
-              </div>
+            // 页面切换
+            function showPage(page) {
+                currentPage = page;
+                document
+                    .querySelectorAll(".page-content")
+                    .forEach((p) => p.classList.add("hidden"));
+                document
+                    .getElementById(`page-${page}`)
+                    .classList.remove("hidden");
 
-              <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                  <thead class="bg-slate-50/50">
-                    <tr class="text-slate-400 text-[10px] font-black uppercase tracking-widest">
-                      <th class="px-8 py-5">项目</th>
-                      <th class="px-6 py-5">标题</th>
-                      <th class="px-6 py-5">视频</th>
-                      <th class="px-6 py-5">计费说明</th>
-                      <th class="px-6 py-5 text-right">操作</th>
-                    </tr>
-                  </thead>
-                  <tbody id="tutorials-table-body" class="divide-y divide-slate-100">
-                  </tbody>
-                </table>
-              </div>
-              <div id="tutorials-pagination" class="p-5 border-t border-slate-50">
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+                document.querySelectorAll(".nav-btn").forEach((btn) => {
+                    if (btn.dataset.page === page) {
+                        btn.classList.add("nav-active");
+                    } else {
+                        btn.classList.remove("nav-active");
+                    }
+                });
 
-    <!-- Footer -->
-    <footer class="px-10 py-6 border-t border-slate-100/80 bg-white/40 backdrop-blur-md flex justify-between items-center">
-      <div class="flex items-center gap-4">
-        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">© 2026 API Nexus Infrastructure</p>
-        <div class="w-1 h-1 rounded-full bg-slate-300"></div>
-        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Build 1.0.0</p>
-      </div>
-      <div class="flex items-center gap-8">
-        <div class="flex items-center gap-2">
-          <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
-          <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest">核心节点响应正常</span>
-        </div>
-      </div>
-    </footer>
-  </div>
+                loadPageData(page);
+            }
 
-  <!-- Modal -->
-  <div id="modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50">
-    <div class="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl">
-      <h3 id="modal-title" class="text-xl font-black text-slate-900 mb-4"></h3>
-      <div id="modal-content"></div>
-      <div class="mt-6 flex justify-end gap-3">
-        <button type="button" onclick="closeModal()" class="px-5 py-2.5 border-2 border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors">取消</button>
-        <button type="button" id="modal-confirm" class="px-5 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-500/20">确认</button>
-      </div>
-    </div>
-  </div>
+            // 加载页面数据
+            async function loadPageData(page) {
+                switch (page) {
+                    case "dashboard":
+                        await loadDashboard();
+                        break;
+                    case "users":
+                        await loadUsers();
+                        break;
+                    case "tokens":
+                        await loadTokens();
+                        break;
+                    case "usage":
+                        await loadUsage();
+                        await loadUsageDetail();
+                        break;
+                    case "pricing":
+                        await loadPricing();
+                        break;
+                    case "logs":
+                        await loadLogs();
+                        break;
+                    case "projects":
+                        await loadProjects();
+                        break;
+                    case "tutorials":
+                        await loadTutorialProjects();
+                        await loadTutorials();
+                        break;
+                }
+            }
 
-  <script>
-    const API_BASE = 'https://api-gateway.juliamashitlova1.workers.dev';
-    let currentUser = null;
-    let currentPage = 'dashboard';
+            // 加载仪表盘
+            async function loadDashboard() {
+                try {
+                    const result = await api("/api/admin/stats?days=30");
+                    if (!result || !result.success) return;
 
-    // 初始化
-    document.addEventListener('DOMContentLoaded', () => {
-      const savedUser = localStorage.getItem('admin_user');
-      if (!savedUser) {
-        window.location.href = '/login.html';
-        return;
-      }
-      currentUser = JSON.parse(savedUser);
-      document.getElementById('sidebar-username').textContent = currentUser.username;
-      loadPageData('dashboard');
-    });
+                    const stats = result.data;
+                    document.getElementById("stat-calls").textContent =
+                        formatNumber(stats.today.total_calls);
+                    document.getElementById("stat-cost").textContent =
+                        `¥${stats.today.total_cost.toFixed(2)}`;
+                    document.getElementById("stat-users").textContent =
+                        stats.today.active_users;
 
-    // API请求封装
-    async function api(path, options = {}) {
-      const headers = {
-        'Content-Type': 'application/json',
-        ...options.headers
-      };
-      
-      // 如果没有指定X-User-Id，则使用当前用户的ID
-      if (!headers['X-User-Id'] && currentUser) {
-        headers['X-User-Id'] = currentUser.userId;
-      }
+                    const successRate =
+                        stats.today.total_calls > 0
+                            ? (
+                                  (stats.today.success_count /
+                                      stats.today.total_calls) *
+                                  100
+                              ).toFixed(1)
+                            : 0;
+                    document.getElementById("stat-success").textContent =
+                        `${successRate}%`;
 
-      try {
-        const response = await fetch(`${API_BASE}${path}`, {
-          method: options.method || 'GET',
-          headers,
-          body: options.body || undefined
-        });
-
-        const data = await response.json();
-
-        if ((response.status === 401 || response.status === 403) && !path.includes('/login')) {
-          logout();
-          return null;
-        }
-
-        return data;
-      } catch (err) {
-        console.error('API Error:', err);
-        throw new Error('网络请求失败，请检查网络连接');
-      }
-    }
-
-    // 登出
-    function logout() {
-      localStorage.removeItem('admin_user');
-      window.location.href = '/login.html';
-    }
-
-    // 页面切换
-    function showPage(page) {
-      currentPage = page;
-      document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
-      document.getElementById(`page-${page}`).classList.remove('hidden');
-      
-      document.querySelectorAll('.nav-btn').forEach(btn => {
-        if (btn.dataset.page === page) {
-          btn.className = 'nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 bg-indigo-600 text-white shadow-lg shadow-indigo-500/20';
-        } else {
-          btn.className = 'nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-400 hover:text-white hover:bg-white/5';
-        }
-      });
-
-      loadPageData(page);
-    }
-
-    // 加载页面数据
-    async function loadPageData(page) {
-      switch (page) {
-        case 'dashboard':
-          await loadDashboard();
-          break;
-        case 'users':
-          await loadUsers();
-          break;
-        case 'tokens':
-          await loadTokens();
-          break;
-        case 'usage':
-          await loadUsage();
-          await loadUsageDetail();
-          break;
-        case 'pricing':
-          await loadPricing();
-          break;
-        case 'logs':
-          await loadLogs();
-          break;
-        case 'projects':
-          await loadProjects();
-          break;
-        case 'tutorials':
-          await loadTutorialProjects();
-          await loadTutorials();
-          break;
-      }
-    }
-
-    // 加载仪表盘
-    async function loadDashboard() {
-      try {
-        const result = await api('/api/admin/stats?days=30');
-        if (!result || !result.success) return;
-
-        const stats = result.data;
-        document.getElementById('stat-calls').textContent = formatNumber(stats.today.total_calls);
-        document.getElementById('stat-cost').textContent = `¥${stats.today.total_cost.toFixed(2)}`;
-        document.getElementById('stat-users').textContent = stats.today.active_users;
-        
-        const successRate = stats.today.total_calls > 0 
-          ? ((stats.today.success_count / stats.today.total_calls) * 100).toFixed(1)
-          : 0;
-        document.getElementById('stat-success').textContent = `${successRate}%`;
-
-        // 用户排名
-        const rankingContainer = document.getElementById('user-ranking');
-        if (stats.userRanking && stats.userRanking.length > 0) {
-          const maxCost = Math.max(...stats.userRanking.map(d => d.cost));
-          rankingContainer.innerHTML = stats.userRanking.map((user, i) => `
+                    // 用户排名
+                    const rankingContainer =
+                        document.getElementById("user-ranking");
+                    if (stats.userRanking && stats.userRanking.length > 0) {
+                        const maxCost = Math.max(
+                            ...stats.userRanking.map((d) => d.cost),
+                        );
+                        rankingContainer.innerHTML = stats.userRanking
+                            .map(
+                                (user, i) => `
             <div class="flex items-center gap-4">
               <span class="w-8 text-sm font-black text-slate-400">#${i + 1}</span>
               <span class="w-32 font-bold text-slate-700">${user.username}</span>
               <div class="flex-1 h-3 bg-slate-50 rounded-full overflow-hidden p-0.5 ring-1 ring-slate-100">
-                <div class="h-full rounded-full bg-indigo-600 shadow-sm" style="width: ${(user.cost / maxCost * 100)}%"></div>
+                <div class="h-full rounded-full bg-indigo-600 shadow-sm" style="width: ${(user.cost / maxCost) * 100}%"></div>
               </div>
               <span class="w-24 text-right font-mono font-bold text-slate-900">¥${user.cost.toFixed(2)}</span>
             </div>
-          `).join('');
-        }
+          `,
+                            )
+                            .join("");
+                    }
 
-        // 模型分布
-        const modelContainer = document.getElementById('model-stats');
-        if (stats.modelStats && stats.modelStats.length > 0) {
-          const totalCost = stats.modelStats.reduce((sum, m) => sum + m.cost, 0);
-          const colors = ['bg-indigo-600', 'bg-blue-600', 'bg-violet-600', 'bg-slate-400'];
-          modelContainer.innerHTML = stats.modelStats.map((model, i) => `
+                    // 模型分布
+                    const modelContainer =
+                        document.getElementById("model-stats");
+                    if (stats.modelStats && stats.modelStats.length > 0) {
+                        const totalCost = stats.modelStats.reduce(
+                            (sum, m) => sum + m.cost,
+                            0,
+                        );
+                        const colors = [
+                            "bg-indigo-600",
+                            "bg-blue-600",
+                            "bg-violet-600",
+                            "bg-slate-400",
+                        ];
+                        modelContainer.innerHTML = stats.modelStats
+                            .map(
+                                (model, i) => `
             <div class="space-y-3">
               <div class="flex justify-between items-end px-1">
                 <span class="text-sm font-bold text-slate-700">${model.api_provider}/${model.model}</span>
                 <span class="text-xs font-black text-indigo-600">${((model.cost / totalCost) * 100).toFixed(1)}%</span>
               </div>
               <div class="w-full h-3 bg-slate-50 rounded-full overflow-hidden p-0.5 ring-1 ring-slate-100">
-                <div class="h-full rounded-full transition-all duration-1000 ${colors[i % colors.length]} shadow-sm" style="width: ${(model.cost / totalCost * 100)}%"></div>
+                <div class="h-full rounded-full transition-all duration-1000 ${colors[i % colors.length]} shadow-sm" style="width: ${(model.cost / totalCost) * 100}%"></div>
               </div>
             </div>
-          `).join('');
-        }
-      } catch (err) {
-        console.error('Load dashboard error:', err);
-      }
-    }
+          `,
+                            )
+                            .join("");
+                    }
+                } catch (err) {
+                    console.error("Load dashboard error:", err);
+                }
+            }
 
-    // 加载用户列表
-    async function loadUsers(page = 1) {
-      const search = document.getElementById('user-search')?.value || '';
-      const result = await api(`/api/admin/users?page=${page}&pageSize=20&search=${search}`);
-      if (!result || !result.success) return;
+            // 加载用户列表
+            async function loadUsers(page = 1) {
+                const search =
+                    document.getElementById("user-search")?.value || "";
+                const result = await api(
+                    `/api/admin/users?page=${page}&pageSize=20&search=${search}`,
+                );
+                if (!result || !result.success) return;
 
-      const tbody = document.getElementById('users-table-body');
-      tbody.innerHTML = result.data.map(user => `
+                const tbody = document.getElementById("users-table-body");
+                tbody.innerHTML = result.data
+                    .map(
+                        (user) => `
         <tr class="hover:bg-slate-50/50 transition-colors group">
           <td class="px-8 py-5">
             <div class="flex items-center gap-4">
@@ -699,7 +1665,7 @@
             </div>
           </td>
           <td class="px-6 py-5">
-            <span class="text-sm font-medium text-slate-600">${user.email || '-'}</span>
+            <span class="text-sm font-medium text-slate-600">${user.email || "-"}</span>
           </td>
           <td class="px-6 py-5 text-right">
             <span class="font-mono font-bold text-slate-900 tracking-tighter">¥${user.balance.toFixed(2)}</span>
@@ -709,11 +1675,11 @@
           </td>
           <td class="px-6 py-5 text-center">
             <span class="inline-flex px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-              user.status === 'active' 
-                ? 'bg-emerald-50 text-emerald-600 border-emerald-100' 
-                : 'bg-slate-50 text-slate-400 border-slate-100'
+                user.status === "active"
+                    ? "bg-emerald-50 text-emerald-600 border-emerald-100"
+                    : "bg-slate-50 text-slate-400 border-slate-100"
             }">
-              ${user.status === 'active' ? '正常' : '封禁'}
+              ${user.status === "active" ? "正常" : "封禁"}
             </span>
           </td>
           <td class="px-6 py-5 text-right">
@@ -723,56 +1689,71 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
               </button>
-              <button onclick="toggleUserStatus('${user.user_id}', '${user.status}')" class="text-slate-400 hover:text-${user.status === 'active' ? 'red' : 'emerald'}-600 transition-colors p-2 hover:bg-white rounded-lg shadow-sm border border-transparent hover:border-slate-100" title="${user.status === 'active' ? '封禁' : '解封'}">
+              <button onclick="toggleUserStatus('${user.user_id}', '${user.status}')" class="text-slate-400 hover:text-${user.status === "active" ? "red" : "emerald"}-600 transition-colors p-2 hover:bg-white rounded-lg shadow-sm border border-transparent hover:border-slate-100" title="${user.status === "active" ? "封禁" : "解封"}">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  ${user.status === 'active' 
-                    ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>'
-                    : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>'
+                  ${
+                      user.status === "active"
+                          ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>'
+                          : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>'
                   }
                 </svg>
               </button>
             </div>
           </td>
         </tr>
-      `).join('');
+      `,
+                    )
+                    .join("");
 
-      renderPagination('users-pagination', result.pagination, loadUsers);
-    }
+                renderPagination(
+                    "users-pagination",
+                    result.pagination,
+                    loadUsers,
+                );
+            }
 
-    // 加载Token列表
-    async function loadTokens(page = 1) {
-      const result = await api(`/api/admin/tokens?page=${page}&pageSize=20`);
-      if (!result || !result.success) return;
+            // 加载Token列表
+            async function loadTokens(page = 1) {
+                const result = await api(
+                    `/api/admin/tokens?page=${page}&pageSize=20`,
+                );
+                if (!result || !result.success) return;
 
-      const tbody = document.getElementById('tokens-table-body');
-      tbody.innerHTML = result.data.map(token => `
+                const tbody = document.getElementById("tokens-table-body");
+                tbody.innerHTML = result.data
+                    .map(
+                        (token) => `
         <tr class="hover:bg-slate-50/50 transition-colors">
           <td class="px-8 py-5">
             <div class="flex items-center gap-2">
               <span class="font-mono text-sm font-bold text-slate-600">${token.token_plain || token.token_prefix}</span>
-              ${token.token_plain ? `<button onclick="copyToken('${token.token_plain}')" class="text-slate-400 hover:text-indigo-600 transition-colors p-1" title="复制">
+              ${
+                  token.token_plain
+                      ? `<button onclick="copyToken('${token.token_plain}')" class="text-slate-400 hover:text-indigo-600 transition-colors p-1" title="复制">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                 </svg>
-              </button>` : ''}
+              </button>`
+                      : ""
+              }
             </div>
           </td>
           <td class="px-6 py-5">
             <span class="text-sm font-medium text-slate-600">${token.username}</span>
           </td>
           <td class="px-6 py-5">
-            <span class="text-sm font-medium text-slate-600">${token.token_name || '-'}</span>
+            <span class="text-sm font-medium text-slate-600">${token.token_name || "-"}</span>
           </td>
           <td class="px-6 py-5 text-right">
             <span class="font-mono font-bold text-slate-900">¥${token.balance.toFixed(2)}</span>
           </td>
           <td class="px-6 py-5 text-center">
             <span class="inline-flex px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-              token.status === 'active' 
-                ? 'bg-emerald-50 text-emerald-600 border-emerald-100' 
-                : 'bg-slate-50 text-slate-400 border-slate-100'
+                token.status === "active"
+                    ? "bg-emerald-50 text-emerald-600 border-emerald-100"
+                    : "bg-slate-50 text-slate-400 border-slate-100"
             }">
-              ${token.status === 'active' ? '正常' : '已吊销'}
+              ${token.status === "active" ? "正常" : "已吊销"}
             </span>
           </td>
           <td class="px-6 py-5 text-right">
@@ -783,65 +1764,83 @@
             </button>
           </td>
         </tr>
-      `).join('');
+      `,
+                    )
+                    .join("");
 
-      renderPagination('tokens-pagination', result.pagination, loadTokens);
-    }
+                renderPagination(
+                    "tokens-pagination",
+                    result.pagination,
+                    loadTokens,
+                );
+            }
 
-    // 复制Token
-    function copyToken(token) {
-      navigator.clipboard.writeText(token).then(() => {
-        alert('Token已复制到剪贴板');
-      }).catch(() => {
-        //  fallback for older browsers
-        const textarea = document.createElement('textarea');
-        textarea.value = token;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        alert('Token已复制到剪贴板');
-      });
-    }
+            // 复制Token
+            function copyToken(token) {
+                navigator.clipboard
+                    .writeText(token)
+                    .then(() => {
+                        alert("Token已复制到剪贴板");
+                    })
+                    .catch(() => {
+                        //  fallback for older browsers
+                        const textarea = document.createElement("textarea");
+                        textarea.value = token;
+                        document.body.appendChild(textarea);
+                        textarea.select();
+                        document.execCommand("copy");
+                        document.body.removeChild(textarea);
+                        alert("Token已复制到剪贴板");
+                    });
+            }
 
-    // Token充值
-    function rechargeToken(tokenId) {
-      showModal('Token充值', `
+            // Token充值
+            function rechargeToken(tokenId) {
+                showModal(
+                    "Token充值",
+                    `
         <div class="space-y-4">
           <div>
             <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">充值金额 (元)</label>
             <input type="number" id="token-recharge-amount" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" min="0.01" step="0.01">
           </div>
         </div>
-      `, async () => {
-        const amount = parseFloat(document.getElementById('token-recharge-amount').value);
-        
-        if (!amount || amount <= 0) {
-          throw new Error('请输入有效金额');
-        }
-        
-        const result = await api('/api/token/recharge', {
-          method: 'POST',
-          body: JSON.stringify({ tokenId, amount })
-        });
+      `,
+                    async () => {
+                        const amount = parseFloat(
+                            document.getElementById("token-recharge-amount")
+                                .value,
+                        );
 
-        if (result && result.success) {
-          alert('充值成功');
-          closeModal();
-          loadTokens();
-        } else {
-          throw new Error(result?.error?.message || '充值失败');
-        }
-      });
-    }
+                        if (!amount || amount <= 0) {
+                            throw new Error("请输入有效金额");
+                        }
 
-    // 加载定价
-    async function loadPricing() {
-      const result = await api('/api/admin/pricing');
-      if (!result || !result.success) return;
+                        const result = await api("/api/token/recharge", {
+                            method: "POST",
+                            body: JSON.stringify({ tokenId, amount }),
+                        });
 
-      const container = document.getElementById('pricing-table');
-      container.innerHTML = `
+                        if (result && result.success) {
+                            alert("充值成功");
+                            closeModal();
+                            loadTokens();
+                        } else {
+                            throw new Error(
+                                result?.error?.message || "充值失败",
+                            );
+                        }
+                    },
+                );
+            }
+
+            // 加载定价
+            async function loadPricing() {
+                const result = await api("/api/admin/pricing");
+                if (!result || !result.success) return;
+
+                const container = document.getElementById("pricing-table");
+                container.innerHTML = `
         <table class="w-full text-left">
           <thead>
             <tr class="border-b-2 border-slate-100">
@@ -853,74 +1852,90 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-50">
-            ${result.data.map(p => `
+            ${result.data
+                .map(
+                    (p) => `
               <tr>
                 <td class="py-4 font-bold text-slate-700">${p.provider}</td>
                 <td class="py-4 font-mono text-sm text-slate-600">${p.model}</td>
                 <td class="py-4 text-right font-mono text-sm">¥${p.price_per_1k_prompt}/千</td>
                 <td class="py-4 text-right font-mono text-sm">¥${p.price_per_1k_completion}/千</td>
                 <td class="py-4 text-center">
-                  <span class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold ${p.is_active ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-400'}">
-                    ${p.is_active ? '启用' : '禁用'}
+                  <span class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold ${p.is_active ? "bg-emerald-50 text-emerald-600" : "bg-slate-50 text-slate-400"}">
+                    ${p.is_active ? "启用" : "禁用"}
                   </span>
                 </td>
               </tr>
-            `).join('')}
+            `,
+                )
+                .join("")}
           </tbody>
         </table>
       `;
-    }
+            }
 
-    // 加载日志
-    async function loadLogs(page = 1) {
-      const result = await api(`/api/admin/logs?page=${page}&pageSize=50`);
-      if (!result || !result.success) return;
+            // 加载日志
+            async function loadLogs(page = 1) {
+                const result = await api(
+                    `/api/admin/logs?page=${page}&pageSize=50`,
+                );
+                if (!result || !result.success) return;
 
-      const tbody = document.getElementById('logs-table-body');
-      tbody.innerHTML = result.data.map(log => `
+                const tbody = document.getElementById("logs-table-body");
+                tbody.innerHTML = result.data
+                    .map(
+                        (log) => `
         <tr class="hover:bg-slate-50/50 transition-colors">
           <td class="px-8 py-4 text-sm font-mono text-slate-500">${formatTime(log.created_at)}</td>
-          <td class="px-6 py-4 text-sm font-medium text-slate-600">${log.operator_name || '-'}</td>
+          <td class="px-6 py-4 text-sm font-medium text-slate-600">${log.operator_name || "-"}</td>
           <td class="px-6 py-4">
             <span class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-600">${log.action}</span>
           </td>
-          <td class="px-6 py-4 text-sm text-slate-500">${log.target_id?.substring(0, 8) || '-'}</td>
-          <td class="px-6 py-4 text-sm text-slate-400">${log.details ? JSON.parse(log.details).notes || '-' : '-'}</td>
+          <td class="px-6 py-4 text-sm text-slate-500">${log.target_id?.substring(0, 8) || "-"}</td>
+          <td class="px-6 py-4 text-sm text-slate-400">${log.details ? JSON.parse(log.details).notes || "-" : "-"}</td>
         </tr>
-      `).join('');
+      `,
+                    )
+                    .join("");
 
-      renderPagination('logs-pagination', result.pagination, loadLogs);
-    }
+                renderPagination(
+                    "logs-pagination",
+                    result.pagination,
+                    loadLogs,
+                );
+            }
 
-    // 渲染分页
-    function renderPagination(containerId, pagination, loadFn) {
-      const container = document.getElementById(containerId);
-      if (!pagination || pagination.totalPages <= 1) {
-        container.innerHTML = '';
-        return;
-      }
+            // 渲染分页
+            function renderPagination(containerId, pagination, loadFn) {
+                const container = document.getElementById(containerId);
+                if (!pagination || pagination.totalPages <= 1) {
+                    container.innerHTML = "";
+                    return;
+                }
 
-      let html = `<p class="text-xs text-slate-500 font-medium">显示 ${(pagination.page-1)*pagination.pageSize+1} 到 ${Math.min(pagination.page*pagination.pageSize, pagination.total)} 共 ${pagination.total} 条</p><div class="flex gap-1">`;
-      
-      if (pagination.page > 1) {
-        html += `<button onclick="(${loadFn.name})(${pagination.page - 1})" class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-400 hover:bg-slate-50 transition-colors">上一页</button>`;
-      }
-      
-      for (let i = 1; i <= Math.min(pagination.totalPages, 5); i++) {
-        html += `<button onclick="(${loadFn.name})(${i})" class="px-3 py-1.5 rounded-lg ${i === pagination.page ? 'border-2 border-indigo-600 bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'border border-slate-200 text-slate-400 hover:bg-slate-50'} text-xs font-bold transition-colors">${i}</button>`;
-      }
-      
-      if (pagination.page < pagination.totalPages) {
-        html += `<button onclick="(${loadFn.name})(${pagination.page + 1})" class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-400 hover:bg-slate-50 transition-colors">下一页</button>`;
-      }
-      
-      html += '</div>';
-      container.innerHTML = html;
-    }
+                let html = `<p class="text-xs text-slate-500 font-medium">显示 ${(pagination.page - 1) * pagination.pageSize + 1} 到 ${Math.min(pagination.page * pagination.pageSize, pagination.total)} 共 ${pagination.total} 条</p><div class="flex gap-1">`;
 
-    // 充值用户
-    function rechargeUser(userId) {
-      showModal('用户充值', `
+                if (pagination.page > 1) {
+                    html += `<button onclick="(${loadFn.name})(${pagination.page - 1})" class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-400 hover:bg-slate-50 transition-colors">上一页</button>`;
+                }
+
+                for (let i = 1; i <= Math.min(pagination.totalPages, 5); i++) {
+                    html += `<button onclick="(${loadFn.name})(${i})" class="px-3 py-1.5 rounded-lg ${i === pagination.page ? "border-2 border-indigo-600 bg-indigo-600 text-white shadow-md shadow-indigo-500/20" : "border border-slate-200 text-slate-400 hover:bg-slate-50"} text-xs font-bold transition-colors">${i}</button>`;
+                }
+
+                if (pagination.page < pagination.totalPages) {
+                    html += `<button onclick="(${loadFn.name})(${pagination.page + 1})" class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-400 hover:bg-slate-50 transition-colors">下一页</button>`;
+                }
+
+                html += "</div>";
+                container.innerHTML = html;
+            }
+
+            // 充值用户
+            function rechargeUser(userId) {
+                showModal(
+                    "用户充值",
+                    `
         <div class="space-y-4">
           <div>
             <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">充值金额 (元)</label>
@@ -931,93 +1946,103 @@
             <input type="text" id="recharge-notes" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all">
           </div>
         </div>
-      `, async () => {
-        const amount = parseFloat(document.getElementById('recharge-amount').value);
-        const notes = document.getElementById('recharge-notes').value;
-        
-        const result = await api('/api/admin/recharge', {
-          method: 'POST',
-          body: JSON.stringify({ userId, amount, notes })
-        });
+      `,
+                    async () => {
+                        const amount = parseFloat(
+                            document.getElementById("recharge-amount").value,
+                        );
+                        const notes =
+                            document.getElementById("recharge-notes").value;
 
-        if (result && result.success) {
-          alert('充值成功');
-          closeModal();
-          loadUsers();
-        } else {
-          alert(result?.error?.message || '充值失败');
-        }
-      });
-    }
+                        const result = await api("/api/admin/recharge", {
+                            method: "POST",
+                            body: JSON.stringify({ userId, amount, notes }),
+                        });
 
-    // 切换用户状态
-    async function toggleUserStatus(userId, currentStatus) {
-      const newStatus = currentStatus === 'active' ? 'suspended' : 'active';
-      const action = newStatus === 'suspended' ? '封禁' : '解封';
-      
-      if (!confirm(`确定要${action}该用户吗？`)) return;
+                        if (result && result.success) {
+                            alert("充值成功");
+                            closeModal();
+                            loadUsers();
+                        } else {
+                            alert(result?.error?.message || "充值失败");
+                        }
+                    },
+                );
+            }
 
-      const result = await api('/api/admin/user/status', {
-        method: 'POST',
-        body: JSON.stringify({ userId, status: newStatus })
-      });
+            // 切换用户状态
+            async function toggleUserStatus(userId, currentStatus) {
+                const newStatus =
+                    currentStatus === "active" ? "suspended" : "active";
+                const action = newStatus === "suspended" ? "封禁" : "解封";
 
-      if (result && result.success) {
-        loadUsers();
-      } else {
-        alert(result?.error?.message || `${action}失败`);
-      }
-    }
+                if (!confirm(`确定要${action}该用户吗？`)) return;
 
-    // 模态框
-    let currentConfirmHandler = null;
-    
-    function showModal(title, content, onConfirm) {
-      document.getElementById('modal-title').textContent = title;
-      document.getElementById('modal-content').innerHTML = content;
-      document.getElementById('modal').classList.remove('hidden');
-      document.getElementById('modal').style.display = 'flex';
-      
-      // 移除旧的事件监听器
-      const confirmBtn = document.getElementById('modal-confirm');
-      const newBtn = confirmBtn.cloneNode(true);
-      confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
-      
-      // 添加新的事件监听器
-      newBtn.addEventListener('click', async () => {
-        try {
-          newBtn.disabled = true;
-          newBtn.textContent = '处理中...';
-          await onConfirm();
-        } catch (err) {
-          alert('操作失败: ' + err.message);
-        } finally {
-          newBtn.disabled = false;
-          newBtn.textContent = '确认';
-        }
-      });
-      
-      // 阻止表单提交
-      const form = document.querySelector('#modal-content form');
-      if (form) {
-        form.addEventListener('submit', (e) => e.preventDefault());
-      }
-      
-      // 聚焦到第一个输入框
-      setTimeout(() => {
-        const firstInput = document.querySelector('#modal-content input');
-        if (firstInput) firstInput.focus();
-      }, 100);
-    }
+                const result = await api("/api/admin/user/status", {
+                    method: "POST",
+                    body: JSON.stringify({ userId, status: newStatus }),
+                });
 
-    function closeModal() {
-      document.getElementById('modal').classList.add('hidden');
-      document.getElementById('modal').style.display = 'none';
-    }
+                if (result && result.success) {
+                    loadUsers();
+                } else {
+                    alert(result?.error?.message || `${action}失败`);
+                }
+            }
 
-    // 添加用户模态框
-    function showAddUserModal() {
-      showModal('添加新用户', `
+            // 模态框
+            let currentConfirmHandler = null;
+
+            function showModal(title, content, onConfirm) {
+                document.getElementById("modal-title").textContent = title;
+                document.getElementById("modal-content").innerHTML = content;
+                document.getElementById("modal").classList.remove("hidden");
+                document.getElementById("modal").style.display = "flex";
+
+                // 移除旧的事件监听器
+                const confirmBtn = document.getElementById("modal-confirm");
+                const newBtn = confirmBtn.cloneNode(true);
+                confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
+
+                // 添加新的事件监听器
+                newBtn.addEventListener("click", async () => {
+                    try {
+                        newBtn.disabled = true;
+                        newBtn.textContent = "处理中...";
+                        await onConfirm();
+                    } catch (err) {
+                        alert("操作失败: " + err.message);
+                    } finally {
+                        newBtn.disabled = false;
+                        newBtn.textContent = "确认";
+                    }
+                });
+
+                // 阻止表单提交
+                const form = document.querySelector("#modal-content form");
+                if (form) {
+                    form.addEventListener("submit", (e) => e.preventDefault());
+                }
+
+                // 聚焦到第一个输入框
+                setTimeout(() => {
+                    const firstInput = document.querySelector(
+                        "#modal-content input",
+                    );
+                    if (firstInput) firstInput.focus();
+                }, 100);
+            }
+
+            function closeModal() {
+                document.getElementById("modal").classList.add("hidden");
+                document.getElementById("modal").style.display = "none";
+            }
+
+            // 添加用户模态框
+            function showAddUserModal() {
+                showModal(
+                    "添加新用户",
+                    `
         <div class="space-y-4">
           <div>
             <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">用户名</label>
@@ -1032,49 +2057,68 @@
             <input type="email" id="new-email" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all">
           </div>
         </div>
-      `, async () => {
-        const username = document.getElementById('new-username').value;
-        const password = document.getElementById('new-password').value;
-        const email = document.getElementById('new-email').value;
-        
-        if (!username || !password) {
-          throw new Error('用户名和密码不能为空');
-        }
-        
-        const result = await api('/api/user/register', {
-          method: 'POST',
-          body: JSON.stringify({ username, password, email })
-        });
+      `,
+                    async () => {
+                        const username =
+                            document.getElementById("new-username").value;
+                        const password =
+                            document.getElementById("new-password").value;
+                        const email =
+                            document.getElementById("new-email").value;
 
-        if (result && result.success) {
-          alert('用户创建成功');
-          closeModal();
-          loadUsers();
-        } else {
-          throw new Error(result?.error?.message || '创建失败');
-        }
-      });
-    }
+                        if (!username || !password) {
+                            throw new Error("用户名和密码不能为空");
+                        }
 
-    // 创建Token模态框
-    async function showCreateTokenModal() {
-      try {
-        // 先加载用户列表
-        const result = await api('/api/admin/users?page=1&pageSize=100');
-        
-        if (!result || !result.success) {
-          alert('加载用户列表失败: ' + (result?.error?.message || '未知错误'));
-          return;
-        }
-        
-        const userOptions = result.data.map(u => `<option value="${u.user_id}">${u.username}</option>`).join('');
-        
-        if (!userOptions) {
-          alert('请先添加用户');
-          return;
-        }
-        
-        showModal('创建新Token', `
+                        const result = await api("/api/user/register", {
+                            method: "POST",
+                            body: JSON.stringify({ username, password, email }),
+                        });
+
+                        if (result && result.success) {
+                            alert("用户创建成功");
+                            closeModal();
+                            loadUsers();
+                        } else {
+                            throw new Error(
+                                result?.error?.message || "创建失败",
+                            );
+                        }
+                    },
+                );
+            }
+
+            // 创建Token模态框
+            async function showCreateTokenModal() {
+                try {
+                    // 先加载用户列表
+                    const result = await api(
+                        "/api/admin/users?page=1&pageSize=100",
+                    );
+
+                    if (!result || !result.success) {
+                        alert(
+                            "加载用户列表失败: " +
+                                (result?.error?.message || "未知错误"),
+                        );
+                        return;
+                    }
+
+                    const userOptions = result.data
+                        .map(
+                            (u) =>
+                                `<option value="${u.user_id}">${u.username}</option>`,
+                        )
+                        .join("");
+
+                    if (!userOptions) {
+                        alert("请先添加用户");
+                        return;
+                    }
+
+                    showModal(
+                        "创建新Token",
+                        `
           <div class="space-y-4">
             <div>
               <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">选择用户</label>
@@ -1091,128 +2135,187 @@
               <input type="number" id="token-balance" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" min="0" step="0.01" value="0">
             </div>
           </div>
-        `, async () => {
-          const userId = document.getElementById('token-user-id').value;
-          const name = document.getElementById('token-name').value || '默认Token';
-          const balance = parseFloat(document.getElementById('token-balance').value) || 0;
-          
-          if (!userId) {
-            throw new Error('请选择用户');
-          }
-          
-          const result = await api('/api/token/create', {
-            method: 'POST',
-            headers: { 'X-User-Id': userId },
-            body: JSON.stringify({ name, initialBalance: balance })
-          });
+        `,
+                        async () => {
+                            const userId =
+                                document.getElementById("token-user-id").value;
+                            const name =
+                                document.getElementById("token-name").value ||
+                                "默认Token";
+                            const balance =
+                                parseFloat(
+                                    document.getElementById("token-balance")
+                                        .value,
+                                ) || 0;
 
-          if (result && result.success) {
-            alert(`Token创建成功！\n\nToken: ${result.data.token}\n\n请妥善保存此Token，它只会显示一次！`);
-            closeModal();
-            loadTokens();
-          } else {
-            throw new Error(result?.error?.message || '创建失败');
-          }
-        });
-      } catch (err) {
-        alert('加载用户列表失败: ' + err.message);
-      }
-    }
+                            if (!userId) {
+                                throw new Error("请选择用户");
+                            }
 
-    // 加载用量分析
-    async function loadUsage() {
-      try {
-        const result = await api('/api/admin/stats?days=30');
-        if (!result || !result.success) return;
+                            const result = await api("/api/token/create", {
+                                method: "POST",
+                                headers: { "X-User-Id": userId },
+                                body: JSON.stringify({
+                                    name,
+                                    initialBalance: balance,
+                                }),
+                            });
 
-        // 每日消耗趋势
-        const dailyContainer = document.getElementById('daily-usage-chart');
-        if (result.data.dailyTrend && result.data.dailyTrend.length > 0) {
-          const maxCost = Math.max(...result.data.dailyTrend.map(d => d.cost));
-          dailyContainer.innerHTML = result.data.dailyTrend.slice(0, 7).reverse().map(day => `
+                            if (result && result.success) {
+                                alert(
+                                    `Token创建成功！\n\nToken: ${result.data.token}\n\n请妥善保存此Token，它只会显示一次！`,
+                                );
+                                closeModal();
+                                loadTokens();
+                            } else {
+                                throw new Error(
+                                    result?.error?.message || "创建失败",
+                                );
+                            }
+                        },
+                    );
+                } catch (err) {
+                    alert("加载用户列表失败: " + err.message);
+                }
+            }
+
+            // 加载用量分析
+            async function loadUsage() {
+                try {
+                    const result = await api("/api/admin/stats?days=30");
+                    if (!result || !result.success) return;
+
+                    // 每日消耗趋势
+                    const dailyContainer =
+                        document.getElementById("daily-usage-chart");
+                    if (
+                        result.data.dailyTrend &&
+                        result.data.dailyTrend.length > 0
+                    ) {
+                        const maxCost = Math.max(
+                            ...result.data.dailyTrend.map((d) => d.cost),
+                        );
+                        dailyContainer.innerHTML = result.data.dailyTrend
+                            .slice(0, 7)
+                            .reverse()
+                            .map(
+                                (day) => `
             <div class="flex items-center gap-4">
               <span class="w-16 text-xs font-bold text-slate-500">${day.date.substring(5)}</span>
               <div class="flex-1 h-6 bg-slate-50 rounded-full overflow-hidden p-0.5">
-                <div class="h-full rounded-full bg-indigo-600 shadow-sm" style="width: ${maxCost > 0 ? (day.cost / maxCost * 100) : 0}%"></div>
+                <div class="h-full rounded-full bg-indigo-600 shadow-sm" style="width: ${maxCost > 0 ? (day.cost / maxCost) * 100 : 0}%"></div>
               </div>
               <span class="w-20 text-right font-mono text-xs font-bold text-slate-700">¥${day.cost.toFixed(2)}</span>
             </div>
-          `).join('');
-        }
+          `,
+                            )
+                            .join("");
+                    }
 
-        // 软件消耗分布
-        const softwareContainer = document.getElementById('software-stats');
-        if (result.data.softwareStats && result.data.softwareStats.length > 0) {
-          const totalCost = result.data.softwareStats.reduce((sum, s) => sum + s.cost, 0);
-          const colors = ['bg-indigo-600', 'bg-blue-600', 'bg-violet-600'];
-          const softwareNames = { 'pricing': '核价软件', 'optimizer': '优化软件', 'collector': '采集助手' };
-          softwareContainer.innerHTML = result.data.softwareStats.map((s, i) => `
+                    // 软件消耗分布
+                    const softwareContainer =
+                        document.getElementById("software-stats");
+                    if (
+                        result.data.softwareStats &&
+                        result.data.softwareStats.length > 0
+                    ) {
+                        const totalCost = result.data.softwareStats.reduce(
+                            (sum, s) => sum + s.cost,
+                            0,
+                        );
+                        const colors = [
+                            "bg-indigo-600",
+                            "bg-blue-600",
+                            "bg-violet-600",
+                        ];
+                        const softwareNames = {
+                            pricing: "核价软件",
+                            optimizer: "优化软件",
+                            collector: "采集助手",
+                        };
+                        softwareContainer.innerHTML = result.data.softwareStats
+                            .map(
+                                (s, i) => `
             <div class="space-y-2">
               <div class="flex justify-between items-end px-1">
-                <span class="text-sm font-bold text-slate-700">${softwareNames[s.software] || s.software || '未知'}</span>
+                <span class="text-sm font-bold text-slate-700">${softwareNames[s.software] || s.software || "未知"}</span>
                 <span class="text-xs font-black text-indigo-600">${((s.cost / totalCost) * 100).toFixed(1)}%</span>
               </div>
               <div class="w-full h-3 bg-slate-50 rounded-full overflow-hidden p-0.5 ring-1 ring-slate-100">
-                <div class="h-full rounded-full ${colors[i % colors.length]} shadow-sm" style="width: ${(s.cost / totalCost * 100)}%"></div>
+                <div class="h-full rounded-full ${colors[i % colors.length]} shadow-sm" style="width: ${(s.cost / totalCost) * 100}%"></div>
               </div>
             </div>
-          `).join('');
-        }
-      } catch (err) {
-        console.error('Load usage error:', err);
-      }
-    }
+          `,
+                            )
+                            .join("");
+                    }
+                } catch (err) {
+                    console.error("Load usage error:", err);
+                }
+            }
 
-    // 加载详细用量记录
-    async function loadUsageDetail(page = 1) {
-      const result = await api(`/api/usage/detail?page=${page}&pageSize=20`);
-      if (!result || !result.success) return;
+            // 加载详细用量记录
+            async function loadUsageDetail(page = 1) {
+                const result = await api(
+                    `/api/usage/detail?page=${page}&pageSize=20`,
+                );
+                if (!result || !result.success) return;
 
-      const tbody = document.getElementById('usage-table-body');
-      tbody.innerHTML = result.data.map(record => `
+                const tbody = document.getElementById("usage-table-body");
+                tbody.innerHTML = result.data
+                    .map(
+                        (record) => `
         <tr class="hover:bg-slate-50/50 transition-colors">
           <td class="px-8 py-4 text-sm font-mono text-slate-500">${formatTime(record.created_at)}</td>
           <td class="px-6 py-4">
             <span class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-600">${record.api_provider}/${record.model}</span>
           </td>
-          <td class="px-6 py-4 text-sm text-slate-600">${record.software || '-'}</td>
+          <td class="px-6 py-4 text-sm text-slate-600">${record.software || "-"}</td>
           <td class="px-6 py-4 text-right font-mono text-sm font-bold text-slate-700">${formatNumber(record.total_tokens)}</td>
           <td class="px-6 py-4 text-right font-mono text-sm font-bold text-slate-900">¥${record.cost_cny.toFixed(4)}</td>
           <td class="px-6 py-4 text-center">
-            <span class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold ${record.is_success ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}">
-              ${record.is_success ? '成功' : '失败'}
+            <span class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold ${record.is_success ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"}">
+              ${record.is_success ? "成功" : "失败"}
             </span>
           </td>
         </tr>
-      `).join('');
+      `,
+                    )
+                    .join("");
 
-      renderPagination('usage-pagination', result.pagination, loadUsageDetail);
-    }
+                renderPagination(
+                    "usage-pagination",
+                    result.pagination,
+                    loadUsageDetail,
+                );
+            }
 
-    // 工具函数
-    function formatNumber(num) {
-      if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-      if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-      return num?.toString() || '0';
-    }
+            // 工具函数
+            function formatNumber(num) {
+                if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
+                if (num >= 1000) return (num / 1000).toFixed(1) + "K";
+                return num?.toString() || "0";
+            }
 
-    function formatTime(timestamp) {
-      if (!timestamp) return '-';
-      const date = new Date(timestamp);
-      return date.toLocaleString('zh-CN');
-    }
+            function formatTime(timestamp) {
+                if (!timestamp) return "-";
+                const date = new Date(timestamp);
+                return date.toLocaleString("zh-CN");
+            }
 
-    // ==================== 项目管理 ====================
-    
-    // 加载项目列表
-    async function loadProjects() {
-      try {
-        const result = await api('/api/projects?page=1&pageSize=100');
-        if (!result || !result.success) return;
+            // ==================== 项目管理 ====================
 
-        const container = document.getElementById('projects-grid');
-        if (result.data.length === 0) {
-          container.innerHTML = `
+            // 加载项目列表
+            async function loadProjects() {
+                try {
+                    const result = await api(
+                        "/api/projects?page=1&pageSize=100",
+                    );
+                    if (!result || !result.success) return;
+
+                    const container = document.getElementById("projects-grid");
+                    if (result.data.length === 0) {
+                        container.innerHTML = `
             <div class="col-span-full text-center py-12">
               <svg class="w-16 h-16 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
@@ -1221,27 +2324,33 @@
               <p class="text-slate-400 text-sm mt-1">点击"添加新项目"开始创建</p>
             </div>
           `;
-          return;
-        }
+                        return;
+                    }
 
-        container.innerHTML = result.data.map(project => `
+                    container.innerHTML = result.data
+                        .map(
+                            (project) => `
           <div class="bg-white rounded-2xl border border-slate-100 overflow-hidden card-shadow hover:shadow-lg transition-all">
-            ${project.poster_url ? `
+            ${
+                project.poster_url
+                    ? `
               <div class="h-48 bg-slate-100 overflow-hidden">
                 <img src="${project.poster_url}" alt="${project.name}" class="w-full h-full object-cover">
               </div>
-            ` : `
+            `
+                    : `
               <div class="h-48 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
                 <span class="text-white text-4xl font-black">${project.name.charAt(0)}</span>
               </div>
-            `}
+            `
+            }
             <div class="p-6">
               <h3 class="text-lg font-black text-slate-900 mb-2">${project.name}</h3>
-              <p class="text-sm text-slate-500 mb-4 line-clamp-2">${project.description || '暂无描述'}</p>
+              <p class="text-sm text-slate-500 mb-4 line-clamp-2">${project.description || "暂无描述"}</p>
               <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-slate-400">${project.tutorialCount || 0} 个教程</span>
                 <div class="flex gap-2">
-                  <button onclick="editProject('${project.project_id}', '${project.name}', '${project.description || ''}', '${project.poster_url || ''}')" class="text-slate-400 hover:text-indigo-600 transition-colors p-2 hover:bg-white rounded-lg shadow-sm border border-transparent hover:border-slate-100">
+                  <button onclick="editProject('${project.project_id}', '${project.name}', '${project.description || ""}', '${project.poster_url || ""}')" class="text-slate-400 hover:text-indigo-600 transition-colors p-2 hover:bg-white rounded-lg shadow-sm border border-transparent hover:border-slate-100">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                     </svg>
@@ -1255,15 +2364,19 @@
               </div>
             </div>
           </div>
-        `).join('');
-      } catch (err) {
-        console.error('Load projects error:', err);
-      }
-    }
+        `,
+                        )
+                        .join("");
+                } catch (err) {
+                    console.error("Load projects error:", err);
+                }
+            }
 
-    // 添加项目模态框
-    function showAddProjectModal() {
-      showModal('添加新项目', `
+            // 添加项目模态框
+            function showAddProjectModal() {
+                showModal(
+                    "添加新项目",
+                    `
         <div class="space-y-4">
           <div>
             <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">项目名称</label>
@@ -1278,33 +2391,47 @@
             <input type="text" id="project-poster" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" placeholder="https://example.com/image.jpg">
           </div>
         </div>
-      `, async () => {
-        const name = document.getElementById('project-name').value;
-        const description = document.getElementById('project-description').value;
-        const posterUrl = document.getElementById('project-poster').value;
+      `,
+                    async () => {
+                        const name =
+                            document.getElementById("project-name").value;
+                        const description = document.getElementById(
+                            "project-description",
+                        ).value;
+                        const posterUrl =
+                            document.getElementById("project-poster").value;
 
-        if (!name) {
-          throw new Error('项目名称不能为空');
-        }
+                        if (!name) {
+                            throw new Error("项目名称不能为空");
+                        }
 
-        const result = await api('/api/projects', {
-          method: 'POST',
-          body: JSON.stringify({ name, description, posterUrl })
-        });
+                        const result = await api("/api/projects", {
+                            method: "POST",
+                            body: JSON.stringify({
+                                name,
+                                description,
+                                posterUrl,
+                            }),
+                        });
 
-        if (result && result.success) {
-          alert('项目创建成功');
-          closeModal();
-          loadProjects();
-        } else {
-          throw new Error(result?.error?.message || '创建失败');
-        }
-      });
-    }
+                        if (result && result.success) {
+                            alert("项目创建成功");
+                            closeModal();
+                            loadProjects();
+                        } else {
+                            throw new Error(
+                                result?.error?.message || "创建失败",
+                            );
+                        }
+                    },
+                );
+            }
 
-    // 编辑项目
-    function editProject(projectId, name, description, posterUrl) {
-      showModal('编辑项目', `
+            // 编辑项目
+            function editProject(projectId, name, description, posterUrl) {
+                showModal(
+                    "编辑项目",
+                    `
         <div class="space-y-4">
           <div>
             <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">项目名称</label>
@@ -1319,95 +2446,127 @@
             <input type="text" id="edit-project-poster" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" value="${posterUrl}">
           </div>
         </div>
-      `, async () => {
-        const newName = document.getElementById('edit-project-name').value;
-        const newDescription = document.getElementById('edit-project-description').value;
-        const newPosterUrl = document.getElementById('edit-project-poster').value;
+      `,
+                    async () => {
+                        const newName =
+                            document.getElementById("edit-project-name").value;
+                        const newDescription = document.getElementById(
+                            "edit-project-description",
+                        ).value;
+                        const newPosterUrl = document.getElementById(
+                            "edit-project-poster",
+                        ).value;
 
-        if (!newName) {
-          throw new Error('项目名称不能为空');
-        }
+                        if (!newName) {
+                            throw new Error("项目名称不能为空");
+                        }
 
-        const result = await api('/api/projects/update', {
-          method: 'POST',
-          body: JSON.stringify({ projectId, name: newName, description: newDescription, posterUrl: newPosterUrl })
-        });
+                        const result = await api("/api/projects/update", {
+                            method: "POST",
+                            body: JSON.stringify({
+                                projectId,
+                                name: newName,
+                                description: newDescription,
+                                posterUrl: newPosterUrl,
+                            }),
+                        });
 
-        if (result && result.success) {
-          alert('项目更新成功');
-          closeModal();
-          loadProjects();
-        } else {
-          throw new Error(result?.error?.message || '更新失败');
-        }
-      });
-    }
+                        if (result && result.success) {
+                            alert("项目更新成功");
+                            closeModal();
+                            loadProjects();
+                        } else {
+                            throw new Error(
+                                result?.error?.message || "更新失败",
+                            );
+                        }
+                    },
+                );
+            }
 
-    // 删除项目
-    async function deleteProject(projectId, name) {
-      if (!confirm(`确定要删除项目"${name}"吗？`)) return;
+            // 删除项目
+            async function deleteProject(projectId, name) {
+                if (!confirm(`确定要删除项目"${name}"吗？`)) return;
 
-      const result = await api('/api/projects/delete', {
-        method: 'POST',
-        body: JSON.stringify({ projectId })
-      });
+                const result = await api("/api/projects/delete", {
+                    method: "POST",
+                    body: JSON.stringify({ projectId }),
+                });
 
-      if (result && result.success) {
-        alert('项目删除成功');
-        loadProjects();
-      } else {
-        alert(result?.error?.message || '删除失败');
-      }
-    }
+                if (result && result.success) {
+                    alert("项目删除成功");
+                    loadProjects();
+                } else {
+                    alert(result?.error?.message || "删除失败");
+                }
+            }
 
-    // ==================== 使用说明管理 ====================
-    
-    // 加载项目列表到筛选下拉框
-    async function loadTutorialProjects() {
-      try {
-        const result = await api('/api/projects?page=1&pageSize=100');
-        if (!result || !result.success) return;
+            // ==================== 使用说明管理 ====================
 
-        const select = document.getElementById('tutorial-project-filter');
-        select.innerHTML = '<option value="">全部项目</option>' + 
-          result.data.map(p => `<option value="${p.project_id}">${p.name}</option>`).join('');
-      } catch (err) {
-        console.error('Load tutorial projects error:', err);
-      }
-    }
+            // 加载项目列表到筛选下拉框
+            async function loadTutorialProjects() {
+                try {
+                    const result = await api(
+                        "/api/projects?page=1&pageSize=100",
+                    );
+                    if (!result || !result.success) return;
 
-    // 加载使用说明列表
-    async function loadTutorials(page = 1) {
-      const projectId = document.getElementById('tutorial-project-filter')?.value || '';
-      const url = projectId 
-        ? `/api/tutorials?page=${page}&pageSize=20&projectId=${projectId}`
-        : `/api/tutorials?page=${page}&pageSize=20`;
-      
-      const result = await api(url);
-      if (!result || !result.success) return;
+                    const select = document.getElementById(
+                        "tutorial-project-filter",
+                    );
+                    select.innerHTML =
+                        '<option value="">全部项目</option>' +
+                        result.data
+                            .map(
+                                (p) =>
+                                    `<option value="${p.project_id}">${p.name}</option>`,
+                            )
+                            .join("");
+                } catch (err) {
+                    console.error("Load tutorial projects error:", err);
+                }
+            }
 
-      const tbody = document.getElementById('tutorials-table-body');
-      tbody.innerHTML = result.data.map(tutorial => `
+            // 加载使用说明列表
+            async function loadTutorials(page = 1) {
+                const projectId =
+                    document.getElementById("tutorial-project-filter")?.value ||
+                    "";
+                const url = projectId
+                    ? `/api/tutorials?page=${page}&pageSize=20&projectId=${projectId}`
+                    : `/api/tutorials?page=${page}&pageSize=20`;
+
+                const result = await api(url);
+                if (!result || !result.success) return;
+
+                const tbody = document.getElementById("tutorials-table-body");
+                tbody.innerHTML = result.data
+                    .map(
+                        (tutorial) => `
         <tr class="hover:bg-slate-50/50 transition-colors">
           <td class="px-8 py-5">
-            <span class="text-sm font-medium text-slate-600">${tutorial.project_name || '-'}</span>
+            <span class="text-sm font-medium text-slate-600">${tutorial.project_name || "-"}</span>
           </td>
           <td class="px-6 py-5">
             <span class="text-sm font-bold text-slate-900">${tutorial.title}</span>
           </td>
           <td class="px-6 py-5">
-            ${tutorial.video_url ? `
+            ${
+                tutorial.video_url
+                    ? `
               <a href="${tutorial.video_url}" target="_blank" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
                 查看视频
               </a>
-            ` : '<span class="text-slate-400 text-sm">无</span>'}
+            `
+                    : '<span class="text-slate-400 text-sm">无</span>'
+            }
           </td>
           <td class="px-6 py-5">
-            <span class="text-sm text-slate-600">${tutorial.pricing_info ? '已配置' : '未配置'}</span>
+            <span class="text-sm text-slate-600">${tutorial.pricing_info ? "已配置" : "未配置"}</span>
           </td>
           <td class="px-6 py-5 text-right">
             <div class="flex justify-end gap-2">
-              <button onclick="editTutorial('${tutorial.tutorial_id}', '${tutorial.project_id}', '${tutorial.title}', '${(tutorial.content || '').replace(/'/g, "\\'")}', '${tutorial.video_url || ''}', '${(tutorial.pricing_info || '').replace(/'/g, "\\'")}', ${tutorial.sort_order})" class="text-slate-400 hover:text-indigo-600 transition-colors p-2 hover:bg-white rounded-lg shadow-sm border border-transparent hover:border-slate-100">
+              <button onclick="editTutorial('${tutorial.tutorial_id}', '${tutorial.project_id}', '${tutorial.title}', '${(tutorial.content || "").replace(/'/g, "\\'")}', '${tutorial.video_url || ""}', '${(tutorial.pricing_info || "").replace(/'/g, "\\'")}', ${tutorial.sort_order})" class="text-slate-400 hover:text-indigo-600 transition-colors p-2 hover:bg-white rounded-lg shadow-sm border border-transparent hover:border-slate-100">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                 </svg>
@@ -1420,23 +2579,38 @@
             </div>
           </td>
         </tr>
-      `).join('');
+      `,
+                    )
+                    .join("");
 
-      renderPagination('tutorials-pagination', result.pagination, loadTutorials);
-    }
+                renderPagination(
+                    "tutorials-pagination",
+                    result.pagination,
+                    loadTutorials,
+                );
+            }
 
-    // 添加使用说明模态框
-    async function showAddTutorialModal() {
-      // 先加载项目列表
-      const projectsResult = await api('/api/projects?page=1&pageSize=100');
-      if (!projectsResult || !projectsResult.success) {
-        alert('加载项目列表失败');
-        return;
-      }
+            // 添加使用说明模态框
+            async function showAddTutorialModal() {
+                // 先加载项目列表
+                const projectsResult = await api(
+                    "/api/projects?page=1&pageSize=100",
+                );
+                if (!projectsResult || !projectsResult.success) {
+                    alert("加载项目列表失败");
+                    return;
+                }
 
-      const projectOptions = projectsResult.data.map(p => `<option value="${p.project_id}">${p.name}</option>`).join('');
+                const projectOptions = projectsResult.data
+                    .map(
+                        (p) =>
+                            `<option value="${p.project_id}">${p.name}</option>`,
+                    )
+                    .join("");
 
-      showModal('添加使用说明', `
+                showModal(
+                    "添加使用说明",
+                    `
         <div class="space-y-4">
           <div>
             <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">选择项目</label>
@@ -1465,36 +2639,65 @@
             <input type="number" id="tutorial-sort" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" value="0" min="0">
           </div>
         </div>
-      `, async () => {
-        const projectId = document.getElementById('tutorial-project').value;
-        const title = document.getElementById('tutorial-title').value;
-        const content = document.getElementById('tutorial-content').value;
-        const videoUrl = document.getElementById('tutorial-video').value;
-        const pricingInfo = document.getElementById('tutorial-pricing').value;
-        const sortOrder = parseInt(document.getElementById('tutorial-sort').value) || 0;
+      `,
+                    async () => {
+                        const projectId =
+                            document.getElementById("tutorial-project").value;
+                        const title =
+                            document.getElementById("tutorial-title").value;
+                        const content =
+                            document.getElementById("tutorial-content").value;
+                        const videoUrl =
+                            document.getElementById("tutorial-video").value;
+                        const pricingInfo =
+                            document.getElementById("tutorial-pricing").value;
+                        const sortOrder =
+                            parseInt(
+                                document.getElementById("tutorial-sort").value,
+                            ) || 0;
 
-        if (!projectId || !title) {
-          throw new Error('项目和标题不能为空');
-        }
+                        if (!projectId || !title) {
+                            throw new Error("项目和标题不能为空");
+                        }
 
-        const result = await api('/api/tutorials', {
-          method: 'POST',
-          body: JSON.stringify({ projectId, title, content, videoUrl, pricingInfo, sortOrder })
-        });
+                        const result = await api("/api/tutorials", {
+                            method: "POST",
+                            body: JSON.stringify({
+                                projectId,
+                                title,
+                                content,
+                                videoUrl,
+                                pricingInfo,
+                                sortOrder,
+                            }),
+                        });
 
-        if (result && result.success) {
-          alert('使用说明创建成功');
-          closeModal();
-          loadTutorials();
-        } else {
-          throw new Error(result?.error?.message || '创建失败');
-        }
-      });
-    }
+                        if (result && result.success) {
+                            alert("使用说明创建成功");
+                            closeModal();
+                            loadTutorials();
+                        } else {
+                            throw new Error(
+                                result?.error?.message || "创建失败",
+                            );
+                        }
+                    },
+                );
+            }
 
-    // 编辑使用说明
-    function editTutorial(tutorialId, projectId, title, content, videoUrl, pricingInfo, sortOrder) {
-      showModal('编辑使用说明', `
+            // 编辑使用说明
+            function editTutorial(
+                tutorialId,
+                projectId,
+                title,
+                content,
+                videoUrl,
+                pricingInfo,
+                sortOrder,
+            ) {
+                showModal(
+                    "编辑使用说明",
+                    `
         <div class="space-y-4">
           <div>
             <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">标题</label>
@@ -1517,55 +2720,71 @@
             <input type="number" id="edit-tutorial-sort" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" value="${sortOrder}" min="0">
           </div>
         </div>
-      `, async () => {
-        const newTitle = document.getElementById('edit-tutorial-title').value;
-        const newContent = document.getElementById('edit-tutorial-content').value;
-        const newVideoUrl = document.getElementById('edit-tutorial-video').value;
-        const newPricingInfo = document.getElementById('edit-tutorial-pricing').value;
-        const newSortOrder = parseInt(document.getElementById('edit-tutorial-sort').value) || 0;
+      `,
+                    async () => {
+                        const newTitle = document.getElementById(
+                            "edit-tutorial-title",
+                        ).value;
+                        const newContent = document.getElementById(
+                            "edit-tutorial-content",
+                        ).value;
+                        const newVideoUrl = document.getElementById(
+                            "edit-tutorial-video",
+                        ).value;
+                        const newPricingInfo = document.getElementById(
+                            "edit-tutorial-pricing",
+                        ).value;
+                        const newSortOrder =
+                            parseInt(
+                                document.getElementById("edit-tutorial-sort")
+                                    .value,
+                            ) || 0;
 
-        if (!newTitle) {
-          throw new Error('标题不能为空');
-        }
+                        if (!newTitle) {
+                            throw new Error("标题不能为空");
+                        }
 
-        const result = await api('/api/tutorials/update', {
-          method: 'POST',
-          body: JSON.stringify({ 
-            tutorialId, 
-            title: newTitle, 
-            content: newContent, 
-            videoUrl: newVideoUrl, 
-            pricingInfo: newPricingInfo, 
-            sortOrder: newSortOrder 
-          })
-        });
+                        const result = await api("/api/tutorials/update", {
+                            method: "POST",
+                            body: JSON.stringify({
+                                tutorialId,
+                                title: newTitle,
+                                content: newContent,
+                                videoUrl: newVideoUrl,
+                                pricingInfo: newPricingInfo,
+                                sortOrder: newSortOrder,
+                            }),
+                        });
 
-        if (result && result.success) {
-          alert('使用说明更新成功');
-          closeModal();
-          loadTutorials();
-        } else {
-          throw new Error(result?.error?.message || '更新失败');
-        }
-      });
-    }
+                        if (result && result.success) {
+                            alert("使用说明更新成功");
+                            closeModal();
+                            loadTutorials();
+                        } else {
+                            throw new Error(
+                                result?.error?.message || "更新失败",
+                            );
+                        }
+                    },
+                );
+            }
 
-    // 删除使用说明
-    async function deleteTutorial(tutorialId, title) {
-      if (!confirm(`确定要删除使用说明"${title}"吗？`)) return;
+            // 删除使用说明
+            async function deleteTutorial(tutorialId, title) {
+                if (!confirm(`确定要删除使用说明"${title}"吗？`)) return;
 
-      const result = await api('/api/tutorials/delete', {
-        method: 'POST',
-        body: JSON.stringify({ tutorialId })
-      });
+                const result = await api("/api/tutorials/delete", {
+                    method: "POST",
+                    body: JSON.stringify({ tutorialId }),
+                });
 
-      if (result && result.success) {
-        alert('使用说明删除成功');
-        loadTutorials();
-      } else {
-        alert(result?.error?.message || '删除失败');
-      }
-    }
-  </script>
-</body>
+                if (result && result.success) {
+                    alert("使用说明删除成功");
+                    loadTutorials();
+                } else {
+                    alert(result?.error?.message || "删除失败");
+                }
+            }
+        </script>
+    </body>
 </html>
