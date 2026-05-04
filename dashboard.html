@@ -470,19 +470,25 @@
         headers['X-User-Id'] = currentUser.userId;
       }
 
-      const response = await fetch(`${API_BASE}${path}`, {
-        ...options,
-        headers
-      });
+      try {
+        const response = await fetch(`${API_BASE}${path}`, {
+          method: options.method || 'GET',
+          headers,
+          body: options.body || undefined
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if ((response.status === 401 || response.status === 403) && !path.includes('/login')) {
-        logout();
-        return null;
+        if ((response.status === 401 || response.status === 403) && !path.includes('/login')) {
+          logout();
+          return null;
+        }
+
+        return data;
+      } catch (err) {
+        console.error('API Error:', err);
+        throw new Error('网络请求失败，请检查网络连接');
       }
-
-      return data;
     }
 
     // 登出
@@ -893,6 +899,10 @@
         const password = document.getElementById('new-password').value;
         const email = document.getElementById('new-email').value;
         
+        if (!username || !password) {
+          throw new Error('用户名和密码不能为空');
+        }
+        
         const result = await api('/api/user/register', {
           method: 'POST',
           body: JSON.stringify({ username, password, email })
@@ -903,18 +913,28 @@
           closeModal();
           loadUsers();
         } else {
-          alert(result?.error?.message || '创建失败');
+          throw new Error(result?.error?.message || '创建失败');
         }
       });
     }
 
     // 创建Token模态框
-    function showCreateTokenModal() {
-      // 先加载用户列表
-      api('/api/admin/users?page=1&pageSize=100').then(result => {
-        if (!result || !result.success) return;
+    async function showCreateTokenModal() {
+      try {
+        // 先加载用户列表
+        const result = await api('/api/admin/users?page=1&pageSize=100');
+        
+        if (!result || !result.success) {
+          alert('加载用户列表失败: ' + (result?.error?.message || '未知错误'));
+          return;
+        }
         
         const userOptions = result.data.map(u => `<option value="${u.user_id}">${u.username}</option>`).join('');
+        
+        if (!userOptions) {
+          alert('请先添加用户');
+          return;
+        }
         
         showModal('创建新Token', `
           <div class="space-y-4">
@@ -935,8 +955,12 @@
           </div>
         `, async () => {
           const userId = document.getElementById('token-user-id').value;
-          const name = document.getElementById('token-name').value;
+          const name = document.getElementById('token-name').value || '默认Token';
           const balance = parseFloat(document.getElementById('token-balance').value) || 0;
+          
+          if (!userId) {
+            throw new Error('请选择用户');
+          }
           
           const result = await api('/api/token/create', {
             method: 'POST',
@@ -949,10 +973,12 @@
             closeModal();
             loadTokens();
           } else {
-            alert(result?.error?.message || '创建失败');
+            throw new Error(result?.error?.message || '创建失败');
           }
         });
-      });
+      } catch (err) {
+        alert('加载用户列表失败: ' + err.message);
+      }
     }
 
     // 加载用量分析
