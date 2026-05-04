@@ -91,14 +91,14 @@
                 align-items: center;
                 gap: 12px;
                 padding: 0 16px;
-                color: #94a3b8;
+                color: #475569;
                 transition: all 200ms;
                 border-radius: 12px;
             }
             .nav-card.nav-active .back .back-content {
-                background-color: #4f46e5;
-                color: white;
-                box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.2);
+                background-color: rgba(79, 70, 229, 0.1);
+                color: #4f46e5;
+                box-shadow: 0 4px 12px -2px rgba(79, 70, 229, 0.15);
             }
             /* Front face - hidden by default, shown on hover with gradient border */
             .nav-card .front {
@@ -129,19 +129,20 @@
                 height: calc(100% - 6px);
                 top: 3px;
                 left: 3px;
-                background-color: #1e1b4b;
+                background-color: rgba(255, 255, 255, 0.85);
+                backdrop-filter: blur(8px);
                 border-radius: 10px;
                 display: flex;
                 align-items: center;
                 gap: 12px;
                 padding: 0 16px;
-                color: white;
+                color: #4f46e5;
                 font-weight: 600;
                 font-size: 14px;
                 z-index: 1;
             }
             .nav-card.nav-active .front .front-content {
-                background-color: #4f46e5;
+                background-color: rgba(79, 70, 229, 0.15);
             }
             .nav-card:hover .content {
                 transform: rotateY(180deg);
@@ -159,7 +160,7 @@
     <body class="min-h-screen bg-[#FDFDFF] flex overflow-hidden font-sans">
         <!-- Sidebar -->
         <aside
-            class="bg-slate-950 h-screen w-[280px] flex-shrink-0 relative z-50 shadow-2xl"
+            class="bg-white/40 backdrop-blur-2xl border-r border-white/30 h-screen w-[280px] flex-shrink-0 relative z-50 shadow-xl"
         >
             <div class="h-full flex flex-col p-8">
                 <div class="flex items-center gap-4 mb-12 px-2">
@@ -182,7 +183,7 @@
                     </div>
                     <div>
                         <h1
-                            class="text-2xl font-black text-white tracking-tighter leading-none mb-1"
+                            class="text-2xl font-black text-slate-900 tracking-tighter leading-none mb-1"
                         >
                             API NEXUS
                         </h1>
@@ -191,7 +192,7 @@
                                 class="w-1.5 h-1.5 rounded-full bg-emerald-500 pulse-dot"
                             ></div>
                             <span
-                                class="text-[9px] text-slate-600 font-black uppercase tracking-widest"
+                                class="text-[9px] text-slate-500 font-black uppercase tracking-widest"
                                 >系统就绪</span
                             >
                         </div>
@@ -201,7 +202,7 @@
                 <nav class="flex-1 space-y-3 overflow-y-auto scrollbar-hide">
                     <div class="mb-6">
                         <p
-                            class="text-[10px] font-black text-slate-700 uppercase tracking-[0.2em] mb-4 px-3"
+                            class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 px-3"
                         >
                             主控节点
                         </p>
@@ -403,7 +404,7 @@
 
                     <div>
                         <p
-                            class="text-[10px] font-black text-slate-700 uppercase tracking-[0.2em] mb-4 px-3"
+                            class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 px-3"
                         >
                             高级运维
                         </p>
@@ -509,7 +510,7 @@
 
                     <div>
                         <p
-                            class="text-[10px] font-black text-slate-700 uppercase tracking-[0.2em] mb-4 px-3"
+                            class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 px-3"
                         >
                             内容管理
                         </p>
@@ -614,9 +615,9 @@
                     </div>
                 </nav>
 
-                <div class="mt-auto pt-8 border-t border-white/5">
+                <div class="mt-auto pt-8 border-t border-slate-200/50">
                     <div
-                        class="flex items-center gap-4 p-3 rounded-2xl bg-white/[0.03] border border-white/5 cursor-pointer group"
+                        class="flex items-center gap-4 p-3 rounded-2xl bg-white/50 border border-white/40 cursor-pointer group backdrop-blur-sm"
                     >
                         <div
                             class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center text-white font-black shadow-lg"
@@ -625,19 +626,19 @@
                         </div>
                         <div class="flex-1 overflow-hidden">
                             <p
-                                class="text-sm font-bold text-white truncate px-1"
+                                class="text-sm font-bold text-slate-900 truncate px-1"
                                 id="sidebar-username"
                             >
                                 Admin
                             </p>
                             <p
-                                class="text-[10px] text-slate-600 font-bold uppercase tracking-widest px-1"
+                                class="text-[10px] text-slate-400 font-bold uppercase tracking-widest px-1"
                             >
                                 管理员
                             </p>
                         </div>
                         <svg
-                            class="w-4 h-4 text-slate-600"
+                            class="w-4 h-4 text-slate-400"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
