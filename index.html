@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API管理后台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .sidebar { min-height: 100vh; }
+    .card { transition: all 0.3s; }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .status-active { color: #10B981; }
+    .status-suspended { color: #EF4444; }
+    .status-revoked { color: #6B7280; }
+    .loading { opacity: 0.5; pointer-events: none; }
+    .tab-active { border-bottom: 2px solid #3B82F6; color: #3B82F6; }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <div class="flex">
+    <!-- 侧边栏 -->
+    <div class="sidebar bg-white w-64 p-4 shadow-md">
+      <div class="mb-8">
+        <h1 class="text-xl font-bold text-blue-600">API管理后台</h1>
+        <p class="text-sm text-gray-500">跨境电商自动化系统</p>
+      </div>
+      
+      <nav>
+        <a href="#" onclick="showPage('dashboard')" class="nav-link block py-2 px-4 rounded mb-2 hover:bg-blue-50" data-page="dashboard">
+          📊 实时监控
+        </a>
+        <a href="#" onclick="showPage('users')" class="nav-link block py-2 px-4 rounded mb-2 hover:bg-blue-50" data-page="users">
+          👥 用户管理
+        </a>
+        <a href="#" onclick="showPage('tokens')" class="nav-link block py-2 px-4 rounded mb-2 hover:bg-blue-50" data-page="tokens">
+          🔑 Token管理
+        </a>
+        <a href="#" onclick="showPage('usage')" class="nav-link block py-2 px-4 rounded mb-2 hover:bg-blue-50" data-page="usage">
+          📈 用量分析
+        </a>
+        <a href="#" onclick="showPage('pricing')" class="nav-link block py-2 px-4 rounded mb-2 hover:bg-blue-50" data-page="pricing">
+          💰 定价配置
+        </a>
+        <a href="#" onclick="showPage('logs')" class="nav-link block py-2 px-4 rounded mb-2 hover:bg-blue-50" data-page="logs">
+          📝 操作日志
+        </a>
+      </nav>
+      
+      <div class="mt-auto pt-4 border-t">
+        <div id="user-info" class="text-sm">
+          <p class="font-medium">管理员</p>
+          <p class="text-gray-500">admin@example.com</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="flex-1 p-8">
+      <!-- 登录页面 -->
+      <div id="login-page" class="hidden">
+        <div class="max-w-md mx-auto mt-20">
+          <div class="bg-white rounded-lg shadow-md p-8">
+            <h2 class="text-2xl font-bold mb-6 text-center">登录</h2>
+            <form onsubmit="handleLogin(event)">
+              <div class="mb-4">
+                <label class="block text-gray-700 mb-2">用户名</label>
+                <input type="text" id="login-username" class="w-full px-3 py-2 border rounded-lg" required>
+              </div>
+              <div class="mb-6">
+                <label class="block text-gray-700 mb-2">密码</label>
+                <input type="password" id="login-password" class="w-full px-3 py-2 border rounded-lg" required>
+              </div>
+              <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
+                登录
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- 仪表盘 -->
+      <div id="dashboard-page" class="page">
+        <h2 class="text-2xl font-bold mb-6">实时监控仪表盘</h2>
+        
+        <!-- 统计卡片 -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div class="card bg-white rounded-lg shadow p-6">
+            <div class="text-gray-500 text-sm">今日调用</div>
+            <div class="text-3xl font-bold" id="stat-calls">0</div>
+            <div class="text-sm text-gray-500">次</div>
+          </div>
+          <div class="card bg-white rounded-lg shadow p-6">
+            <div class="text-gray-500 text-sm">今日消耗</div>
+            <div class="text-3xl font-bold text-green-600" id="stat-cost">¥0.00</div>
+          </div>
+          <div class="card bg-white rounded-lg shadow p-6">
+            <div class="text-gray-500 text-sm">活跃用户</div>
+            <div class="text-3xl font-bold text-blue-600" id="stat-users">0</div>
+          </div>
+          <div class="card bg-white rounded-lg shadow p-6">
+            <div class="text-gray-500 text-sm">成功率</div>
+            <div class="text-3xl font-bold text-purple-600" id="stat-success">0%</div>
+          </div>
+        </div>
+
+        <!-- 图表区域 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="font-bold mb-4">每小时调用趋势</h3>
+            <canvas id="hourlyChart"></canvas>
+          </div>
+          <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="font-bold mb-4">模型消耗分布</h3>
+            <canvas id="modelChart"></canvas>
+          </div>
+        </div>
+
+        <!-- 用户排名 -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+          <h3 class="font-bold mb-4">用户消耗排名 TOP10</h3>
+          <div id="user-ranking"></div>
+        </div>
+
+        <!-- 最近调用 -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <h3 class="font-bold mb-4">最近调用记录</h3>
+          <div id="recent-calls"></div>
+        </div>
+      </div>
+
+      <!-- 用户管理页面 -->
+      <div id="users-page" class="page hidden">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold">用户管理</h2>
+          <button onclick="showAddUserModal()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+            添加用户
+          </button>
+        </div>
+
+        <!-- 搜索栏 -->
+        <div class="bg-white rounded-lg shadow p-4 mb-6">
+          <div class="flex gap-4">
+            <input type="text" id="user-search" placeholder="搜索用户名/邮箱/手机" 
+                   class="flex-1 px-3 py-2 border rounded-lg" onkeyup="searchUsers()">
+            <select id="user-status-filter" class="px-3 py-2 border rounded-lg" onchange="searchUsers()">
+              <option value="">全部状态</option>
+              <option value="active">正常</option>
+              <option value="suspended">封禁</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 用户列表 -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+          <table class="w-full">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">用户名</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">邮箱</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">余额</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Token数</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">状态</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">操作</th>
+              </tr>
+            </thead>
+            <tbody id="users-table-body" class="divide-y divide-gray-200">
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 分页 -->
+        <div id="users-pagination" class="mt-4 flex justify-center"></div>
+      </div>
+
+      <!-- Token管理页面 -->
+      <div id="tokens-page" class="page hidden">
+        <h2 class="text-2xl font-bold mb-6">Token管理</h2>
+
+        <!-- 筛选 -->
+        <div class="bg-white rounded-lg shadow p-4 mb-6">
+          <div class="flex gap-4">
+            <select id="token-user-filter" class="px-3 py-2 border rounded-lg" onchange="loadTokens()">
+              <option value="">全部用户</option>
+            </select>
+            <select id="token-status-filter" class="px-3 py-2 border rounded-lg" onchange="loadTokens()">
+              <option value="">全部状态</option>
+              <option value="active">正常</option>
+              <option value="revoked">已吊销</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Token列表 -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+          <table class="w-full">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Token</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">用户</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">名称</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">余额</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">今日消耗</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">状态</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">操作</th>
+              </tr>
+            </thead>
+            <tbody id="tokens-table-body" class="divide-y divide-gray-200">
+            </tbody>
+          </table>
+        </div>
+
+        <div id="tokens-pagination" class="mt-4 flex justify-center"></div>
+      </div>
+
+      <!-- 用量分析页面 -->
+      <div id="usage-page" class="page hidden">
+        <h2 class="text-2xl font-bold mb-6">用量分析</h2>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="font-bold mb-4">每日消耗趋势</h3>
+            <canvas id="dailyUsageChart"></canvas>
+          </div>
+          <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="font-bold mb-4">软件消耗分布</h3>
+            <canvas id="softwareChart"></canvas>
+          </div>
+        </div>
+
+        <!-- 详细记录 -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <h3 class="font-bold mb-4">详细调用记录</h3>
+          <div class="mb-4 flex gap-4">
+            <input type="date" id="usage-start-date" class="px-3 py-2 border rounded-lg">
+            <input type="date" id="usage-end-date" class="px-3 py-2 border rounded-lg">
+            <select id="usage-provider-filter" class="px-3 py-2 border rounded-lg">
+              <option value="">全部模型</option>
+              <option value="deepseek">DeepSeek</option>
+              <option value="qwen">Qwen</option>
+              <option value="openai">OpenAI</option>
+            </select>
+            <button onclick="loadUsageDetail()" class="bg-blue-500 text-white px-4 py-2 rounded-lg">查询</button>
+          </div>
+          <div id="usage-detail-table"></div>
+        </div>
+      </div>
+
+      <!-- 定价配置页面 -->
+      <div id="pricing-page" class="page hidden">
+        <h2 class="text-2xl font-bold mb-6">定价配置</h2>
+        <div class="bg-white rounded-lg shadow p-6">
+          <div id="pricing-table"></div>
+        </div>
+      </div>
+
+      <!-- 操作日志页面 -->
+      <div id="logs-page" class="page hidden">
+        <h2 class="text-2xl font-bold mb-6">操作日志</h2>
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+          <table class="w-full">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">时间</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">操作人</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">操作</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">目标</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">详情</th>
+              </tr>
+            </thead>
+            <tbody id="logs-table-body" class="divide-y divide-gray-200">
+            </tbody>
+          </table>
+        </div>
+        <div id="logs-pagination" class="mt-4 flex justify-center"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 模态框 -->
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full">
+      <h3 id="modal-title" class="text-lg font-bold mb-4"></h3>
+      <div id="modal-content"></div>
+      <div class="mt-4 flex justify-end gap-2">
+        <button onclick="closeModal()" class="px-4 py-2 border rounded-lg">取消</button>
+        <button id="modal-confirm" class="px-4 py-2 bg-blue-500 text-white rounded-lg">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 配置
+    const API_BASE = 'https://api-gateway.juliamashitlova1.workers.dev';
+    let currentUser = null;
+    let currentPage = 'dashboard';
+    let charts = {};
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedUser = localStorage.getItem('admin_user');
+      if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        showPage('dashboard');
+      } else {
+        showLoginPage();
+      }
+    });
+
+    // API请求封装
+    async function api(path, options = {}) {
+      const headers = {
+        'Content-Type': 'application/json',
+        ...options.headers
+      };
+      
+      if (currentUser) {
+        headers['X-User-Id'] = currentUser.userId;
+      }
+
+      const response = await fetch(`${API_BASE}${path}`, {
+        ...options,
+        headers
+      });
+
+      const data = await response.json();
+
+      // 登录接口不自动logout
+      if ((response.status === 401 || response.status === 403) && !path.includes('/login')) {
+        logout();
+        return null;
+      }
+
+      return data;
+    }
+
+    // 登录
+    async function handleLogin(event) {
+      event.preventDefault();
+      const username = document.getElementById('login-username').value;
+      const password = document.getElementById('login-password').value;
+
+      try {
+        const result = await api('/api/user/login', {
+          method: 'POST',
+          body: JSON.stringify({ username, password })
+        });
+
+        if (result && result.success) {
+          currentUser = result.data;
+          localStorage.setItem('admin_user', JSON.stringify(currentUser));
+          showPage('dashboard');
+        } else {
+          alert(result?.error?.message || '登录失败');
+        }
+      } catch (err) {
+        alert('登录失败: ' + err.message);
+      }
+    }
+
+    // 登出
+    function logout() {
+      currentUser = null;
+      localStorage.removeItem('admin_user');
+      showLoginPage();
+    }
+
+    // 显示登录页
+    function showLoginPage() {
+      document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+      document.getElementById('login-page').classList.remove('hidden');
+      document.getElementById('login-page').style.display = 'block';
+    }
+
+    // 页面切换
+    function showPage(page) {
+      currentPage = page;
+      document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+      document.getElementById(`${page}-page`).classList.remove('hidden');
+      
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.toggle('bg-blue-50', link.dataset.page === page);
+      });
+
+      loadPageData(page);
+    }
+
+    // 加载页面数据
+    async function loadPageData(page) {
+      switch (page) {
+        case 'dashboard':
+          await loadDashboard();
+          break;
+        case 'users':
+          await loadUsers();
+          break;
+        case 'tokens':
+          await loadTokens();
+          break;
+        case 'usage':
+          await loadUsage();
+          break;
+        case 'pricing':
+          await loadPricing();
+          break;
+        case 'logs':
+          await loadLogs();
+          break;
+      }
+    }
+
+    // 仪表盘数据
+    async function loadDashboard() {
+      try {
+        const result = await api('/api/admin/stats?days=30');
+        if (!result || !result.success) return;
+
+        const stats = result.data;
+        
+        // 更新统计卡片
+        document.getElementById('stat-calls').textContent = formatNumber(stats.today.total_calls);
+        document.getElementById('stat-cost').textContent = `¥${stats.today.total_cost.toFixed(2)}`;
+        document.getElementById('stat-users').textContent = stats.today.active_users;
+        
+        const successRate = stats.today.total_calls > 0 
+          ? ((stats.today.success_count / stats.today.total_calls) * 100).toFixed(1)
+          : 0;
+        document.getElementById('stat-success').textContent = `${successRate}%`;
+
+        // 更新图表
+        updateHourlyChart(stats.today);
+        updateModelChart(stats.modelStats);
+        
+        // 更新用户排名
+        updateUserRanking(stats.userRanking);
+        
+        // 更新最近调用
+        await loadRecentCalls();
+      } catch (err) {
+        console.error('Load dashboard error:', err);
+      }
+    }
+
+    // 更新小时图表
+    function updateHourlyChart(data) {
+      const ctx = document.getElementById('hourlyChart').getContext('2d');
+      
+      if (charts.hourly) {
+        charts.hourly.destroy();
+      }
+
+      const hours = Array.from({length: 24}, (_, i) => `${i}:00`);
+      const values = new Array(24).fill(0);
+
+      charts.hourly = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: hours,
+          datasets: [{
+            label: '调用次数',
+            data: values,
+            borderColor: '#3B82F6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+    }
+
+    // 更新模型图表
+    function updateModelChart(data) {
+      const ctx = document.getElementById('modelChart').getContext('2d');
+      
+      if (charts.model) {
+        charts.model.destroy();
+      }
+
+      const labels = data.map(d => `${d.api_provider}/${d.model}`);
+      const values = data.map(d => d.cost);
+      const colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
+
+      charts.model = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels,
+          datasets: [{
+            data: values,
+            backgroundColor: colors.slice(0, values.length)
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'bottom' }
+          }
+        }
+      });
+    }
+
+    // 更新用户排名
+    function updateUserRanking(data) {
+      const container = document.getElementById('user-ranking');
+      if (!data || data.length === 0) {
+        container.innerHTML = '<p class="text-gray-500">暂无数据</p>';
+        return;
+      }
+
+      const maxCost = Math.max(...data.map(d => d.cost));
+      container.innerHTML = data.map((user, i) => `
+        <div class="flex items-center mb-3">
+          <span class="w-8 text-gray-500">#${i + 1}</span>
+          <span class="w-32 font-medium">${user.username}</span>
+          <div class="flex-1 bg-gray-200 rounded-full h-4 mx-4">
+            <div class="bg-blue-500 rounded-full h-4" style="width: ${(user.cost / maxCost * 100)}%"></div>
+          </div>
+          <span class="w-24 text-right">¥${user.cost.toFixed(2)}</span>
+          <span class="w-20 text-right text-gray-500">${user.calls}次</span>
+        </div>
+      `).join('');
+    }
+
+    // 加载最近调用
+    async function loadRecentCalls() {
+      const result = await api('/api/usage/detail?page=1&pageSize=10');
+      if (!result || !result.success) return;
+
+      const container = document.getElementById('recent-calls');
+      container.innerHTML = `
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-gray-500">
+              <th class="text-left py-2">时间</th>
+              <th class="text-left py-2">模型</th>
+              <th class="text-left py-2">软件</th>
+              <th class="text-right py-2">Tokens</th>
+              <th class="text-right py-2">费用</th>
+              <th class="text-center py-2">状态</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${result.data.map(call => `
+              <tr class="border-t">
+                <td class="py-2">${formatTime(call.created_at)}</td>
+                <td>${call.api_provider}/${call.model}</td>
+                <td>${call.software || '-'}</td>
+                <td class="text-right">${formatNumber(call.total_tokens)}</td>
+                <td class="text-right">¥${call.cost_cny.toFixed(4)}</td>
+                <td class="text-center">
+                  <span class="${call.is_success ? 'text-green-500' : 'text-red-500'}">
+                    ${call.is_success ? '✓' : '✗'}
+                  </span>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    // 加载用户列表
+    async function loadUsers(page = 1) {
+      const search = document.getElementById('user-search')?.value || '';
+      const status = document.getElementById('user-status-filter')?.value || '';
+      
+      const result = await api(`/api/admin/users?page=${page}&pageSize=20&search=${search}&status=${status}`);
+      if (!result || !result.success) return;
+
+      const tbody = document.getElementById('users-table-body');
+      tbody.innerHTML = result.data.map(user => `
+        <tr>
+          <td class="px-6 py-4">${user.username}</td>
+          <td class="px-6 py-4">${user.email || '-'}</td>
+          <td class="px-6 py-4">¥${user.balance.toFixed(2)}</td>
+          <td class="px-6 py-4">${user.tokenCount}</td>
+          <td class="px-6 py-4">
+            <span class="status-${user.status}">${user.status === 'active' ? '正常' : '封禁'}</span>
+          </td>
+          <td class="px-6 py-4">
+            <button onclick="rechargeUser('${user.user_id}')" class="text-blue-500 hover:underline mr-2">充值</button>
+            <button onclick="toggleUserStatus('${user.user_id}', '${user.status}')" class="text-${user.status === 'active' ? 'red' : 'green'}-500 hover:underline">
+              ${user.status === 'active' ? '封禁' : '解封'}
+            </button>
+          </td>
+        </tr>
+      `).join('');
+
+      renderPagination('users-pagination', result.pagination, loadUsers);
+    }
+
+    // 搜索用户
+    function searchUsers() {
+      loadUsers(1);
+    }
+
+    // 充值用户
+    function rechargeUser(userId) {
+      showModal('用户充值', `
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-2">充值金额 (元)</label>
+          <input type="number" id="recharge-amount" class="w-full px-3 py-2 border rounded-lg" min="0.01" step="0.01">
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-2">备注</label>
+          <input type="text" id="recharge-notes" class="w-full px-3 py-2 border rounded-lg">
+        </div>
+      `, async () => {
+        const amount = parseFloat(document.getElementById('recharge-amount').value);
+        const notes = document.getElementById('recharge-notes').value;
+        
+        const result = await api('/api/admin/recharge', {
+          method: 'POST',
+          body: JSON.stringify({ userId, amount, notes })
+        });
+
+        if (result && result.success) {
+          alert('充值成功');
+          closeModal();
+          loadUsers();
+        } else {
+          alert(result?.error?.message || '充值失败');
+        }
+      });
+    }
+
+    // 切换用户状态
+    async function toggleUserStatus(userId, currentStatus) {
+      const newStatus = currentStatus === 'active' ? 'suspended' : 'active';
+      const action = newStatus === 'suspended' ? '封禁' : '解封';
+      
+      if (!confirm(`确定要${action}该用户吗？`)) return;
+
+      const result = await api('/api/admin/user/status', {
+        method: 'POST',
+        body: JSON.stringify({ userId, status: newStatus })
+      });
+
+      if (result && result.success) {
+        alert(`${action}成功`);
+        loadUsers();
+      } else {
+        alert(result?.error?.message || `${action}失败`);
+      }
+    }
+
+    // 加载Token列表
+    async function loadTokens(page = 1) {
+      const userId = document.getElementById('token-user-filter')?.value || '';
+      const status = document.getElementById('token-status-filter')?.value || '';
+      
+      const result = await api(`/api/admin/tokens?page=${page}&pageSize=20&userId=${userId}&status=${status}`);
+      if (!result || !result.success) return;
+
+      const tbody = document.getElementById('tokens-table-body');
+      tbody.innerHTML = result.data.map(token => `
+        <tr>
+          <td class="px-6 py-4 font-mono text-sm">${token.token_prefix}</td>
+          <td class="px-6 py-4">${token.username}</td>
+          <td class="px-6 py-4">${token.token_name || '-'}</td>
+          <td class="px-6 py-4">¥${token.balance.toFixed(2)}</td>
+          <td class="px-6 py-4">-</td>
+          <td class="px-6 py-4">
+            <span class="status-${token.status}">${token.status === 'active' ? '正常' : '已吊销'}</span>
+          </td>
+          <td class="px-6 py-4">
+            <button onclick="showTokenDetail('${token.token_id}')" class="text-blue-500 hover:underline mr-2">详情</button>
+          </td>
+        </tr>
+      `).join('');
+
+      renderPagination('tokens-pagination', result.pagination, loadTokens);
+    }
+
+    // 加载用量分析
+    async function loadUsage() {
+      const result = await api('/api/admin/stats?days=30');
+      if (!result || !result.success) return;
+
+      // 更新每日图表
+      const ctx = document.getElementById('dailyUsageChart').getContext('2d');
+      if (charts.daily) charts.daily.destroy();
+
+      const dailyData = result.data.dailyTrend.reverse();
+      charts.daily = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: dailyData.map(d => d.date.substring(5)),
+          datasets: [{
+            label: '消耗 (元)',
+            data: dailyData.map(d => d.cost),
+            backgroundColor: '#3B82F6'
+          }]
+        },
+        options: { responsive: true }
+      });
+
+      // 更新软件图表
+      const ctx2 = document.getElementById('softwareChart').getContext('2d');
+      if (charts.software) charts.software.destroy();
+
+      const softwareData = result.data.softwareStats;
+      charts.software = new Chart(ctx2, {
+        type: 'pie',
+        data: {
+          labels: softwareData.map(d => d.software || '未知'),
+          datasets: [{
+            data: softwareData.map(d => d.cost),
+            backgroundColor: ['#3B82F6', '#10B981', '#F59E0B']
+          }]
+        },
+        options: { responsive: true }
+      });
+    }
+
+    // 加载定价配置
+    async function loadPricing() {
+      const result = await api('/api/admin/pricing');
+      if (!result || !result.success) return;
+
+      const container = document.getElementById('pricing-table');
+      container.innerHTML = `
+        <table class="w-full">
+          <thead>
+            <tr class="border-b">
+              <th class="text-left py-3">提供商</th>
+              <th class="text-left py-3">模型</th>
+              <th class="text-right py-3">输入价格 (元/千tokens)</th>
+              <th class="text-right py-3">输出价格 (元/千tokens)</th>
+              <th class="text-right py-3">缓存命中价格</th>
+              <th class="text-center py-3">状态</th>
+              <th class="text-center py-3">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${result.data.map(p => `
+              <tr class="border-b">
+                <td class="py-3">${p.provider}</td>
+                <td class="py-3">${p.model}</td>
+                <td class="py-3 text-right">${p.price_per_1k_prompt}</td>
+                <td class="py-3 text-right">${p.price_per_1k_completion}</td>
+                <td class="py-3 text-right">${p.price_per_1k_cache_hit || '-'}</td>
+                <td class="py-3 text-center">
+                  <span class="${p.is_active ? 'text-green-500' : 'text-gray-500'}">
+                    ${p.is_active ? '启用' : '禁用'}
+                  </span>
+                </td>
+                <td class="py-3 text-center">
+                  <button onclick="editPricing(${p.id})" class="text-blue-500 hover:underline">编辑</button>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    // 加载操作日志
+    async function loadLogs(page = 1) {
+      const result = await api(`/api/admin/logs?page=${page}&pageSize=50`);
+      if (!result || !result.success) return;
+
+      const tbody = document.getElementById('logs-table-body');
+      tbody.innerHTML = result.data.map(log => `
+        <tr>
+          <td class="px-6 py-4 text-sm">${formatTime(log.created_at)}</td>
+          <td class="px-6 py-4">${log.operator_name || log.operator_id || '-'}</td>
+          <td class="px-6 py-4">${log.action}</td>
+          <td class="px-6 py-4">${log.target_type}/${log.target_id?.substring(0, 8)}</td>
+          <td class="px-6 py-4 text-sm text-gray-500">${log.details ? JSON.parse(log.details).notes || '-' : '-'}</td>
+        </tr>
+      `).join('');
+
+      renderPagination('logs-pagination', result.pagination, loadLogs);
+    }
+
+    // 渲染分页
+    function renderPagination(containerId, pagination, loadFn) {
+      const container = document.getElementById(containerId);
+      if (!pagination || pagination.totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+      }
+
+      let html = '<div class="flex gap-2">';
+      
+      if (pagination.page > 1) {
+        html += `<button onclick="(${loadFn.name})(${pagination.page - 1})" class="px-3 py-1 border rounded">上一页</button>`;
+      }
+      
+      for (let i = 1; i <= Math.min(pagination.totalPages, 10); i++) {
+        html += `<button onclick="(${loadFn.name})(${i})" class="px-3 py-1 border rounded ${i === pagination.page ? 'bg-blue-500 text-white' : ''}">${i}</button>`;
+      }
+      
+      if (pagination.page < pagination.totalPages) {
+        html += `<button onclick="(${loadFn.name})(${pagination.page + 1})" class="px-3 py-1 border rounded">下一页</button>`;
+      }
+      
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    // 模态框
+    function showModal(title, content, onConfirm) {
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-content').innerHTML = content;
+      document.getElementById('modal').classList.remove('hidden');
+      document.getElementById('modal').style.display = 'flex';
+      
+      document.getElementById('modal-confirm').onclick = onConfirm;
+    }
+
+    function closeModal() {
+      document.getElementById('modal').classList.add('hidden');
+      document.getElementById('modal').style.display = 'none';
+    }
+
+    // 工具函数
+    function formatNumber(num) {
+      if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+      if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+      return num?.toString() || '0';
+    }
+
+    function formatTime(timestamp) {
+      if (!timestamp) return '-';
+      const date = new Date(timestamp);
+      return date.toLocaleString('zh-CN');
+    }
+
+    function showAddUserModal() {
+      showModal('添加用户', `
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-2">用户名</label>
+          <input type="text" id="new-username" class="w-full px-3 py-2 border rounded-lg" required>
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-2">密码</label>
+          <input type="password" id="new-password" class="w-full px-3 py-2 border rounded-lg" required>
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-2">邮箱</label>
+          <input type="email" id="new-email" class="w-full px-3 py-2 border rounded-lg">
+        </div>
+      `, async () => {
+        const username = document.getElementById('new-username').value;
+        const password = document.getElementById('new-password').value;
+        const email = document.getElementById('new-email').value;
+        
+        const result = await api('/api/user/register', {
+          method: 'POST',
+          body: JSON.stringify({ username, password, email })
+        });
+
+        if (result && result.success) {
+          alert('用户创建成功');
+          closeModal();
+          loadUsers();
+        } else {
+          alert(result?.error?.message || '创建失败');
+        }
+      });
+    }
+
+    function showTokenDetail(tokenId) {
+      // TODO: 显示Token详情
+      alert('Token详情功能开发中');
+    }
+
+    function editPricing(pricingId) {
+      // TODO: 编辑定价
+      alert('定价编辑功能开发中');
+    }
+
+    function loadUsageDetail() {
+      // TODO: 加载详细用量记录
+      alert('详细记录功能开发中');
+    }
+  </script>
+</body>
+</html>
