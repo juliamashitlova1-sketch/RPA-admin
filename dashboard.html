@@ -287,9 +287,14 @@
         <!-- Tokens Page -->
         <div id="page-tokens" class="page-content hidden">
           <div class="space-y-6">
-            <div>
-              <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">密钥管理</h2>
-              <p class="text-slate-500 text-sm">管理所有API访问密钥与配额</p>
+            <div class="flex justify-between items-end">
+              <div>
+                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">密钥管理</h2>
+                <p class="text-slate-500 text-sm">管理所有API访问密钥与配额</p>
+              </div>
+              <button onclick="showCreateTokenModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-indigo-500/20 hover:scale-105 active:scale-95">
+                创建新Token
+              </button>
             </div>
 
             <div class="bg-white rounded-2xl border border-slate-100 overflow-hidden card-shadow">
@@ -322,8 +327,44 @@
               <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">流量指数</h2>
               <p class="text-slate-500 text-sm">API调用统计与消耗分析</p>
             </div>
-            <div class="bg-white p-8 rounded-3xl border border-slate-100 card-shadow">
-              <p class="text-slate-400">流量分析功能加载中...</p>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div class="bg-white p-8 rounded-3xl border border-slate-100 card-shadow">
+                <h3 class="font-black text-slate-900 text-lg mb-4">每日消耗趋势</h3>
+                <div id="daily-usage-chart" class="space-y-3">
+                  <p class="text-slate-400 text-sm">加载中...</p>
+                </div>
+              </div>
+              <div class="bg-white p-8 rounded-3xl border border-slate-100 card-shadow">
+                <h3 class="font-black text-slate-900 text-lg mb-4">软件消耗分布</h3>
+                <div id="software-stats" class="space-y-4">
+                  <p class="text-slate-400 text-sm">加载中...</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-100 overflow-hidden card-shadow">
+              <div class="p-5 border-b border-slate-50">
+                <h3 class="font-black text-slate-900">详细调用记录</h3>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                  <thead class="bg-slate-50/50">
+                    <tr class="text-slate-400 text-[10px] font-black uppercase tracking-widest">
+                      <th class="px-8 py-5">时间</th>
+                      <th class="px-6 py-5">模型</th>
+                      <th class="px-6 py-5">软件</th>
+                      <th class="px-6 py-5 text-right">Tokens</th>
+                      <th class="px-6 py-5 text-right">费用</th>
+                      <th class="px-6 py-5 text-center">状态</th>
+                    </tr>
+                  </thead>
+                  <tbody id="usage-table-body" class="divide-y divide-slate-100">
+                  </tbody>
+                </table>
+              </div>
+              <div id="usage-pagination" class="p-5 border-t border-slate-50">
+              </div>
             </div>
           </div>
         </div>
@@ -477,6 +518,10 @@
           break;
         case 'tokens':
           await loadTokens();
+          break;
+        case 'usage':
+          await loadUsage();
+          await loadUsageDetail();
           break;
         case 'pricing':
           await loadPricing();
@@ -828,6 +873,123 @@
           alert(result?.error?.message || '创建失败');
         }
       });
+    }
+
+    // 创建Token模态框
+    function showCreateTokenModal() {
+      // 先加载用户列表
+      api('/api/admin/users?page=1&pageSize=100').then(result => {
+        if (!result || !result.success) return;
+        
+        const userOptions = result.data.map(u => `<option value="${u.user_id}">${u.username}</option>`).join('');
+        
+        showModal('创建新Token', `
+          <div class="space-y-4">
+            <div>
+              <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">选择用户</label>
+              <select id="token-user-id" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all">
+                ${userOptions}
+              </select>
+            </div>
+            <div>
+              <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Token名称</label>
+              <input type="text" id="token-name" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" placeholder="例如: 默认Token">
+            </div>
+            <div>
+              <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">初始余额 (元)</label>
+              <input type="number" id="token-balance" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" min="0" step="0.01" value="0">
+            </div>
+          </div>
+        `, async () => {
+          const userId = document.getElementById('token-user-id').value;
+          const name = document.getElementById('token-name').value;
+          const balance = parseFloat(document.getElementById('token-balance').value) || 0;
+          
+          const result = await api('/api/token/create', {
+            method: 'POST',
+            headers: { 'X-User-Id': userId },
+            body: JSON.stringify({ name, initialBalance: balance })
+          });
+
+          if (result && result.success) {
+            alert(`Token创建成功！\n\nToken: ${result.data.token}\n\n请妥善保存此Token，它只会显示一次！`);
+            closeModal();
+            loadTokens();
+          } else {
+            alert(result?.error?.message || '创建失败');
+          }
+        });
+      });
+    }
+
+    // 加载用量分析
+    async function loadUsage() {
+      try {
+        const result = await api('/api/admin/stats?days=30');
+        if (!result || !result.success) return;
+
+        // 每日消耗趋势
+        const dailyContainer = document.getElementById('daily-usage-chart');
+        if (result.data.dailyTrend && result.data.dailyTrend.length > 0) {
+          const maxCost = Math.max(...result.data.dailyTrend.map(d => d.cost));
+          dailyContainer.innerHTML = result.data.dailyTrend.slice(0, 7).reverse().map(day => `
+            <div class="flex items-center gap-4">
+              <span class="w-16 text-xs font-bold text-slate-500">${day.date.substring(5)}</span>
+              <div class="flex-1 h-6 bg-slate-50 rounded-full overflow-hidden p-0.5">
+                <div class="h-full rounded-full bg-indigo-600 shadow-sm" style="width: ${maxCost > 0 ? (day.cost / maxCost * 100) : 0}%"></div>
+              </div>
+              <span class="w-20 text-right font-mono text-xs font-bold text-slate-700">¥${day.cost.toFixed(2)}</span>
+            </div>
+          `).join('');
+        }
+
+        // 软件消耗分布
+        const softwareContainer = document.getElementById('software-stats');
+        if (result.data.softwareStats && result.data.softwareStats.length > 0) {
+          const totalCost = result.data.softwareStats.reduce((sum, s) => sum + s.cost, 0);
+          const colors = ['bg-indigo-600', 'bg-blue-600', 'bg-violet-600'];
+          const softwareNames = { 'pricing': '核价软件', 'optimizer': '优化软件', 'collector': '采集助手' };
+          softwareContainer.innerHTML = result.data.softwareStats.map((s, i) => `
+            <div class="space-y-2">
+              <div class="flex justify-between items-end px-1">
+                <span class="text-sm font-bold text-slate-700">${softwareNames[s.software] || s.software || '未知'}</span>
+                <span class="text-xs font-black text-indigo-600">${((s.cost / totalCost) * 100).toFixed(1)}%</span>
+              </div>
+              <div class="w-full h-3 bg-slate-50 rounded-full overflow-hidden p-0.5 ring-1 ring-slate-100">
+                <div class="h-full rounded-full ${colors[i % colors.length]} shadow-sm" style="width: ${(s.cost / totalCost * 100)}%"></div>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (err) {
+        console.error('Load usage error:', err);
+      }
+    }
+
+    // 加载详细用量记录
+    async function loadUsageDetail(page = 1) {
+      const result = await api(`/api/usage/detail?page=${page}&pageSize=20`);
+      if (!result || !result.success) return;
+
+      const tbody = document.getElementById('usage-table-body');
+      tbody.innerHTML = result.data.map(record => `
+        <tr class="hover:bg-slate-50/50 transition-colors">
+          <td class="px-8 py-4 text-sm font-mono text-slate-500">${formatTime(record.created_at)}</td>
+          <td class="px-6 py-4">
+            <span class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-600">${record.api_provider}/${record.model}</span>
+          </td>
+          <td class="px-6 py-4 text-sm text-slate-600">${record.software || '-'}</td>
+          <td class="px-6 py-4 text-right font-mono text-sm font-bold text-slate-700">${formatNumber(record.total_tokens)}</td>
+          <td class="px-6 py-4 text-right font-mono text-sm font-bold text-slate-900">¥${record.cost_cny.toFixed(4)}</td>
+          <td class="px-6 py-4 text-center">
+            <span class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold ${record.is_success ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}">
+              ${record.is_success ? '成功' : '失败'}
+            </span>
+          </td>
+        </tr>
+      `).join('');
+
+      renderPagination('usage-pagination', result.pagination, loadUsageDetail);
     }
 
     // 工具函数
