@@ -103,6 +103,24 @@
             </button>
           </div>
         </div>
+        
+        <div>
+          <p class="text-[10px] font-black text-slate-700 uppercase tracking-[0.2em] mb-4 px-3">内容管理</p>
+          <div class="space-y-1.5">
+            <button onclick="showPage('projects')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-400 hover:text-white hover:bg-white/5" data-page="projects">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+              </svg>
+              <span class="text-sm font-medium">项目大全</span>
+            </button>
+            <button onclick="showPage('tutorials')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-400 hover:text-white hover:bg-white/5" data-page="tutorials">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+              </svg>
+              <span class="text-sm font-medium">使用说明</span>
+            </button>
+          </div>
+        </div>
       </nav>
 
       <div class="mt-auto pt-8 border-t border-white/5">
@@ -410,6 +428,66 @@
             </div>
           </div>
         </div>
+
+        <!-- Projects Page -->
+        <div id="page-projects" class="page-content hidden">
+          <div class="space-y-6">
+            <div class="flex justify-between items-end">
+              <div>
+                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">项目大全</h2>
+                <p class="text-slate-500 text-sm">管理所有项目信息与海报</p>
+              </div>
+              <button onclick="showAddProjectModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-indigo-500/20 hover:scale-105 active:scale-95">
+                添加新项目
+              </button>
+            </div>
+
+            <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <!-- 项目卡片将在这里动态加载 -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Tutorials Page -->
+        <div id="page-tutorials" class="page-content hidden">
+          <div class="space-y-6">
+            <div class="flex justify-between items-end">
+              <div>
+                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">使用说明</h2>
+                <p class="text-slate-500 text-sm">为每个项目添加视频教程和文字说明</p>
+              </div>
+              <button onclick="showAddTutorialModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-indigo-500/20 hover:scale-105 active:scale-95">
+                添加使用说明
+              </button>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-100 overflow-hidden card-shadow">
+              <div class="p-5 border-b border-slate-50 flex flex-wrap gap-4 items-center">
+                <select id="tutorial-project-filter" class="bg-slate-50 border-none rounded-xl text-sm px-4 py-3 focus:ring-2 focus:ring-indigo-500/20 transition-all font-semibold text-slate-600 outline-none" onchange="loadTutorials()">
+                  <option value="">全部项目</option>
+                </select>
+              </div>
+
+              <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                  <thead class="bg-slate-50/50">
+                    <tr class="text-slate-400 text-[10px] font-black uppercase tracking-widest">
+                      <th class="px-8 py-5">项目</th>
+                      <th class="px-6 py-5">标题</th>
+                      <th class="px-6 py-5">视频</th>
+                      <th class="px-6 py-5">计费说明</th>
+                      <th class="px-6 py-5 text-right">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tutorials-table-body" class="divide-y divide-slate-100">
+                  </tbody>
+                </table>
+              </div>
+              <div id="tutorials-pagination" class="p-5 border-t border-slate-50">
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -535,6 +613,13 @@
           break;
         case 'logs':
           await loadLogs();
+          break;
+        case 'projects':
+          await loadProjects();
+          break;
+        case 'tutorials':
+          await loadTutorialProjects();
+          await loadTutorials();
           break;
       }
     }
@@ -1115,6 +1200,371 @@
       if (!timestamp) return '-';
       const date = new Date(timestamp);
       return date.toLocaleString('zh-CN');
+    }
+
+    // ==================== 项目管理 ====================
+    
+    // 加载项目列表
+    async function loadProjects() {
+      try {
+        const result = await api('/api/projects?page=1&pageSize=100');
+        if (!result || !result.success) return;
+
+        const container = document.getElementById('projects-grid');
+        if (result.data.length === 0) {
+          container.innerHTML = `
+            <div class="col-span-full text-center py-12">
+              <svg class="w-16 h-16 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+              </svg>
+              <p class="text-slate-400 font-bold">暂无项目</p>
+              <p class="text-slate-400 text-sm mt-1">点击"添加新项目"开始创建</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = result.data.map(project => `
+          <div class="bg-white rounded-2xl border border-slate-100 overflow-hidden card-shadow hover:shadow-lg transition-all">
+            ${project.poster_url ? `
+              <div class="h-48 bg-slate-100 overflow-hidden">
+                <img src="${project.poster_url}" alt="${project.name}" class="w-full h-full object-cover">
+              </div>
+            ` : `
+              <div class="h-48 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                <span class="text-white text-4xl font-black">${project.name.charAt(0)}</span>
+              </div>
+            `}
+            <div class="p-6">
+              <h3 class="text-lg font-black text-slate-900 mb-2">${project.name}</h3>
+              <p class="text-sm text-slate-500 mb-4 line-clamp-2">${project.description || '暂无描述'}</p>
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-400">${project.tutorialCount || 0} 个教程</span>
+                <div class="flex gap-2">
+                  <button onclick="editProject('${project.project_id}', '${project.name}', '${project.description || ''}', '${project.poster_url || ''}')" class="text-slate-400 hover:text-indigo-600 transition-colors p-2 hover:bg-white rounded-lg shadow-sm border border-transparent hover:border-slate-100">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                  </button>
+                  <button onclick="deleteProject('${project.project_id}', '${project.name}')" class="text-slate-400 hover:text-red-600 transition-colors p-2 hover:bg-white rounded-lg shadow-sm border border-transparent hover:border-slate-100">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error('Load projects error:', err);
+      }
+    }
+
+    // 添加项目模态框
+    function showAddProjectModal() {
+      showModal('添加新项目', `
+        <div class="space-y-4">
+          <div>
+            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">项目名称</label>
+            <input type="text" id="project-name" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" required>
+          </div>
+          <div>
+            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">项目描述</label>
+            <textarea id="project-description" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" rows="3"></textarea>
+          </div>
+          <div>
+            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">海报图片URL</label>
+            <input type="text" id="project-poster" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" placeholder="https://example.com/image.jpg">
+          </div>
+        </div>
+      `, async () => {
+        const name = document.getElementById('project-name').value;
+        const description = document.getElementById('project-description').value;
+        const posterUrl = document.getElementById('project-poster').value;
+
+        if (!name) {
+          throw new Error('项目名称不能为空');
+        }
+
+        const result = await api('/api/projects', {
+          method: 'POST',
+          body: JSON.stringify({ name, description, posterUrl })
+        });
+
+        if (result && result.success) {
+          alert('项目创建成功');
+          closeModal();
+          loadProjects();
+        } else {
+          throw new Error(result?.error?.message || '创建失败');
+        }
+      });
+    }
+
+    // 编辑项目
+    function editProject(projectId, name, description, posterUrl) {
+      showModal('编辑项目', `
+        <div class="space-y-4">
+          <div>
+            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">项目名称</label>
+            <input type="text" id="edit-project-name" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" value="${name}" required>
+          </div>
+          <div>
+            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">项目描述</label>
+            <textarea id="edit-project-description" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" rows="3">${description}</textarea>
+          </div>
+          <div>
+            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">海报图片URL</label>
+            <input type="text" id="edit-project-poster" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" value="${posterUrl}">
+          </div>
+        </div>
+      `, async () => {
+        const newName = document.getElementById('edit-project-name').value;
+        const newDescription = document.getElementById('edit-project-description').value;
+        const newPosterUrl = document.getElementById('edit-project-poster').value;
+
+        if (!newName) {
+          throw new Error('项目名称不能为空');
+        }
+
+        const result = await api('/api/projects/update', {
+          method: 'POST',
+          body: JSON.stringify({ projectId, name: newName, description: newDescription, posterUrl: newPosterUrl })
+        });
+
+        if (result && result.success) {
+          alert('项目更新成功');
+          closeModal();
+          loadProjects();
+        } else {
+          throw new Error(result?.error?.message || '更新失败');
+        }
+      });
+    }
+
+    // 删除项目
+    async function deleteProject(projectId, name) {
+      if (!confirm(`确定要删除项目"${name}"吗？`)) return;
+
+      const result = await api('/api/projects/delete', {
+        method: 'POST',
+        body: JSON.stringify({ projectId })
+      });
+
+      if (result && result.success) {
+        alert('项目删除成功');
+        loadProjects();
+      } else {
+        alert(result?.error?.message || '删除失败');
+      }
+    }
+
+    // ==================== 使用说明管理 ====================
+    
+    // 加载项目列表到筛选下拉框
+    async function loadTutorialProjects() {
+      try {
+        const result = await api('/api/projects?page=1&pageSize=100');
+        if (!result || !result.success) return;
+
+        const select = document.getElementById('tutorial-project-filter');
+        select.innerHTML = '<option value="">全部项目</option>' + 
+          result.data.map(p => `<option value="${p.project_id}">${p.name}</option>`).join('');
+      } catch (err) {
+        console.error('Load tutorial projects error:', err);
+      }
+    }
+
+    // 加载使用说明列表
+    async function loadTutorials(page = 1) {
+      const projectId = document.getElementById('tutorial-project-filter')?.value || '';
+      const url = projectId 
+        ? `/api/tutorials?page=${page}&pageSize=20&projectId=${projectId}`
+        : `/api/tutorials?page=${page}&pageSize=20`;
+      
+      const result = await api(url);
+      if (!result || !result.success) return;
+
+      const tbody = document.getElementById('tutorials-table-body');
+      tbody.innerHTML = result.data.map(tutorial => `
+        <tr class="hover:bg-slate-50/50 transition-colors">
+          <td class="px-8 py-5">
+            <span class="text-sm font-medium text-slate-600">${tutorial.project_name || '-'}</span>
+          </td>
+          <td class="px-6 py-5">
+            <span class="text-sm font-bold text-slate-900">${tutorial.title}</span>
+          </td>
+          <td class="px-6 py-5">
+            ${tutorial.video_url ? `
+              <a href="${tutorial.video_url}" target="_blank" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+                查看视频
+              </a>
+            ` : '<span class="text-slate-400 text-sm">无</span>'}
+          </td>
+          <td class="px-6 py-5">
+            <span class="text-sm text-slate-600">${tutorial.pricing_info ? '已配置' : '未配置'}</span>
+          </td>
+          <td class="px-6 py-5 text-right">
+            <div class="flex justify-end gap-2">
+              <button onclick="editTutorial('${tutorial.tutorial_id}', '${tutorial.project_id}', '${tutorial.title}', '${(tutorial.content || '').replace(/'/g, "\\'")}', '${tutorial.video_url || ''}', '${(tutorial.pricing_info || '').replace(/'/g, "\\'")}', ${tutorial.sort_order})" class="text-slate-400 hover:text-indigo-600 transition-colors p-2 hover:bg-white rounded-lg shadow-sm border border-transparent hover:border-slate-100">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+              </button>
+              <button onclick="deleteTutorial('${tutorial.tutorial_id}', '${tutorial.title}')" class="text-slate-400 hover:text-red-600 transition-colors p-2 hover:bg-white rounded-lg shadow-sm border border-transparent hover:border-slate-100">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+
+      renderPagination('tutorials-pagination', result.pagination, loadTutorials);
+    }
+
+    // 添加使用说明模态框
+    async function showAddTutorialModal() {
+      // 先加载项目列表
+      const projectsResult = await api('/api/projects?page=1&pageSize=100');
+      if (!projectsResult || !projectsResult.success) {
+        alert('加载项目列表失败');
+        return;
+      }
+
+      const projectOptions = projectsResult.data.map(p => `<option value="${p.project_id}">${p.name}</option>`).join('');
+
+      showModal('添加使用说明', `
+        <div class="space-y-4">
+          <div>
+            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">选择项目</label>
+            <select id="tutorial-project" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all">
+              ${projectOptions}
+            </select>
+          </div>
+          <div>
+            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">标题</label>
+            <input type="text" id="tutorial-title" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" required>
+          </div>
+          <div>
+            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">文字说明</label>
+            <textarea id="tutorial-content" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" rows="4"></textarea>
+          </div>
+          <div>
+            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">视频URL</label>
+            <input type="text" id="tutorial-video" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" placeholder="https://example.com/video.mp4">
+          </div>
+          <div>
+            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">计费说明</label>
+            <textarea id="tutorial-pricing" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" rows="2" placeholder="例如：每次调用消耗0.002元"></textarea>
+          </div>
+          <div>
+            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">排序顺序</label>
+            <input type="number" id="tutorial-sort" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" value="0" min="0">
+          </div>
+        </div>
+      `, async () => {
+        const projectId = document.getElementById('tutorial-project').value;
+        const title = document.getElementById('tutorial-title').value;
+        const content = document.getElementById('tutorial-content').value;
+        const videoUrl = document.getElementById('tutorial-video').value;
+        const pricingInfo = document.getElementById('tutorial-pricing').value;
+        const sortOrder = parseInt(document.getElementById('tutorial-sort').value) || 0;
+
+        if (!projectId || !title) {
+          throw new Error('项目和标题不能为空');
+        }
+
+        const result = await api('/api/tutorials', {
+          method: 'POST',
+          body: JSON.stringify({ projectId, title, content, videoUrl, pricingInfo, sortOrder })
+        });
+
+        if (result && result.success) {
+          alert('使用说明创建成功');
+          closeModal();
+          loadTutorials();
+        } else {
+          throw new Error(result?.error?.message || '创建失败');
+        }
+      });
+    }
+
+    // 编辑使用说明
+    function editTutorial(tutorialId, projectId, title, content, videoUrl, pricingInfo, sortOrder) {
+      showModal('编辑使用说明', `
+        <div class="space-y-4">
+          <div>
+            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">标题</label>
+            <input type="text" id="edit-tutorial-title" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" value="${title}" required>
+          </div>
+          <div>
+            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">文字说明</label>
+            <textarea id="edit-tutorial-content" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" rows="4">${content}</textarea>
+          </div>
+          <div>
+            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">视频URL</label>
+            <input type="text" id="edit-tutorial-video" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" value="${videoUrl}">
+          </div>
+          <div>
+            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">计费说明</label>
+            <textarea id="edit-tutorial-pricing" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" rows="2">${pricingInfo}</textarea>
+          </div>
+          <div>
+            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">排序顺序</label>
+            <input type="number" id="edit-tutorial-sort" class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-50 border-none text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all" value="${sortOrder}" min="0">
+          </div>
+        </div>
+      `, async () => {
+        const newTitle = document.getElementById('edit-tutorial-title').value;
+        const newContent = document.getElementById('edit-tutorial-content').value;
+        const newVideoUrl = document.getElementById('edit-tutorial-video').value;
+        const newPricingInfo = document.getElementById('edit-tutorial-pricing').value;
+        const newSortOrder = parseInt(document.getElementById('edit-tutorial-sort').value) || 0;
+
+        if (!newTitle) {
+          throw new Error('标题不能为空');
+        }
+
+        const result = await api('/api/tutorials/update', {
+          method: 'POST',
+          body: JSON.stringify({ 
+            tutorialId, 
+            title: newTitle, 
+            content: newContent, 
+            videoUrl: newVideoUrl, 
+            pricingInfo: newPricingInfo, 
+            sortOrder: newSortOrder 
+          })
+        });
+
+        if (result && result.success) {
+          alert('使用说明更新成功');
+          closeModal();
+          loadTutorials();
+        } else {
+          throw new Error(result?.error?.message || '更新失败');
+        }
+      });
+    }
+
+    // 删除使用说明
+    async function deleteTutorial(tutorialId, title) {
+      if (!confirm(`确定要删除使用说明"${title}"吗？`)) return;
+
+      const result = await api('/api/tutorials/delete', {
+        method: 'POST',
+        body: JSON.stringify({ tutorialId })
+      });
+
+      if (result && result.success) {
+        alert('使用说明删除成功');
+        loadTutorials();
+      } else {
+        alert(result?.error?.message || '删除失败');
+      }
     }
   </script>
 </body>
