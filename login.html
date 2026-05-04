@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Nexus - 登录</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              primary: '#4f46e5',
+              secondary: '#0f172a'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    .float-animation { animation: float 3s ease-in-out infinite; }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-950 flex items-center justify-center p-6 relative overflow-hidden">
+  <!-- Background Decor -->
+  <div class="absolute inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600 opacity-20 blur-[150px] rounded-full"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-violet-600 opacity-20 blur-[150px] rounded-full"></div>
+    <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(#fff 1px, transparent 0); background-size: 40px 40px;"></div>
+  </div>
+
+  <div class="w-full max-w-lg relative z-10">
+    <div class="bg-slate-900/50 backdrop-blur-3xl border border-white/5 p-12 rounded-[40px] shadow-2xl overflow-hidden relative">
+      <!-- Accent light top -->
+      <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-50"></div>
+      
+      <div class="flex flex-col items-center mb-12">
+        <div class="w-20 h-20 bg-indigo-600 rounded-[28px] flex items-center justify-center shadow-2xl shadow-indigo-500/50 mb-6 float-animation">
+          <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+          </svg>
+        </div>
+        <h1 class="text-4xl font-black text-white tracking-tighter uppercase mb-2">API Nexus <span class="text-indigo-400">v2</span></h1>
+        <p class="text-slate-500 text-sm font-semibold uppercase tracking-[0.2em]">运营指挥中心</p>
+      </div>
+
+      <form id="loginForm" class="space-y-6">
+        <div class="space-y-2">
+          <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-2">系统标识</label>
+          <div class="relative">
+            <svg class="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+            <input 
+              type="text" 
+              id="username"
+              value="admin"
+              class="w-full pl-14 pr-6 py-5 rounded-2xl bg-white/[0.03] border border-white/5 text-white placeholder-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:bg-white/[0.05] transition-all font-bold tracking-tight"
+              placeholder="admin"
+            >
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-2">安全密钥</label>
+          <div class="relative">
+            <svg class="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+            </svg>
+            <input 
+              type="password" 
+              id="password"
+              class="w-full pl-14 pr-6 py-5 rounded-2xl bg-white/[0.03] border border-white/5 text-white placeholder-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:bg-white/[0.05] transition-all font-bold tracking-tight"
+              placeholder="••••••••••••"
+            >
+          </div>
+        </div>
+
+        <div id="errorMsg" class="hidden text-red-400 text-sm text-center font-medium"></div>
+
+        <button 
+          type="submit"
+          class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-5 rounded-2xl font-black uppercase tracking-widest transition-all transform hover:scale-[1.01] active:scale-[0.98] shadow-2xl shadow-indigo-600/30 mt-4 h-16 flex items-center justify-center gap-3"
+        >
+          初始化命令
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+          </svg>
+        </button>
+      </form>
+
+      <p class="mt-12 text-center text-[10px] font-black text-slate-600 uppercase tracking-widest leading-loose">
+        安全协议 849-B 加密<br/>
+        仅限授权人员
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'https://api-gateway.juliamashitlova1.workers.dev';
+    
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('errorMsg');
+      
+      errorMsg.classList.add('hidden');
+      
+      try {
+        const response = await fetch(`${API_BASE}/api/user/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          localStorage.setItem('admin_user', JSON.stringify(data.data));
+          window.location.href = '/dashboard.html';
+        } else {
+          errorMsg.textContent = data.error?.message || '登录失败';
+          errorMsg.classList.remove('hidden');
+        }
+      } catch (err) {
+        errorMsg.textContent = '网络错误，请重试';
+        errorMsg.classList.remove('hidden');
+      }
+    });
+
+    // 检查是否已登录
+    if (localStorage.getItem('admin_user')) {
+      window.location.href = '/dashboard.html';
+    }
+  </script>
+</body>
+</html>
