@@ -373,8 +373,8 @@
                 使用说明
             </button>
             <button class="nav-link" id="nav-recharge" onclick="showPage('recharge')" data-page="recharge">
-                <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                充值中心
+                <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                充值说明
             </button>
             <button class="nav-link" id="nav-permissions" onclick="showPage('permissions')" data-page="permissions">
                 <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
@@ -644,83 +644,83 @@
                 </div>
             </div>
 
-            <!-- Recharge -->
+            <!-- Recharge Instructions -->
             <div id="page-recharge" class="page-content hidden">
                 <div class="page-header">
-                    <h1 class="page-title">充值中心</h1>
-                    <p class="page-subtitle">即刻充值额度，畅享无限制 AI 服务</p>
+                    <h1 class="page-title">充值说明</h1>
+                    <p class="page-subtitle">联系客服人工充值，享受超值额度返利</p>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 380px; gap: var(--space-lg); align-items: start;">
-                    <div class="glass-card" style="padding: 32px; border-radius: 24px;">
-                        <h3 style="font-size: 18px; margin-bottom: 24px; color: var(--t-dark); font-weight: 800;">选择充值金额</h3>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px;">
-                            <div class="recharge-card" onclick="selectRechargeAmount(10)">
-                                <div class="amount">￥10</div>
-                                <div class="tokens">10,000 额度</div>
-                                <div class="bonus">入门款</div>
-                            </div>
-                            <div class="recharge-card active" onclick="selectRechargeAmount(50)">
-                                <div class="amount">￥50</div>
-                                <div class="tokens">55,000 额度</div>
-                                <div class="bonus">超值推荐</div>
-                            </div>
-                            <div class="recharge-card" onclick="selectRechargeAmount(100)">
-                                <div class="amount">￥100</div>
-                                <div class="tokens">120,000 额度</div>
-                                <div class="bonus">赠送 20%</div>
-                            </div>
-                            <div class="recharge-card" onclick="selectRechargeAmount(500)">
-                                <div class="amount">￥500</div>
-                                <div class="tokens">650,000 额度</div>
-                                <div class="bonus">至尊返利</div>
+                <div style="display: grid; grid-template-columns: 450px 1fr; gap: 32px; align-items: start;">
+                    <!-- Section 1: QR Code -->
+                    <div class="glass-card" style="padding: 32px; text-align: center; border-radius: 28px;">
+                        <h3 style="font-size: 18px; margin-bottom: 24px; color: var(--t-dark); font-weight: 800;">板块一：微信收款码</h3>
+                        <div id="qr-upload-area" onclick="document.getElementById('qr-input').click()" style="width: 100%; aspect-ratio: 1; border: 2px dashed var(--glass-border); border-radius: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; background: rgba(255,255,255,0.2); overflow: hidden;">
+                            <img id="qr-preview" style="display: none; width: 100%; height: 100%; object-fit: contain;">
+                            <div id="qr-placeholder">
+                                <svg width="64" height="64" fill="none" stroke="var(--c-brand)" viewBox="0 0 24 24" style="opacity: 0.5; margin-bottom: 16px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"></path></svg>
+                                <div style="font-weight: 700; color: var(--t-dark);">点击上传微信二维码</div>
+                                <div style="font-size: 13px; color: var(--t-muted); margin-top: 8px;">推荐尺寸 800x800 以上</div>
                             </div>
                         </div>
-
-                        <div style="margin-top: 40px; padding: 24px; background: linear-gradient(135deg, var(--c-brand-light), transparent); border-radius: 20px; border: 1px solid var(--c-brand-light);">
-                            <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
-                                <div style="width:32px; height:32px; border-radius:50%; background:var(--c-brand); color:white; display:flex; align-items:center; justify-content:center;">
-                                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                </div>
-                                <h4 style="color: var(--t-dark); font-weight:800;">充值协议</h4>
-                            </div>
-                            <ul style="font-size: 13px; color: var(--t-dark); opacity: 0.7; line-height: 2; font-weight:500;">
-                                <li>所有充值金额将立即实时到账为账户可用额度。</li>
-                                <li>支持支付宝及微信支付全平台自动跳转，安全快捷。</li>
-                                <li>本平台提供 7x24 小时技术支持，如遇充值异常请随时联系。</li>
-                            </ul>
-                        </div>
+                        <input type="file" id="qr-input" hidden accept="image/*" onchange="previewQR(this)">
                     </div>
 
-                    <div class="glass-card" style="padding: 32px; border-radius: 24px; position: sticky; top: 24px;">
-                        <h3 style="font-size: 18px; margin-bottom: 24px; color: var(--t-dark); font-weight:800;">确认订单</h3>
-                        <div style="display: flex; flex-direction: column; gap: 20px;">
-                            <div style="display: flex; justify-content: space-between; font-size: 14px;">
-                                <span style="color: var(--t-muted); font-weight:600;">商品内容</span>
-                                <span style="color: var(--t-dark); font-weight:700;">API 调用额度包</span>
+                    <div style="display: flex; flex-direction: column; gap: 32px;">
+                        <!-- Section 2: WeChat ID -->
+                        <div class="glass-card" style="padding: 32px; border-radius: 28px; background: linear-gradient(135deg, var(--c-brand), #6366f1); color: white;">
+                            <h3 style="font-size: 18px; margin-bottom: 16px; font-weight: 800;">板块二：官方微信号</h3>
+                            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.15); padding: 20px 24px; border-radius: 20px; backdrop-filter: blur(10px);">
+                                <div>
+                                    <div style="font-size: 12px; opacity: 0.8; font-weight: 600; margin-bottom: 4px;">微信号 (点击可复制)</div>
+                                    <div style="font-size: 24px; font-weight: 900; letter-spacing: 1px;" id="wechat-id">NexGen_Support</div>
+                                </div>
+                                <button onclick="copyWeChat()" style="background: white; color: var(--c-brand); border: none; padding: 10px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: all 0.2s;">复制</button>
                             </div>
-                            <div style="display: flex; justify-content: space-between; font-size: 14px;">
-                                <span style="color: var(--t-muted); font-weight:600;">支付金额</span>
-                                <span id="recharge-total-price" style="color: var(--c-brand); font-weight: 900; font-size: 24px; font-family: var(--font-display);">￥50.00</span>
-                            </div>
-                            
-                            <div style="margin-top: 10px;">
-                                <label style="font-size: 12px; color: var(--t-muted); display: block; margin-bottom: 12px; font-weight:600; text-transform:uppercase; letter-spacing:1px;">支付方式</label>
-                                <div style="display: flex; flex-direction: column; gap: 12px;">
-                                    <button class="pay-method active" onclick="selectPayMethod('alipay')">
-                                        <img src="https://img.icons8.com/color/48/alipay.png" width="28">
-                                        <span>支付宝一键支付</span>
-                                    </button>
-                                    <button class="pay-method" onclick="selectPayMethod('wechat')">
-                                        <img src="https://img.icons8.com/color/48/wechat-pay.png" width="28">
-                                        <span>微信支付</span>
-                                    </button>
+                        </div>
+
+                        <!-- Section 3: Tiers -->
+                        <div class="glass-card" style="padding: 32px; border-radius: 28px;">
+                            <h3 style="font-size: 18px; margin-bottom: 24px; color: var(--t-dark); font-weight: 800;">板块三：充值套餐 (额度实时返利)</h3>
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                                <div class="recharge-card" style="cursor: default;">
+                                    <div class="amount" style="font-size: 22px;">￥50</div>
+                                    <div class="tokens" style="color: var(--c-brand);">实到 52 元</div>
+                                    <div class="bonus">返 4%</div>
+                                </div>
+                                <div class="recharge-card" style="cursor: default;">
+                                    <div class="amount" style="font-size: 22px;">￥100</div>
+                                    <div class="tokens" style="color: var(--c-brand);">实到 105 元</div>
+                                    <div class="bonus">返 5%</div>
+                                </div>
+                                <div class="recharge-card" style="cursor: default;">
+                                    <div class="amount" style="font-size: 22px;">￥200</div>
+                                    <div class="tokens" style="color: var(--c-brand);">实到 215 元</div>
+                                    <div class="bonus">返 7.5%</div>
+                                </div>
+                                <div class="recharge-card" style="cursor: default;">
+                                    <div class="amount" style="font-size: 22px;">￥300</div>
+                                    <div class="tokens" style="color: var(--c-brand);">实到 330 元</div>
+                                    <div class="bonus">返 10%</div>
+                                </div>
+                                <div class="recharge-card" style="cursor: default;">
+                                    <div class="amount" style="font-size: 22px;">￥500</div>
+                                    <div class="tokens" style="color: var(--c-brand);">实到 580 元</div>
+                                    <div class="bonus">返 16%</div>
+                                </div>
+                                <div class="recharge-card" style="cursor: default;">
+                                    <div class="amount" style="font-size: 22px;">￥1000</div>
+                                    <div class="tokens" style="color: var(--c-brand);">实到 1200 元</div>
+                                    <div class="bonus">返 20%</div>
                                 </div>
                             </div>
-
-                            <button onclick="executeRecharge()" class="btn btn-primary" style="width: 100%; height: 56px; font-size: 16px; margin-top: 20px; border-radius: 18px; font-weight:800; box-shadow: 0 10px 20px rgba(67, 24, 255, 0.2);">
-                                立即跳转支付
-                            </button>
+                            <div style="margin-top: 24px; padding: 20px; background: var(--c-brand-light); border-radius: 16px; font-size: 14px; color: var(--c-brand); font-weight: 600; line-height: 1.6;">
+                                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                                    <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20"><path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"></path></svg>
+                                    <span>充值提示</span>
+                                </div>
+                                转账时请备注您的“账户ID”，转账完成后请将截图发送给客服，我们将于 5 分钟内为您手动上分。
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -901,7 +901,7 @@
                 { id: "logs", name: "系统审计" },
                 { id: "projects", name: "项目管理" },
                 { id: "tutorials", name: "使用说明" },
-                { id: "recharge", name: "充值中心" }
+                { id: "recharge", name: "充值说明" }
             ];
 
             document.addEventListener("DOMContentLoaded", () => {
@@ -2578,52 +2578,38 @@
                 if (currentPage === 'dashboard') loadDashboard();
             }
 
-            let selectedAmount = 50;
-            let selectedPayMethod = 'alipay';
-
-            function selectRechargeAmount(amount) {
-                selectedAmount = amount;
-                document.querySelectorAll('.recharge-card').forEach(card => {
-                    card.classList.remove('active');
-                    if (card.querySelector('.amount').textContent === '￥' + amount) {
-                        card.classList.add('active');
+            function previewQR(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('qr-preview').src = e.target.result;
+                        document.getElementById('qr-preview').style.display = 'block';
+                        document.getElementById('qr-placeholder').style.display = 'none';
+                        // Save to localStorage so it persists for this browser session
+                        localStorage.setItem('recharge_qr_code', e.target.result);
                     }
-                });
-                document.getElementById('recharge-total-price').textContent = '￥' + amount + '.00';
-            }
-
-            function selectPayMethod(method) {
-                selectedPayMethod = method;
-                document.querySelectorAll('.pay-method').forEach(btn => {
-                    btn.classList.remove('active');
-                    if (btn.innerHTML.includes(method === 'alipay' ? 'alipay' : 'wechat-pay')) {
-                        btn.classList.add('active');
-                    }
-                });
-            }
-
-            async function executeRecharge() {
-                const btn = event.target;
-                const originalText = btn.innerHTML;
-                btn.innerHTML = '<span class="loading-spinner"></span> 正在建立支付安全连接...';
-                btn.disabled = true;
-
-                try {
-                    // 模拟支付跳转逻辑
-                    setTimeout(() => {
-                        const mockUrl = selectedPayMethod === 'alipay' 
-                            ? 'https://render.alipay.com/p/s/i?scheme=alipays%3A%2F%2Fplatformapi%2Fstartapp%2Fsa%3FappId%3D20000067' 
-                            : 'https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb';
-                            
-                        alert('【模拟支付跳转】\n支付金额：￥' + selectedAmount + '\n支付方式：' + (selectedPayMethod === 'alipay' ? '支付宝' : '微信') + '\n\n系统即将尝试拉起支付 App 或跳转至支付网关。');
-                        
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
-                    }, 1800);
-                } catch (e) {
-                    alert('建立支付连接失败: ' + e.message);
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
+                    reader.readAsDataURL(input.files[0]);
                 }
             }
+
+            function copyWeChat() {
+                var wechat = document.getElementById('wechat-id').textContent;
+                navigator.clipboard.writeText(wechat).then(function() {
+                    alert('微信号已复制: ' + wechat);
+                });
+            }
+
+            // Load saved QR on init
+            window.addEventListener('load', function() {
+                var savedQR = localStorage.getItem('recharge_qr_code');
+                if (savedQR) {
+                    var preview = document.getElementById('qr-preview');
+                    var placeholder = document.getElementById('qr-placeholder');
+                    if (preview && placeholder) {
+                        preview.src = savedQR;
+                        preview.style.display = 'block';
+                        placeholder.style.display = 'none';
+                    }
+                }
+            });
         </script>
