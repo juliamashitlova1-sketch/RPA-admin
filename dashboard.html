@@ -1969,6 +1969,11 @@
             function editProject(projectId) {
                 var project = projectsData[projectId];
                 if (!project) return;
+                var posterUrl = project.poster_url || "";
+                var imgSrc = posterUrl ? ' src="' + posterUrl + '"' : "";
+                var imgClass = posterUrl ? "" : " hidden";
+                var phClass = posterUrl ? " hidden" : "";
+                
                 var videoUrl = project.video_url || "";
                 var vidSrc = videoUrl ? ' src="' + videoUrl + '"' : "";
                 var vidClass = videoUrl ? "" : " hidden";
@@ -1980,13 +1985,13 @@
                         project.name +
                         '" required></div><div class="form-group"><label class="form-label">项目描述</label><textarea id="edit-project-description" class="form-textarea" rows="2">' +
                         (project.description || "") +
-                        '</textarea></div><div class="form-row"><div class="form-group" style="flex:1"><label class="form-label">海报图片</label><div class="upload-area aspect-video" onclick="document.getElementById(\'edit-project-poster-file\').click()"><input type="file" id="edit-project-poster-file" accept="image/*" class="hidden" onchange="previewImage(this)"><img class="pointer-events-none' +
+                        '</textarea></div><div class="form-row" style="display:flex; gap:16px;"><div class="form-group" style="flex:1"><label class="form-label">海报图片</label><div class="upload-area aspect-video" onclick="document.getElementById(\'edit-project-poster-file\').click()"><input type="file" id="edit-project-poster-file" accept="image/*" class="hidden" onchange="previewImage(this)"><img class="pointer-events-none' +
                         imgClass +
                         '"' +
                         imgSrc +
-                        '><div class="upload-placeholder' +
+                        ' style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0;"><div class="upload-placeholder' +
                         phClass +
-                        '"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div></div></div><div class="form-group" style="flex:1"><label class="form-label">演示视频</label><div class="upload-area aspect-video" onclick="document.getElementById(\'edit-project-video-file\').click()"><input type="file" id="edit-project-video-file" accept="video/mp4" class="hidden" onchange="previewVideo(this)"><video class="w-full h-full object-contain pointer-events-none' + vidClass + '"' + vidSrc + '></video><div class="upload-placeholder' + vidPhClass + '"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></div></div></div></div>',
+                        '"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg><span style="font-size:10px;">图片</span></div></div></div><div class="form-group" style="flex:1"><label class="form-label">演示视频</label><div class="upload-area aspect-video" onclick="document.getElementById(\'edit-project-video-file\').click()"><input type="file" id="edit-project-video-file" accept="video/mp4" class="hidden" onchange="previewVideo(this)"><video class="pointer-events-none' + vidClass + '"' + vidSrc + ' style="width:100%; height:100%; object-fit:contain; position:absolute; inset:0;"></video><div class="upload-placeholder' + vidPhClass + '"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg><span style="font-size:10px;">视频</span></div></div></div></div>',
                     async function () {
                         var newName = document.getElementById("edit-project-name").value;
                         var newDescription = document.getElementById("edit-project-description").value;
@@ -2008,11 +2013,7 @@
                             closeModal();
                             loadProjects();
                         } else {
-                            throw new Error(
-                                result && result.error
-                                    ? result.error.message
-                                    : "更新失败",
-                            );
+                            throw new Error(result?.error?.message || "更新失败");
                         }
                     },
                 );
