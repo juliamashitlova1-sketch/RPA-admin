@@ -466,6 +466,18 @@
                         <h2 class="page-title">流量指数</h2>
                         <p class="page-subtitle">多维度监控 API 调用与 Token 消耗详情</p>
                     </div>
+                    <div id="usage-filter-group" style="display:flex; gap:12px; align-items:center;">
+                        <div id="usage-user-filter" class="hidden" style="display:flex; gap:8px; align-items:center;">
+                            <span style="font-size:12px; font-weight:700; color:var(--t-muted)">客户:</span>
+                            <select id="usage-user-select" class="form-select" style="width:160px; padding:6px 10px; font-size:12px;" onchange="reloadUsageData()">
+                                <option value="">当前管理员</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="reloadUsageData()">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                            刷新
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Token Breakdown Cards -->
@@ -794,6 +806,7 @@
                         await loadTokens();
                         break;
                     case "usage":
+                        await initUsageFilter();
                         await loadUsage();
                         await loadUsageDetail();
                         break;
@@ -1560,9 +1573,35 @@
                 }
             }
 
+            async function initUsageFilter() {
+                if (!currentUser || currentUser.username !== "admin") return;
+                const filter = document.getElementById("usage-user-filter");
+                filter.classList.remove("hidden");
+                const select = document.getElementById("usage-user-select");
+                if (select.children.length > 1) return;
+                try {
+                    const result = await api("/api/admin/users?pageSize=100");
+                    if (result && result.success) {
+                        result.data.forEach((u) => {
+                            const opt = document.createElement("option");
+                            opt.value = u.user_id;
+                            opt.textContent = u.username;
+                            select.appendChild(opt);
+                        });
+                    }
+                } catch (e) {}
+            }
+
+            async function reloadUsageData() {
+                await loadUsage();
+                await loadUsageDetail(1);
+            }
+
             async function loadUsage() {
                 try {
-                    const result = await api("/api/usage/realtime");
+                    const userId = document.getElementById("usage-user-select").value;
+                    const query = userId ? "?userId=" + userId : "";
+                    const result = await api("/api/usage/realtime" + query);
                     if (!result || !result.success) return;
                     const data = result.data;
 
@@ -1636,9 +1675,10 @@
 
             async function loadUsageDetail(page) {
                 page = page || 1;
-                var result = await api(
-                    "/api/usage/detail?page=" + page + "&pageSize=20",
-                );
+                const userId = document.getElementById("usage-user-select").value;
+                let url = "/api/usage/detail?page=" + page + "&pageSize=20";
+                if (userId) url += "&userId=" + userId;
+                var result = await api(url);
                 if (!result || !result.success) return;
                 var tbody = document.getElementById("usage-table-body");
                 tbody.innerHTML = result.data
