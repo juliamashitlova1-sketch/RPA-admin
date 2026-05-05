@@ -138,31 +138,7 @@
         .card-title { font-family: var(--font-display); font-size: 18px; font-weight: 800; color: var(--t-dark); letter-spacing: -0.5px; }
 
         /* Stats Grid */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px; }
-        .stat-card {
-            background: var(--glass-bg); backdrop-filter: blur(24px); border: 1px solid var(--glass-border);
-            border-radius: 10px; padding: 16px; box-shadow: var(--glass-shadow);
-            position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 10px;
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .stat-card:hover { transform: translateY(-6px); }
-        .stat-card::after { content: ''; position: absolute; right: -20px; top: -20px; width: 120px; height: 120px; background: radial-gradient(circle, var(--accent-color) 0%, transparent 70%); opacity: 0.1; pointer-events: none; }
-        
-        .stat-header { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--t-muted); font-size: 12px; }
-        .stat-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; background: var(--accent-color); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
-        .stat-icon svg { width: 18px; height: 18px; }
-        .stat-value { font-family: var(--font-display); font-size: 32px; font-weight: 900; color: var(--t-dark); letter-spacing: -2px; line-height: 1; display: flex; align-items: baseline; gap: 4px; }
-        .stat-currency { font-size: 18px; color: var(--t-muted); font-weight: 700; }
 
-        /* Buttons */
-        .btn { padding: 8px 16px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--font-ui); }
-        .btn-primary { background: var(--c-brand); color: white; box-shadow: 0 8px 24px rgba(67, 24, 255, 0.3); }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(67, 24, 255, 0.4); background: #3205E0; }
-        .btn-outline { background: rgba(255,255,255,0.7); border: 2px solid var(--glass-border); color: var(--t-dark); backdrop-filter: blur(10px); }
-        .btn-outline:hover { background: white; border-color: white; box-shadow: 0 8px 20px rgba(0,0,0,0.05); transform: translateY(-2px); }
-        .btn-sm { padding: 8px 16px; font-size: 12px; border-radius: 12px; }
-        .icon-btn { background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border); border-radius: 12px; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--t-muted); transition: all 0.2s; }
-        .icon-btn:hover { background: white; color: var(--c-brand); box-shadow: 0 4px 12px rgba(0,0,0,0.05); transform: translateY(-2px); }
 
         /* Tables */
         .data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
@@ -247,9 +223,6 @@
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 17L12 22L22 17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 12L12 17L22 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
             API<span>Vity</span>
-            <div id="admin-switch" class="hidden">
-                 <a href="dashboard.html" style="font-size: 10px; color: var(--c-accent-1); margin-left: 8px; text-decoration: none; border: 1px solid var(--c-accent-1); padding: 2px 6px; border-radius: 6px; font-weight: 700;">管理员界面</a>
-            </div>
         </div>
         
         <div class="nav-menu">
@@ -259,20 +232,14 @@
             </button>
             <button class="nav-link" onclick="showPage('projects')" data-page="projects">
                 <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                项目展示
+                软件大全
             </button>
-            <button class="nav-link" onclick="showPage('pricing')" data-page="pricing">
-                <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                定价策略
-            </button>
+
             <button class="nav-link" onclick="showPage('recharge')" data-page="recharge">
                 <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 充值说明
             </button>
-            <button class="nav-link" onclick="showPage('tutorials')" data-page="tutorials">
-                <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                使用说明
-            </button>
+
         </div>
 
         <div class="sidebar-user">
@@ -340,63 +307,151 @@
             <div id="page-projects" class="page-content hidden">
                 <div class="page-header">
                     <div>
-                        <h2 class="page-title">项目展示</h2>
-                        <p class="page-subtitle">查看所有可用的项目及其消耗倍率</p>
+                        <h2 class="page-title">软件大全</h2>
+                        <p class="page-subtitle">查看所有可用的软件项目及其消耗倍率</p>
                     </div>
                 </div>
                 <div id="project-list" class="project-grid"></div>
             </div>
 
-            <!-- Pricing -->
-            <div id="page-pricing" class="page-content hidden">
-                <div class="page-header">
-                    <div>
-                        <h2 class="page-title">定价策略</h2>
-                        <p class="page-subtitle">模型计费详情预览</p>
-                    </div>
-                </div>
-                <div class="card">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>模型名称</th>
-                                <th class="text-right">输入倍率 (每1K)</th>
-                                <th class="text-right">输出倍率 (每1K)</th>
-                                <th class="text-right">单次计费(元)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="pricing-table-body"></tbody>
-                    </table>
-                </div>
-            </div>
+
 
             <!-- Recharge -->
             <div id="page-recharge" class="page-content hidden">
                 <div class="page-header">
                     <h2 class="page-title">充值说明</h2>
                 </div>
-                <div class="glass-card" style="padding: 32px; text-align: center;">
-                    <h3 style="margin-bottom: 20px;">联系客服人工充值</h3>
-                    <p style="color: var(--t-muted); margin-bottom: 24px;">扫码关注官方微信，获取最新优惠与充值支持</p>
-                    <div style="display: flex; justify-content: center; gap: 40px;">
-                         <div style="width: 200px;">
-                            <div style="background: white; padding: 10px; border-radius: 20px; box-shadow: var(--glass-shadow);">
-                                <img src="" id="user-recharge-qr" style="width: 100%; border-radius: 10px; display: none;">
-                                <div id="user-qr-placeholder" style="height: 180px; display: flex; align-items: center; justify-content: center; color: var(--t-muted); font-weight: 700;">二维码未设置</div>
+                <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; margin-bottom: 24px;">
+                    <!-- Left: Official Info -->
+                    <div class="glass-card" style="padding: 32px; display: flex; flex-direction: column; gap: 24px; background: linear-gradient(135deg, rgba(67, 24, 255, 0.05) 0%, rgba(255, 255, 255, 0.7) 100%);">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div>
+                                <h3 style="font-family: var(--font-display); font-size: 20px; font-weight: 800; color: var(--t-dark); margin-bottom: 8px;">官方联系方式</h3>
+                                <p style="font-size: 13px; color: var(--t-muted); font-weight: 500;">扫码或复制微信号联系客服进行充值</p>
                             </div>
-                            <p style="margin-top: 12px; font-weight: 700;">微信客服: jcc960623</p>
-                         </div>
+                            <div class="badge badge-success">在线客服</div>
+                        </div>
+
+                        <div style="display: flex; gap: 32px; align-items: center;">
+                            <div style="flex: 1;">
+                                <div style="background: white; padding: 20px; border-radius: 20px; border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow);">
+                                    <div style="font-size: 11px; color: var(--t-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">微信号</div>
+                                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                                        <span id="wechat-id" style="font-family: var(--font-display); font-size: 24px; font-weight: 900; color: var(--c-brand); letter-spacing: 0.5px;">jcc960623</span>
+                                        <button onclick="copyWeChat()" class="btn btn-primary btn-sm" style="padding: 6px 12px; border-radius: 8px;">复制</button>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+                                    <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--t-dark); font-weight: 600;">
+                                        <svg width="18" height="18" fill="var(--c-success)" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                        支持微信/支付宝转账
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--t-dark); font-weight: 600;">
+                                        <svg width="18" height="18" fill="var(--c-success)" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                        充值额度即时到账
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--t-dark); font-weight: 600;">
+                                        <svg width="18" height="18" fill="var(--c-success)" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                        大额充值立享返利
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="width: 180px;">
+                                <div style="width: 100%; aspect-ratio: 1; border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; background: white; padding: 10px; box-shadow: var(--glass-shadow);">
+                                    <img id="user-recharge-qr" style="width: 100%; height: 100%; object-fit: contain; display: none;">
+                                    <div id="user-qr-placeholder" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--t-muted); font-weight: 700; text-align: center; font-size: 12px;">二维码未设置</div>
+                                </div>
+                                <p style="text-align: center; font-size: 11px; color: var(--t-muted); margin-top: 8px; font-weight: 600;">官方客服二维码</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Recharge Tiers -->
+                    <div class="glass-card" style="padding: 24px;">
+                        <h3 style="font-family: var(--font-display); font-size: 18px; font-weight: 800; color: var(--t-dark); margin-bottom: 20px;">充值套餐 <span style="font-size: 12px; color: var(--c-accent-1); margin-left: 8px;">(额度实时返利)</span></h3>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                            <div class="recharge-card" style="padding: 14px; border-radius: 16px;">
+                                <div class="amount" style="font-size: 20px; font-weight: 900; font-family: var(--font-display);">￥50</div>
+                                <div class="tokens" style="color: var(--c-brand); font-size: 12px; font-weight: 600;">实到 52 元</div>
+                            </div>
+                            <div class="recharge-card" style="padding: 14px; border-radius: 16px;">
+                                <div class="amount" style="font-size: 20px; font-weight: 900; font-family: var(--font-display);">￥100</div>
+                                <div class="tokens" style="color: var(--c-brand); font-size: 12px; font-weight: 600;">实到 105 元</div>
+                            </div>
+                            <div class="recharge-card" style="padding: 14px; border-radius: 16px;">
+                                <div class="amount" style="font-size: 20px; font-weight: 900; font-family: var(--font-display);">￥200</div>
+                                <div class="tokens" style="color: var(--c-brand); font-size: 12px; font-weight: 600;">实到 215 元</div>
+                            </div>
+                            <div class="recharge-card" style="padding: 14px; border-radius: 16px;">
+                                <div class="amount" style="font-size: 20px; font-weight: 900; font-family: var(--font-display);">￥300</div>
+                                <div class="tokens" style="color: var(--c-brand); font-size: 12px; font-weight: 600;">实到 330 元</div>
+                            </div>
+                            <div class="recharge-card" style="padding: 14px; border-radius: 16px;">
+                                <div class="amount" style="font-size: 20px; font-weight: 900; font-family: var(--font-display);">￥500</div>
+                                <div class="tokens" style="color: var(--c-brand); font-size: 12px; font-weight: 600;">实到 580 元</div>
+                            </div>
+                            <div class="recharge-card" style="padding: 14px; border-radius: 16px;">
+                                <div class="amount" style="font-size: 20px; font-weight: 900; font-family: var(--font-display);">￥1000</div>
+                                <div class="tokens" style="color: var(--c-brand); font-size: 12px; font-weight: 600;">实到 1200 元</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Row: Payment QRs & Instructions -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                    <div class="glass-card" style="padding: 24px;">
+                        <h3 style="font-family: var(--font-display); font-size: 18px; font-weight: 800; color: var(--t-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                            收款二维码
+                        </h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                            <div style="text-align: center;">
+                                <div style="width: 100%; aspect-ratio: 1; border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; background: white; padding: 10px; box-shadow: var(--glass-shadow);">
+                                    <img id="user-wechat-qr" style="width: 100%; height: 100%; object-fit: contain; display: none;">
+                                    <div id="user-wechat-placeholder" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--t-muted); font-size: 11px; font-weight: 700;">未设置</div>
+                                </div>
+                                <div style="margin-top: 12px; font-size: 13px; font-weight: 800; color: #07C160;">微信支付</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="width: 100%; aspect-ratio: 1; border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; background: white; padding: 10px; box-shadow: var(--glass-shadow);">
+                                    <img id="user-alipay-qr" style="width: 100%; height: 100%; object-fit: contain; display: none;">
+                                    <div id="user-alipay-placeholder" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--t-muted); font-size: 11px; font-weight: 700;">未设置</div>
+                                </div>
+                                <div style="margin-top: 12px; font-size: 13px; font-weight: 800; color: #1677FF;">支付宝支付</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card" style="padding: 24px; display: flex; flex-direction: column; justify-content: center;">
+                        <div style="background: var(--c-brand-light); border-radius: 20px; padding: 24px; border: 1px solid rgba(67, 24, 255, 0.1);">
+                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                                <div style="width: 32px; height: 32px; background: var(--c-brand); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;">
+                                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </div>
+                                <h3 style="font-size: 16px; font-weight: 800; color: var(--c-brand);">温馨提示</h3>
+                            </div>
+                            <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px;">
+                                <li style="display: flex; gap: 10px; font-size: 13px; color: var(--t-dark); font-weight: 500; line-height: 1.5;">
+                                    <span style="color: var(--c-brand);">1.</span>
+                                    <span>转账时请务必备注您的<b>“账户ID”</b>，以便系统快速对账。</span>
+                                </li>
+                                <li style="display: flex; gap: 10px; font-size: 13px; color: var(--t-dark); font-weight: 500; line-height: 1.5;">
+                                    <span style="color: var(--c-brand);">2.</span>
+                                    <span>支付完成后，请将<b>支付成功截图</b>发送给客服微信号。</span>
+                                </li>
+                                <li style="display: flex; gap: 10px; font-size: 13px; color: var(--t-dark); font-weight: 500; line-height: 1.5;">
+                                    <span style="color: var(--c-brand);">3.</span>
+                                    <span>人工审核通过后，额度将实时充值到您的账户余额。</span>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Tutorials -->
-            <div id="page-tutorials" class="page-content hidden">
-                 <div class="page-header">
-                    <h2 class="page-title">使用说明</h2>
-                </div>
-                <div id="tutorials-list" style="display: flex; flex-direction: column; gap: 20px;"></div>
-            </div>
+
         </main>
     </div>
 
@@ -426,7 +481,8 @@
             document.getElementById("nav-avatar").textContent = currentUser.username.charAt(0).toUpperCase();
             
             if (currentUser.username === 'admin') {
-                document.getElementById('admin-switch').classList.remove('hidden');
+                // If somehow an admin is here, we don't show the switch in the sidebar anymore as per requirements
+                // document.getElementById('admin-switch').classList.remove('hidden');
             }
 
             loadUserData();
@@ -492,9 +548,6 @@
                     break;
                 case "recharge":
                     loadRechargeInfo();
-                    break;
-                case "tutorials":
-                    await loadTutorials();
                     break;
             }
         }
@@ -596,24 +649,33 @@
         }
 
         function loadRechargeInfo() {
-            const qr = localStorage.getItem('contact_qr_code');
-            if (qr) {
-                document.getElementById('user-recharge-qr').src = qr;
+            const contactQr = localStorage.getItem('contact_qr_code');
+            if (contactQr) {
+                document.getElementById('user-recharge-qr').src = contactQr;
                 document.getElementById('user-recharge-qr').style.display = 'block';
                 document.getElementById('user-qr-placeholder').style.display = 'none';
             }
+            
+            const wechatQr = localStorage.getItem('wechat_pay_qr');
+            if (wechatQr) {
+                document.getElementById('user-wechat-qr').src = wechatQr;
+                document.getElementById('user-wechat-qr').style.display = 'block';
+                document.getElementById('user-wechat-placeholder').style.display = 'none';
+            }
+
+            const alipayQr = localStorage.getItem('alipay_pay_qr');
+            if (alipayQr) {
+                document.getElementById('user-alipay-qr').src = alipayQr;
+                document.getElementById('user-alipay-qr').style.display = 'block';
+                document.getElementById('user-alipay-placeholder').style.display = 'none';
+            }
         }
 
-        async function loadTutorials() {
-            const result = await api("/api/admin/tutorials");
-            if (!result || !result.success) return;
-            const list = document.getElementById("tutorials-list");
-            list.innerHTML = result.data.map(t => `
-                <div class="card">
-                    <h3 class="card-title" style="margin-bottom:10px;">${t.title}</h3>
-                    <div style="font-size:14px; line-height:1.6; color:var(--t-dark); white-space:pre-wrap;">${t.content}</div>
-                </div>
-            `).join("");
+        function copyWeChat() {
+            const wechatId = document.getElementById("wechat-id").textContent;
+            navigator.clipboard.writeText(wechatId).then(() => {
+                alert("微信号已复制: " + wechatId);
+            });
         }
 
         function showModal(title, content) {

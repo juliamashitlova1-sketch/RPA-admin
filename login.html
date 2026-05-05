@@ -130,7 +130,7 @@
         
         if (data.success) {
           localStorage.setItem('admin_user', JSON.stringify(data.data));
-          if (data.data.role === 'admin') {
+          if (data.data.username === 'admin') {
             window.location.href = '/dashboard.html';
           } else {
             window.location.href = '/user.html';
@@ -149,7 +149,7 @@
     const savedUser = localStorage.getItem('admin_user');
     if (savedUser) {
       const user = JSON.parse(savedUser);
-      if (user.role === 'admin') {
+      if (user.username === 'admin') {
         window.location.href = '/dashboard.html';
       } else {
         window.location.href = '/user.html';
