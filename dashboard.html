@@ -286,6 +286,10 @@
                 <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                 使用说明
             </button>
+            <button class="nav-link" id="nav-permissions" onclick="showPage('permissions')" data-page="permissions">
+                <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                权限管理
+            </button>
         </div>
 
         <div class="sidebar-user">
@@ -558,6 +562,36 @@
                 </div>
             </div>
 
+            <!-- Permissions Management -->
+            <div id="page-permissions" class="page-content hidden">
+                <div class="page-header">
+                    <div>
+                        <h2 class="page-title">权限管理</h2>
+                        <p class="page-subtitle">设置不同用户可查看的侧边栏模块</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>用户名</th>
+                                    <th>控制面板</th>
+                                    <th>客户管理</th>
+                                    <th>密钥管理</th>
+                                    <th>流量指数</th>
+                                    <th>定价策略</th>
+                                    <th>系统审计</th>
+                                    <th>项目管理</th>
+                                    <th>使用说明</th>
+                                </tr>
+                            </thead>
+                            <tbody id="permissions-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <footer class="app-footer">
                 © 2026 API Nexus NexGen Infrastructure. All rights reserved.
             </footer>
@@ -581,6 +615,17 @@
             let currentUser = null;
             let currentPage = "dashboard";
             let projectsData = {};
+            
+            const MANAGEABLE_PAGES = [
+                { id: "dashboard", name: "控制面板" },
+                { id: "users", name: "客户管理" },
+                { id: "tokens", name: "密钥管理" },
+                { id: "usage", name: "流量指数" },
+                { id: "pricing", name: "定价策略" },
+                { id: "logs", name: "系统审计" },
+                { id: "projects", name: "项目管理" },
+                { id: "tutorials", name: "使用说明" }
+            ];
 
             document.addEventListener("DOMContentLoaded", () => {
                 const savedUser = localStorage.getItem("admin_user");
@@ -591,8 +636,36 @@
                 currentUser = JSON.parse(savedUser);
                 document.getElementById("nav-username").textContent =
                     currentUser.username;
+                
+                applyPermissions();
                 loadPageData("dashboard");
             });
+
+            function applyPermissions() {
+                // If admin, show everything
+                if (currentUser.username === 'admin') {
+                    document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('hidden'));
+                    return;
+                }
+
+                // Hide permissions link for non-admins
+                document.getElementById('nav-permissions').classList.add('hidden');
+
+                // Get permissions from localStorage
+                const allPermissions = JSON.parse(localStorage.getItem('system_rbac_permissions') || '{}');
+                const userPermissions = allPermissions[currentUser.username] || MANAGEABLE_PAGES.map(p => p.id); // Default to all if not set
+
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    const pageId = link.dataset.page;
+                    if (pageId && pageId !== 'permissions') {
+                        if (userPermissions.includes(pageId)) {
+                            link.classList.remove('hidden');
+                        } else {
+                            link.classList.add('hidden');
+                        }
+                    }
+                });
+            }
 
             async function api(path, options = {}) {
                 const headers = {
@@ -628,6 +701,16 @@
             }
 
             function showPage(page) {
+                // Permission check
+                if (currentUser.username !== 'admin') {
+                    const allPermissions = JSON.parse(localStorage.getItem('system_rbac_permissions') || '{}');
+                    const userPermissions = allPermissions[currentUser.username] || MANAGEABLE_PAGES.map(p => p.id);
+                    if (page !== 'dashboard' && !userPermissions.includes(page)) {
+                        alert('您没有权限访问此页面');
+                        return;
+                    }
+                }
+
                 currentPage = page;
                 document
                     .querySelectorAll(".page-content")
@@ -671,6 +754,9 @@
                     case "tutorials":
                         await loadTutorialProjects();
                         await loadTutorials();
+                        break;
+                    case "permissions":
+                        await loadPermissions();
                         break;
                 }
             }
@@ -1165,6 +1251,56 @@
                         (pagination.page + 1) +
                         ')" class="page-btn">下一页</button>';
                 c.innerHTML = html + "</div>";
+            }
+
+            async function loadPermissions() {
+                if (currentUser.username !== 'admin') return;
+                
+                const result = await api("/api/admin/users?page=1&pageSize=100");
+                if (!result || !result.success) return;
+                
+                const tbody = document.getElementById("permissions-table-body");
+                const allPermissions = JSON.parse(localStorage.getItem('system_rbac_permissions') || '{}');
+                
+                // Add admin manually to the top of list
+                const users = [{ username: 'admin' }, ...result.data.filter(u => u.username !== 'admin')];
+
+                tbody.innerHTML = users.map(u => {
+                    const userPerms = allPermissions[u.username] || MANAGEABLE_PAGES.map(p => p.id);
+                    const isSystemAdmin = u.username === 'admin';
+
+                    return '<tr>' +
+                        '<td><div style="font-weight:700;color:var(--t-dark)">' + u.username + (isSystemAdmin ? ' <span class="badge badge-success">超级管理员</span>' : '') + '</div></td>' +
+                        MANAGEABLE_PAGES.map(p => {
+                            const checked = userPerms.includes(p.id) ? 'checked' : '';
+                            const disabled = isSystemAdmin ? 'disabled' : '';
+                            return '<td class="text-center">' +
+                                '<input type="checkbox" ' + checked + ' ' + disabled + ' onclick="togglePermission(\'' + u.username + '\', \'' + p.id + '\')" style="width:18px;height:18px;cursor:pointer;">' +
+                                '</td>';
+                        }).join('') +
+                    '</tr>';
+                }).join('');
+            }
+
+            function togglePermission(username, pageId) {
+                if (username === 'admin') return;
+                
+                const allPermissions = JSON.parse(localStorage.getItem('system_rbac_permissions') || '{}');
+                let userPerms = allPermissions[username] || MANAGEABLE_PAGES.map(p => p.id);
+
+                if (userPerms.includes(pageId)) {
+                    userPerms = userPerms.filter(id => id !== pageId);
+                } else {
+                    userPerms.push(pageId);
+                }
+
+                allPermissions[username] = userPerms;
+                localStorage.setItem('system_rbac_permissions', JSON.stringify(allPermissions));
+                
+                // If it's the current user, apply immediately
+                if (currentUser.username === username) {
+                    applyPermissions();
+                }
             }
 
             function rechargeUser(userId) {
