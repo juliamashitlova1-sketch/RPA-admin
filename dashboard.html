@@ -2175,24 +2175,23 @@
                                   "</span></div>";
                             var activeClass = selectedProjectId === p.project_id ? " active" : "";
                             
-                            var badgeHtml = '';
+                            var rateHtml = '';
                             if (p.is_free) {
-                                badgeHtml = '<span class="badge badge-success" style="position:absolute; top:12px; right:12px; z-index:2; box-shadow:0 4px 12px rgba(5,205,153,0.3)">免费开源</span>';
+                                rateHtml = '<span class="project-card-count" style="background:rgba(5,205,153,0.1); color:var(--c-success); margin-left:8px;">免费开源</span>';
                             } else if (p.consumption_rate) {
-                                badgeHtml = '<span class="badge badge-danger" style="position:absolute; top:12px; right:12px; z-index:2; background:rgba(238,93,80,0.9); backdrop-filter:blur(4px); box-shadow:0 4px 12px rgba(238,93,80,0.3)">倍率: ' + p.consumption_rate + '</span>';
+                                rateHtml = '<span class="project-card-count" style="background:rgba(238,93,80,0.1); color:var(--c-accent-1); margin-left:8px;">倍率: ' + p.consumption_rate + '</span>';
                             }
 
                             return (
                                 '<div class="project-card' + activeClass + '" onclick="showProjectDetail(\'' + p.project_id + '\')" style="position:relative;">' +
-                                badgeHtml +
                                 imgHtml +
                                 '<div class="project-card-body"><div class="project-card-title">' +
                                 p.name +
                                 '</div><div class="project-card-desc">' +
                                 (p.description || "暂无描述") +
-                                '</div><div class="project-card-footer"><span class="project-card-count">' +
+                                '</div><div class="project-card-footer"><div style="display:flex; align-items:center;"><span class="project-card-count">' +
                                 (p.tutorialCount || 0) +
-                                ' 个教程</span><div style="display:flex;gap:4px"><button class="icon-btn" onclick="event.stopPropagation(); editProject(\'' +
+                                ' 个教程</span>' + rateHtml + '</div><div style="display:flex;gap:4px"><button class="icon-btn" onclick="event.stopPropagation(); editProject(\'' +
                                 p.project_id +
                                 '\')" title="编辑"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></button><button class="icon-btn" onclick="event.stopPropagation(); deleteProject(\'' +
                                 p.project_id +
