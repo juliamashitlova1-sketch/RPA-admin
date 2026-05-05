@@ -1,560 +1,378 @@
 <!doctype html>
 <html lang="zh-CN">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>API Nexus - 控制中心</title>
-        <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-            :root {
-                --font-main: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-                --fw-regular: 400;
-                --fw-medium: 500;
-                --fw-semibold: 600;
-                --fw-bold: 700;
-                --color-primary: #3b82f6;
-                --color-primary-hover: #2563eb;
-                --color-success: #10b981;
-                --color-warning: #f59e0b;
-                --color-danger: #ef4444;
-                --color-info: #6366f1;
-                --text-main: #1e293b;
-                --text-secondary: #64748b;
-                --text-muted: #94a3b8;
-                --bg-canvas: #f0f5fa;
-                --bg-card: #ffffff;
-                --border-subtle: #f1f5f9;
-                --border-strong: #e2e8f0;
-                --border-color: #e2e8f0;
-                --tag-bg-purple: #f3e8ff;
-                --tag-text-purple: #9333ea;
-                --tag-bg-blue: #dbeafe;
-                --tag-text-blue: #2563eb;
-                --tag-bg-green: #dcfce7;
-                --tag-text-green: #16a34a;
-                --tag-bg-red: #fee2e2;
-                --tag-text-red: #dc2626;
-                --radius-sm: 8px;
-                --radius-md: 12px;
-                --radius-lg: 16px;
-                --radius-full: 9999px;
-                --space-xs: 2px;
-                --space-sm: 6px;
-                --space-md: 8px;
-                --space-lg: 12px;
-                --space-xl: 16px;
-                --space-2xl: 20px;
-                --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-                --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
-            }
-            * { box-sizing: border-box; }
-            body {
-                background-color: var(--bg-canvas);
-                font-family: var(--font-main);
-                -webkit-font-smoothing: antialiased;
-                color: var(--text-main);
-                margin: 0;
-                display: flex;
-                height: 100vh;
-                overflow: hidden;
-            }
-            a { color: var(--color-primary); text-decoration: none; }
-            a:hover { text-decoration: underline; }
-            .hidden { display: none !important; }
-            .pointer-events-none { pointer-events: none; }
-            .aspect-video { aspect-ratio: 16 / 9; }
-            .object-cover { object-fit: cover; }
-
-            .app-wrapper {
-                display: flex;
-                width: 100%;
-                height: 100%;
-            }
-            .sidebar {
-                width: 60px;
-                background: transparent;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                padding: var(--space-xl) 0;
-                gap: 12px;
-                z-index: 10;
-            }
-            .sidebar-icon {
-                width: 36px;
-                height: 36px;
-                border-radius: var(--radius-md);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                transition: all 0.2s;
-                background: white;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-                color: white;
-                font-weight: bold;
-                font-size: 13px;
-                opacity: 0.7;
-            }
-            .sidebar-icon:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); opacity: 1; }
-            .sidebar-icon.active { opacity: 1; box-shadow: 0 0 0 2px var(--color-primary); transform: scale(1.05); }
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Nexus - NexGen Interface</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;700;900&display=swap');
+        
+        :root {
+            --font-ui: "Inter", sans-serif;
+            --font-display: "Outfit", sans-serif;
             
-            .main-area {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                overflow: hidden;
-            }
-
-            .top-nav {
-                height: 60px;
-                padding: 0 var(--space-xl);
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                flex-shrink: 0;
-            }
-            .nav-left {
-                display: flex;
-                align-items: center;
-                gap: var(--space-xl);
-            }
-            .search-bar {
-                background: white;
-                border-radius: var(--radius-full);
-                padding: 10px 20px;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                width: 360px;
-                box-shadow: var(--shadow-card);
-                border: 1px solid rgba(255,255,255,0.5);
-            }
-            .search-bar svg { width: 16px; height: 16px; color: var(--text-muted); }
-            .search-bar input {
-                border: none;
-                outline: none;
-                width: 100%;
-                font-size: 14px;
-                color: var(--text-main);
-                background: transparent;
-            }
-            .search-bar input::placeholder { color: var(--text-muted); }
-
-            .nav-tabs {
-                display: flex;
-                gap: 4px;
-                background: white;
-                padding: 6px;
-                border-radius: var(--radius-full);
-                box-shadow: var(--shadow-card);
-                overflow-x: auto;
-            }
-            .nav-link {
-                padding: 8px 20px;
-                border-radius: var(--radius-full);
-                font-size: 14px;
-                font-weight: var(--fw-medium);
-                cursor: pointer;
-                transition: all 0.2s;
-                border: none;
-                background: transparent;
-                color: var(--text-secondary);
-                white-space: nowrap;
-            }
-            .nav-link:hover { color: var(--text-main); background: var(--bg-canvas); }
-            .nav-link.nav-active {
-                background: var(--color-primary);
-                color: white;
-                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-                font-weight: var(--fw-semibold);
-            }
-
-            .nav-right {
-                display: flex;
-                align-items: center;
-                gap: 16px;
-                background: white;
-                padding: 8px 24px;
-                border-radius: var(--radius-full);
-                box-shadow: var(--shadow-card);
-            }
-            .nav-icon {
-                color: var(--text-secondary);
-                cursor: pointer;
-                transition: all 0.2s;
-                display: flex;
-                align-items: center;
-            }
-            .nav-icon:hover { color: var(--color-primary); }
-            .nav-username { font-size: 14px; font-weight: var(--fw-semibold); color: var(--text-main); }
-
-            .main-content {
-                flex: 1;
-                overflow-y: auto;
-                padding: 0 var(--space-xl) var(--space-xl);
-            }
-            .page-content {
-                max-width: 1600px;
-                margin: 0 auto;
-                animation: fadeIn 0.4s ease-out;
-            }
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(10px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-
-            .page-header {
-                margin-bottom: var(--space-xl);
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-end;
-            }
-            .page-title {
-                font-size: 20px;
-                font-weight: var(--fw-bold);
-                color: var(--text-main);
-                letter-spacing: -0.02em;
-            }
-            .page-subtitle {
-                font-size: 14px;
-                color: var(--text-secondary);
-                margin-top: 6px;
-            }
-
-            .btn {
-                padding: 8px 16px;
-                border-radius: var(--radius-full);
-                font-size: 14px;
-                font-weight: var(--fw-medium);
-                cursor: pointer;
-                transition: all 0.2s;
-                border: none;
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
-            }
-            .btn-primary { background: var(--color-primary); color: white; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25); }
-            .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35); background: var(--color-primary-hover); }
-            .btn-outline { background: white; border: 1px solid var(--border-strong); color: var(--text-main); box-shadow: var(--shadow-card); }
-            .btn-outline:hover { border-color: var(--color-primary); color: var(--color-primary); }
-            .btn-sm { padding: 6px 12px; font-size: 12px; }
-
-            .card {
-                background: var(--bg-card);
-                border-radius: var(--radius-lg);
-                padding: var(--space-xl);
-                margin-bottom: var(--space-xl);
-                box-shadow: var(--shadow-card);
-                border: 1px solid rgba(255,255,255,0.5);
-                transition: transform 0.2s, box-shadow 0.2s;
-            }
-            .card:hover { box-shadow: var(--shadow-md); }
-            .card-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: var(--space-lg);
-            }
-            .card-title { font-size: 14px; font-weight: var(--fw-bold); color: var(--text-main); }
-            .card-body { padding: 0; }
-
-            .dashboard-layout {
-                display: grid;
-                grid-template-columns: 2fr 1fr;
-                gap: var(--space-xl);
-            }
-            .stats-grid {
-                display: grid;
-                grid-template-columns: repeat(4, 1fr);
-                gap: var(--space-lg);
-                margin-bottom: var(--space-xl);
-            }
-            .stat-card {
-                background: var(--bg-card);
-                border-radius: var(--radius-lg);
-                padding: var(--space-xl);
-                box-shadow: var(--shadow-card);
-                display: flex;
-                flex-direction: column;
-                gap: 12px;
-                position: relative;
-                overflow: hidden;
-                border: 1px solid transparent;
-                transition: all 0.2s;
-            }
-            .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-            .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; }
-            .stat-card[data-accent="primary"]::before { background: var(--color-primary); }
-            .stat-card[data-accent="info"]::before { background: var(--color-info); }
-            .stat-card[data-accent="indigo"]::before { background: #8b5cf6; }
-            .stat-card[data-accent="success"]::before { background: var(--color-success); }
+            /* High Contrast Colors */
+            --c-brand: #4318FF; 
+            --c-brand-light: rgba(67, 24, 255, 0.1);
+            --c-accent-1: #FF2E93; 
+            --c-accent-2: #00E5FF; 
+            --c-accent-3: #FFAB00; 
+            --c-success: #05CD99;
+            --c-danger: #EE5D50;
             
-            .stat-header { display: flex; align-items: center; gap: 10px; color: var(--text-secondary); font-size: 14px; font-weight: var(--fw-medium); }
-            .stat-icon { width: 32px; height: 32px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; color: white; }
-            .stat-icon svg { width: 18px; height: 18px; }
-            .stat-value-group { display: flex; align-items: baseline; gap: 4px; }
-            .stat-value { font-size: 24px; font-weight: var(--fw-bold); color: var(--text-main); letter-spacing: -0.5px; }
-            .stat-currency { font-size: 18px; font-weight: var(--fw-semibold); color: var(--text-secondary); }
-
-            .data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-            .data-table th { padding: 8px 12px; text-align: left; font-size: 13px; font-weight: var(--fw-semibold); color: var(--text-secondary); background: #f8fafc; border-bottom: 1px solid var(--border-subtle); }
-            .data-table th:first-child { border-top-left-radius: var(--radius-sm); }
-            .data-table th:last-child { border-top-right-radius: var(--radius-sm); }
-            .data-table td { padding: 12px; border-bottom: 1px solid var(--border-subtle); font-size: 14px; color: var(--text-main); vertical-align: middle; }
-            .data-table tr:hover td { background: #f8fafc; }
-            .data-table tr:last-child td { border-bottom: none; }
-
-            .badge { display: inline-flex; padding: 4px 12px; border-radius: var(--radius-full); font-size: 12px; font-weight: var(--fw-semibold); }
-            .badge-success { background: var(--tag-bg-green); color: var(--tag-text-green); }
-            .badge-danger { background: var(--tag-bg-red); color: var(--tag-text-red); }
-            .badge-info { background: var(--tag-bg-blue); color: var(--tag-text-blue); }
-
-            .progress-bar-container { width: 100%; height: 8px; background: var(--border-subtle); border-radius: var(--radius-full); overflow: hidden; margin-top: 8px;}
-            .progress-bar-fill { height: 100%; border-radius: var(--radius-full); background: linear-gradient(90deg, var(--color-primary), var(--color-info)); transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-
-            .rank-item, .model-stat-row { display: flex; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 1px dashed var(--border-subtle); }
-            .rank-item:last-child, .model-stat-row:last-child { border-bottom: none; }
-            .ranking-rank { font-weight: var(--fw-bold); color: var(--text-muted); width: 28px; font-size: 14px; }
-            .ranking-name, .model-stat-name { font-weight: var(--fw-semibold); color: var(--text-main); width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-            .ranking-value, .model-stat-pct { font-weight: var(--fw-bold); color: var(--color-primary); font-family: monospace; font-size: 14px;}
+            /* Text */
+            --t-dark: #1B254B;
+            --t-muted: #A3AED0;
             
-            .model-stat-header { display: flex; justify-content: space-between; width: 100%; margin-bottom: 8px; }
-            .model-stat-row { flex-direction: column; align-items: flex-start; gap: 4px; }
-
-            .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 200; }
-            .modal-overlay.show { display: flex; }
-            .modal-dialog { background: var(--bg-card); border-radius: var(--radius-lg); padding: var(--space-xl); width: 100%; max-width: 480px; box-shadow: var(--shadow-md); }
-            .modal-title { font-size: 18px; font-weight: var(--fw-bold); margin-bottom: 20px; }
-            .modal-footer { margin-top: 24px; display: flex; justify-content: flex-end; gap: 12px; }
-            .form-group { margin-bottom: var(--space-md); }
-            .form-label { display: block; font-size: 13px; font-weight: var(--fw-medium); color: var(--text-secondary); margin-bottom: 6px; }
-            .form-input, .form-select, .form-textarea { width: 100%; padding: 8px 12px; border: 1px solid var(--border-strong); border-radius: var(--radius-md); font-size: 14px; font-family: inherit; transition: all 0.2s; outline: none; background: #f8fafc; }
-            .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--color-primary); background: white; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+            /* Glass */
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.9);
+            --glass-shadow: 0 10px 40px -10px rgba(112, 144, 176, 0.2);
             
-            .text-right { text-align: right; }
-            .text-center { text-align: center; }
-            
-            .project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--space-xl); }
-            .project-card { background: white; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-card); transition: all 0.2s; }
-            .project-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
-            .project-card-img { height: 180px; background: linear-gradient(135deg, var(--color-primary), var(--color-info)); display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; font-weight: bold; overflow: hidden; }
-            .project-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-            .project-card-body { padding: var(--space-xl); display: flex; flex-direction: column; }
-            .project-card-title { font-size: 16px; font-weight: var(--fw-bold); margin-bottom: 8px; color: var(--text-main); }
-            .project-card-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.6; }
-            .project-card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 12px; margin-top: auto; }
-            .project-card-count { font-size: 12px; font-weight: var(--fw-medium); color: var(--text-muted); }
-            .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-            
-            .pagination-wrapper { display: flex; justify-content: space-between; align-items: center; padding-top: var(--space-lg); border-top: 1px solid var(--border-subtle); margin-top: var(--space-lg); }
-            .page-btn { padding: 8px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-strong); background: white; cursor: pointer; font-weight: var(--fw-medium); transition: all 0.2s; }
-            .page-btn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3); }
-            .pagination-info { font-size: 13px; color: var(--text-secondary); }
-            .pagination-btns { display: flex; gap: 8px; }
+            /* Spacing */
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+        }
 
-            .app-footer {
-                padding: var(--space-xl);
-                color: var(--text-secondary);
-                font-size: 13px;
-                text-align: center;
-                border-top: 1px solid var(--border-subtle);
-                margin-top: auto;
-            }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: var(--font-ui);
+            background-color: #F4F7FE;
+            color: var(--t-dark);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            position: relative;
+        }
 
-            @media (max-width: 1024px) {
-                .dashboard-layout { grid-template-columns: 1fr; }
-                .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            }
-        </style>
-    </head>
-        <body>
-        <div class="app-wrapper">
-            <!-- New Sidebar Design -->
-            <aside class="sidebar" id="sidebar-nav">
-                <div class="sidebar-icon active" onclick="switchWorkspace(this, 'AN')" style="background: var(--color-info);">AN</div>
-                <div class="sidebar-icon" onclick="switchWorkspace(this, 'S1')" style="background: var(--color-success);">S1</div>
-                <div class="sidebar-icon" onclick="switchWorkspace(this, 'P2')" style="background: var(--color-warning);">P2</div>
-                <div class="sidebar-icon" onclick="switchWorkspace(this, 'D3')" style="background: var(--color-danger);">D3</div>
-                <div class="sidebar-icon" onclick="switchWorkspace(this, 'M4')" style="background: var(--tag-bg-purple); color: var(--tag-text-purple);">M4</div>
-            </aside>
+        /* Animated Background Mesh */
+        .bg-mesh {
+            position: absolute; inset: 0; z-index: -1; overflow: hidden;
+            pointer-events: none;
+            background: #F4F7FE;
+        }
+        .mesh-blob {
+            position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.6;
+            animation: drift 25s infinite alternate ease-in-out;
+        }
+        .mesh-1 { width: 600px; height: 600px; background: rgba(255, 46, 147, 0.4); top: -200px; left: -100px; animation-delay: 0s; }
+        .mesh-2 { width: 700px; height: 700px; background: rgba(0, 229, 255, 0.3); bottom: -300px; right: -100px; animation-delay: -5s; }
+        .mesh-3 { width: 500px; height: 500px; background: rgba(67, 24, 255, 0.3); top: 30%; left: 40%; animation-delay: -10s; }
+        .mesh-4 { width: 400px; height: 400px; background: rgba(255, 171, 0, 0.2); top: 10%; right: 10%; animation-delay: -15s; }
+        @keyframes drift { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(150px, 80px) scale(1.1); } }
 
-            <div class="main-area">
-                <nav class="top-nav">
-                    <div class="nav-left">
-                        <div class="search-bar">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                            <input type="text" placeholder="搜索模型、用户或系统记录...">
-                        </div>
-                    </div>
-                    <div class="nav-tabs">
-                        <button class="nav-link nav-active" onclick="showPage('dashboard')" data-page="dashboard">控制面板</button>
-                        <button class="nav-link" onclick="showPage('users')" data-page="users">客户管理</button>
-                        <button class="nav-link" onclick="showPage('tokens')" data-page="tokens">密钥管理</button>
-                        <button class="nav-link" onclick="showPage('usage')" data-page="usage">流量指数</button>
-                        <button class="nav-link" onclick="showPage('pricing')" data-page="pricing">定价策略</button>
-                        <button class="nav-link" onclick="showPage('logs')" data-page="logs">系统审计</button>
-                        <button class="nav-link" onclick="showPage('projects')" data-page="projects">项目管理</button>
-                        <button class="nav-link" onclick="showPage('tutorials')" data-page="tutorials">使用说明</button>
-                    </div>
-                    <div class="nav-right">
-                        <div class="nav-icon" title="通知">
-                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                        </div>
-                        <span class="nav-username" id="nav-username">Admin</span>
-                        <button class="btn btn-outline btn-sm" onclick="logout()">退出</button>
-                    </div>
-                </nav>
-                <main class="main-content">
+        /* Left Sidebar */
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-right: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            padding: 32px 24px;
+            z-index: 10;
+        }
+        
+        .brand {
+            font-family: var(--font-display); font-size: 30px; font-weight: 900;
+            color: var(--t-dark); margin-bottom: 48px; padding-left: 12px;
+            letter-spacing: -1px; display: flex; align-items: center; gap: 12px;
+        }
+        .brand span { color: var(--c-brand); }
+        .brand-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            background: linear-gradient(135deg, var(--c-brand), var(--c-accent-1));
+            display: flex; align-items: center; justify-content: center; color: white;
+            box-shadow: 0 4px 12px rgba(67,24,255,0.3);
+        }
+        
+        .nav-menu { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+        .nav-link {
+            padding: 14px 18px; border-radius: 16px; font-size: 15px; font-weight: 600;
+            color: var(--t-muted); cursor: pointer; transition: all 0.3s;
+            border: none; background: transparent; text-align: left;
+            display: flex; align-items: center; gap: 14px;
+        }
+        .nav-link:hover { color: var(--c-brand); background: rgba(255, 255, 255, 0.6); transform: translateX(4px); }
+        .nav-link.nav-active { background: var(--c-brand); color: white; box-shadow: 0 8px 20px rgba(67, 24, 255, 0.3); transform: translateX(4px); }
+        
+        .sidebar-user {
+            margin-top: auto; background: rgba(255,255,255,0.7); border: 1px solid var(--glass-border);
+            padding: 16px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .sidebar-user-info { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 44px; height: 44px; border-radius: 14px; background: linear-gradient(135deg, var(--c-accent-3), var(--c-accent-1)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-family: var(--font-display); font-size: 18px; box-shadow: 0 4px 10px rgba(255,46,147,0.3); }
+
+        /* Main Content */
+        .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+        .top-header { height: 90px; padding: 0 40px; display: flex; align-items: center; justify-content: flex-end; }
+        
+        .search-glass {
+            background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--glass-border);
+            border-radius: 30px; padding: 12px 24px; display: flex; align-items: center; gap: 12px;
+            width: 320px; box-shadow: var(--glass-shadow); transition: all 0.3s;
+        }
+        .search-glass:focus-within { box-shadow: 0 10px 40px -10px rgba(67, 24, 255, 0.3); border-color: rgba(67,24,255,0.3); }
+        .search-glass input { border: none; background: transparent; outline: none; font-family: var(--font-ui); font-size: 15px; width: 100%; color: var(--t-dark); font-weight: 500; }
+        .search-glass input::placeholder { color: var(--t-muted); font-weight: 400; }
+
+        .main-content { flex: 1; overflow-y: auto; padding: 0 40px 60px; }
+        .page-content { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); max-width: 1400px; margin: 0 auto; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .page-header { margin-bottom: 32px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .page-title { font-family: var(--font-display); font-size: 40px; font-weight: 900; color: var(--t-dark); letter-spacing: -1.5px; line-height: 1.1; }
+        .page-subtitle { font-size: 16px; color: var(--t-muted); font-weight: 500; margin-top: 8px; }
+
+        /* Cards */
+        .card {
+            background: var(--glass-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border); border-radius: 28px; padding: 32px;
+            box-shadow: var(--glass-shadow); margin-bottom: 32px;
+        }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .card-title { font-family: var(--font-display); font-size: 24px; font-weight: 800; color: var(--t-dark); letter-spacing: -0.5px; }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 32px; }
+        .stat-card {
+            background: var(--glass-bg); backdrop-filter: blur(24px); border: 1px solid var(--glass-border);
+            border-radius: 28px; padding: 28px; box-shadow: var(--glass-shadow);
+            position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 16px;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .stat-card:hover { transform: translateY(-6px); }
+        .stat-card::after { content: ''; position: absolute; right: -20px; top: -20px; width: 120px; height: 120px; background: radial-gradient(circle, var(--accent-color) 0%, transparent 70%); opacity: 0.1; pointer-events: none; }
+        
+        .stat-header { display: flex; align-items: center; gap: 14px; font-weight: 600; color: var(--t-muted); font-size: 15px; }
+        .stat-icon { width: 52px; height: 52px; border-radius: 18px; display: flex; align-items: center; justify-content: center; color: white; background: var(--accent-color); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+        .stat-icon svg { width: 26px; height: 26px; }
+        .stat-value { font-family: var(--font-display); font-size: 46px; font-weight: 900; color: var(--t-dark); letter-spacing: -2px; line-height: 1; display: flex; align-items: baseline; gap: 4px; }
+        .stat-currency { font-size: 24px; color: var(--t-muted); font-weight: 700; }
+
+        .dashboard-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 32px; }
+
+        /* Buttons */
+        .btn { padding: 12px 28px; border-radius: 16px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--font-ui); }
+        .btn-primary { background: var(--c-brand); color: white; box-shadow: 0 8px 24px rgba(67, 24, 255, 0.3); }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(67, 24, 255, 0.4); background: #3205E0; }
+        .btn-outline { background: rgba(255,255,255,0.7); border: 2px solid var(--glass-border); color: var(--t-dark); backdrop-filter: blur(10px); }
+        .btn-outline:hover { background: white; border-color: white; box-shadow: 0 8px 20px rgba(0,0,0,0.05); transform: translateY(-2px); }
+        .btn-sm { padding: 8px 16px; font-size: 13px; border-radius: 12px; }
+        .icon-btn { background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border); border-radius: 12px; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--t-muted); transition: all 0.2s; }
+        .icon-btn:hover { background: white; color: var(--c-brand); box-shadow: 0 4px 12px rgba(0,0,0,0.05); transform: translateY(-2px); }
+
+        /* Tables */
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .data-table th { padding: 18px 20px; text-align: left; font-size: 13px; font-weight: 700; color: var(--t-muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid rgba(0,0,0,0.03); }
+        .data-table td { padding: 20px; font-size: 15px; color: var(--t-dark); border-bottom: 1px solid rgba(0,0,0,0.03); font-weight: 500; vertical-align: middle; }
+        .data-table tr:hover td { background: rgba(255,255,255,0.4); }
+        .data-table tr:last-child td { border-bottom: none; }
+        
+        .cell-mono { font-family: var(--font-display); font-weight: 700; font-size: 16px; }
+        
+        /* Progress Bars */
+        .progress-bar-container { height: 12px; background: rgba(0,0,0,0.04); border-radius: 12px; overflow: hidden; width: 100%; margin-top: 10px; }
+        .progress-bar-fill { height: 100%; border-radius: 12px; transition: width 1s cubic-bezier(0.16, 1, 0.3, 1); }
+
+        /* Badges */
+        .badge { display: inline-flex; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; font-family: var(--font-display); letter-spacing: 0.5px; }
+        .badge-success { background: rgba(5,205,153,0.15); color: #00A676; }
+        .badge-danger { background: rgba(238,93,80,0.15); color: #D32F2F; }
+
+        /* Project Cards */
+        .project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 32px; }
+        .project-card { background: var(--glass-bg); backdrop-filter: blur(24px); border: 1px solid var(--glass-border); border-radius: 32px; overflow: hidden; box-shadow: var(--glass-shadow); display: flex; flex-direction: column; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .project-card:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 20px 50px rgba(112, 144, 176, 0.3); border-color: rgba(255,255,255,1); }
+        .project-card-img { height: 200px; width: 100%; overflow: hidden; background: linear-gradient(135deg, var(--c-brand), var(--c-accent-1)); display: flex; justify-content: center; align-items: center; position: relative; }
+        .project-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+        .project-card:hover .project-card-img img { transform: scale(1.05); }
+        .project-card-placeholder { font-family: var(--font-display); font-size: 64px; font-weight: 900; color: rgba(255,255,255,0.5); }
+        .project-card-body { padding: 32px; display: flex; flex-direction: column; flex: 1; }
+        .project-card-title { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--t-dark); margin-bottom: 12px; letter-spacing: -0.5px; }
+        .project-card-desc { font-size: 15px; color: var(--t-muted); margin-bottom: 24px; line-height: 1.6; flex: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .project-card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 2px solid rgba(0,0,0,0.03); padding-top: 20px; }
+        .project-card-count { font-size: 14px; font-weight: 700; color: var(--t-muted); font-family: var(--font-display); background: rgba(0,0,0,0.04); padding: 6px 12px; border-radius: 12px; }
+
+        /* Specific Lists & Rows */
+        .rank-item, .model-stat-row { display: flex; align-items: center; gap: 20px; padding: 20px 0; border-bottom: 2px dashed rgba(0,0,0,0.04); }
+        .rank-item:last-child, .model-stat-row:last-child { border-bottom: none; }
+        .ranking-rank { font-weight: 900; color: var(--t-muted); width: 32px; font-size: 20px; font-family: var(--font-display); }
+        .ranking-name { font-weight: 600; color: var(--t-dark); width: 160px; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ranking-value { font-weight: 900; color: var(--c-brand); font-family: var(--font-display); font-size: 20px;}
+        
+        .model-stat-header { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 4px; }
+        .model-stat-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+        .model-stat-pct { font-family: var(--font-display); font-weight: 900; color: var(--t-dark); font-size: 18px; }
+
+        .hidden { display: none !important; }
+        
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); display: none; align-items: center; justify-content: center; z-index: 999; }
+        .modal-overlay.show { display: flex; }
+        .modal-dialog { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(30px); border: 1px solid var(--glass-border); border-radius: 36px; padding: 48px; width: 100%; max-width: 540px; box-shadow: 0 30px 80px rgba(112,144,176,0.25); animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-title { font-family: var(--font-display); font-size: 28px; font-weight: 900; color: var(--t-dark); margin-bottom: 32px; letter-spacing: -1px; }
+        .form-group { margin-bottom: 24px; }
+        .form-label { display: block; font-size: 14px; font-weight: 700; color: var(--t-muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 16px 20px; background: rgba(255,255,255,0.7); border: 2px solid rgba(0,0,0,0.04); border-radius: 16px; font-size: 16px; outline: none; transition: all 0.3s; color: var(--t-dark); font-family: var(--font-ui); font-weight: 600; }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--c-brand); background: white; box-shadow: 0 0 0 4px var(--c-brand-light); }
+        .modal-footer { margin-top: 40px; display: flex; justify-content: flex-end; gap: 16px; }
+        
+        .pagination-wrapper { display: flex; justify-content: space-between; align-items: center; margin-top: 32px; padding-top: 24px; border-top: 2px solid rgba(0,0,0,0.03); }
+        .page-btn { padding: 10px 20px; border-radius: 14px; border: none; background: rgba(255,255,255,0.6); font-weight: 700; cursor: pointer; color: var(--t-muted); font-size: 14px; transition: all 0.2s; }
+        .page-btn:hover { background: white; color: var(--c-brand); }
+        .page-btn.active { background: var(--c-brand); color: white; box-shadow: 0 8px 20px var(--c-brand-light); }
+        .pagination-info { font-weight: 600; color: var(--t-muted); font-size: 14px; }
+        .pagination-btns { display: flex; gap: 8px; }
+
+        .app-footer { text-align: center; font-size: 13px; color: var(--t-muted); margin-top: 40px; padding: 24px; font-weight: 500; border-top: 1px solid rgba(0,0,0,0.05); }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.2); }
+    </style>
+</head>
+<body>
+    <div class="bg-mesh">
+        <div class="mesh-blob mesh-1"></div>
+        <div class="mesh-blob mesh-2"></div>
+        <div class="mesh-blob mesh-3"></div>
+        <div class="mesh-blob mesh-4"></div>
+    </div>
+
+    <nav class="sidebar">
+        <div class="brand">
+            <div class="brand-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 17L12 22L22 17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 12L12 17L22 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            API<span>Nexus</span>
+        </div>
+        
+        <div class="nav-menu">
+            <button class="nav-link nav-active" onclick="showPage('dashboard')" data-page="dashboard">
+                <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                控制面板
+            </button>
+            <button class="nav-link" onclick="showPage('users')" data-page="users">
+                <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                客户管理
+            </button>
+            <button class="nav-link" onclick="showPage('tokens')" data-page="tokens">
+                <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+                密钥管理
+            </button>
+            <button class="nav-link" onclick="showPage('usage')" data-page="usage">
+                <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                流量指数
+            </button>
+            <button class="nav-link" onclick="showPage('pricing')" data-page="pricing">
+                <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                定价策略
+            </button>
+            <button class="nav-link" onclick="showPage('logs')" data-page="logs">
+                <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                系统审计
+            </button>
+            <button class="nav-link" onclick="showPage('projects')" data-page="projects">
+                <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                项目管理
+            </button>
+            <button class="nav-link" onclick="showPage('tutorials')" data-page="tutorials">
+                <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                使用说明
+            </button>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="sidebar-user-info">
+                <div class="avatar">AN</div>
+                <div>
+                    <div style="font-weight: 800; font-family: var(--font-display); font-size: 16px; color: var(--t-dark);" id="nav-username">Admin</div>
+                    <div style="font-size: 13px; font-weight: 500; color: var(--t-muted);">System Operator</div>
+                </div>
+            </div>
+            <button class="icon-btn" onclick="logout()" title="退出系统">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            </button>
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+        <header class="top-header">
+            <div class="search-glass">
+                <svg width="20" height="20" fill="none" stroke="var(--t-muted)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <input type="text" placeholder="Search the nexus...">
+            </div>
+        </header>
+
+        <main class="main-content">
             <!-- Dashboard -->
-                        <div id="page-dashboard" class="page-content">
+            <div id="page-dashboard" class="page-content">
                 <div class="page-header">
                     <div>
                         <h2 class="page-title">数据概览</h2>
                         <p class="page-subtitle">实时监控您的 API 使用情况和流量</p>
                     </div>
-                    <div style="display: flex; gap: 12px;">
-                        <button class="btn btn-outline" onclick="loadDashboard()">刷新数据</button>
-                    </div>
+                    <button class="btn btn-outline" onclick="loadDashboard()">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        刷新数据
+                    </button>
                 </div>
+                
                 <div class="stats-grid">
-                    <div class="stat-card" data-accent="primary">
+                    <div class="stat-card" style="--accent-color: var(--c-brand);">
                         <div class="stat-header">
-                            <div class="stat-icon" style="background: var(--color-primary)">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                            </div>
+                            <div class="stat-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div>
                             今日调用量
                         </div>
-                        <div class="stat-value-group">
-                            <span class="stat-value" id="stat-calls">0</span>
-                        </div>
+                        <div class="stat-value" id="stat-calls">0</div>
                     </div>
-                    <div class="stat-card" data-accent="warning">
+                    <div class="stat-card" style="--accent-color: var(--c-accent-3);">
                         <div class="stat-header">
-                            <div class="stat-icon" style="background: var(--color-warning)">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            </div>
+                            <div class="stat-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
                             今日消耗
                         </div>
-                        <div class="stat-value-group">
-                            <span class="stat-currency">¥</span>
-                            <span class="stat-value" id="stat-cost">0.00</span>
-                        </div>
+                        <div class="stat-value"><span class="stat-currency">¥</span><span id="stat-cost">0.00</span></div>
                     </div>
-                    <div class="stat-card" data-accent="indigo">
+                    <div class="stat-card" style="--accent-color: var(--c-accent-1);">
                         <div class="stat-header">
-                            <div class="stat-icon" style="background: #8b5cf6">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                            </div>
+                            <div class="stat-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg></div>
                             活跃用户
                         </div>
-                        <div class="stat-value-group">
-                            <span class="stat-value" id="stat-users">0</span>
-                        </div>
+                        <div class="stat-value" id="stat-users">0</div>
                     </div>
-                    <div class="stat-card" data-accent="success">
+                    <div class="stat-card" style="--accent-color: var(--c-success);">
                         <div class="stat-header">
-                            <div class="stat-icon" style="background: var(--color-success)">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                            </div>
+                            <div class="stat-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div>
                             请求成功率
                         </div>
-                        <div class="stat-value-group">
-                            <span class="stat-value" id="stat-success">0%</span>
-                        </div>
+                        <div class="stat-value" id="stat-success">0%</div>
                     </div>
                 </div>
 
                 <div class="dashboard-layout">
-                    <!-- Left Main Column -->
                     <div class="dashboard-col">
                         <div class="card">
-                            <div class="card-header" style="margin-bottom: var(--space-md);">
-                                <h3 class="card-title">可用分组</h3>
-                            </div>
-                            <div class="nav-tabs" style="margin-bottom: var(--space-xl); display: inline-flex; box-shadow: none; border: 1px solid var(--border-subtle); padding: 4px;">
-                                <button class="nav-link nav-active">全部</button>
-                                <button class="nav-link">Codex</button>
-                                <button class="nav-link">Claude</button>
-                                <button class="nav-link">OpenAI</button>
-                                <button class="nav-link">Gemini</button>
-                            </div>
-                            <div class="project-grid" style="grid-template-columns: repeat(2, 1fr);">
-                                <div class="stat-card" style="box-shadow: none; border: 1px solid var(--border-strong);">
-                                    <div style="display: flex; justify-content: space-between;">
-                                        <div style="display: flex; gap: 8px; align-items: center;">
-                                            <span class="badge badge-info">OpenAI</span>
-                                            <span style="font-weight: 600;">GPT-4-Turbo</span>
-                                        </div>
-                                        <span style="color: var(--color-success); font-weight: 600;">$0.01 / 1K</span>
-                                    </div>
-                                    <div style="font-size: 13px; color: var(--text-secondary); margin-top: 12px; margin-bottom: 8px;">
-                                        支持所有 GPT-4 相关功能
-                                    </div>
-                                    <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 85%"></div></div>
-                                </div>
-                                <div class="stat-card" style="box-shadow: none; border: 1px solid var(--border-strong);">
-                                    <div style="display: flex; justify-content: space-between;">
-                                        <div style="display: flex; gap: 8px; align-items: center;">
-                                            <span class="badge" style="background: var(--tag-bg-purple); color: var(--tag-text-purple);">Claude</span>
-                                            <span style="font-weight: 600;">Claude-3-Opus</span>
-                                        </div>
-                                        <span style="color: var(--color-success); font-weight: 600;">$0.015 / 1K</span>
-                                    </div>
-                                    <div style="font-size: 13px; color: var(--text-secondary); margin-top: 12px; margin-bottom: 8px;">
-                                        智能推理，最强语言模型
-                                    </div>
-                                    <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 60%; background: linear-gradient(90deg, #a855f7, #6366f1)"></div></div>
-                                </div>
-                                <div class="stat-card" style="box-shadow: none; border: 1px solid var(--border-strong);">
-                                    <div style="display: flex; justify-content: space-between;">
-                                        <div style="display: flex; gap: 8px; align-items: center;">
-                                            <span class="badge" style="background: #e0f2fe; color: #0284c7;">Gemini</span>
-                                            <span style="font-weight: 600;">Gemini-1.5-Pro</span>
-                                        </div>
-                                        <span style="color: var(--color-success); font-weight: 600;">$0.007 / 1K</span>
-                                    </div>
-                                    <div style="font-size: 13px; color: var(--text-secondary); margin-top: 12px; margin-bottom: 8px;">
-                                        超大上下文，极速响应
-                                    </div>
-                                    <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 45%; background: linear-gradient(90deg, #38bdf8, #0284c7)"></div></div>
-                                </div>
-                                <div class="stat-card" style="box-shadow: none; border: 1px solid var(--border-strong);">
-                                    <div style="display: flex; justify-content: space-between;">
-                                        <div style="display: flex; gap: 8px; align-items: center;">
-                                            <span class="badge" style="background: #fef08a; color: #a16207;">Midjourney</span>
-                                            <span style="font-weight: 600;">MJ-V6</span>
-                                        </div>
-                                        <span style="color: var(--color-success); font-weight: 600;">$0.05 / 1次</span>
-                                    </div>
-                                    <div style="font-size: 13px; color: var(--text-secondary); margin-top: 12px; margin-bottom: 8px;">
-                                        AI 绘画，无损渲染
-                                    </div>
-                                    <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 90%; background: linear-gradient(90deg, #facc15, #ca8a04)"></div></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">用户消耗排名 (TOP 10)</h3>
+                                <h3 class="card-title">用户消耗排名 <span style="color:var(--t-muted); font-size: 16px;">(TOP 10)</span></h3>
                             </div>
-                            <div class="card-body" id="user-ranking">
-                                <p style="color: var(--text-muted); font-size: 14px;">暂无数据</p>
+                            <div id="user-ranking">
+                                <p style="color: var(--t-muted); font-weight: 500;">暂无数据</p>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Right Stats Column -->
                     <div class="dashboard-col">
                         <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title">模型调用分布</h3>
                             </div>
-                            <div class="card-body" id="model-stats">
-                                <p style="color: var(--text-muted); font-size: 14px;">暂无数据</p>
+                            <div id="model-stats">
+                                <p style="color: var(--t-muted); font-weight: 500;">暂无数据</p>
                             </div>
                         </div>
                     </div>
@@ -565,55 +383,28 @@
             <div id="page-users" class="page-content hidden">
                 <div class="page-header">
                     <div>
-                        <h2 class="page-title">用户管理</h2>
-                        <p class="page-subtitle">
-                            管理系统中的所有接入客户与权限级别
-                        </p>
+                        <h2 class="page-title">客户管理</h2>
+                        <p class="page-subtitle">管理系统用户及其充值状态</p>
                     </div>
-                    <button
-                        class="btn btn-primary"
-                        onclick="showAddUserModal()"
-                    >
-                        添加新用户
-                    </button>
+                    <button class="btn btn-primary" onclick="showAddUserModal()">添加新用户</button>
                 </div>
                 <div class="card">
-                    <div class="card-header">
-                        <div class="search-wrapper">
-                            <svg
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                ></path></svg
-                            ><input
-                                type="text"
-                                id="user-search"
-                                class="form-input"
-                                placeholder="搜索用户名、邮箱..."
-                                onkeyup="loadUsers()"
-                            />
-                        </div>
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>用户名</th>
+                                    <th>邮箱</th>
+                                    <th class="text-right">余额</th>
+                                    <th class="text-center">状态</th>
+                                    <th>注册时间</th>
+                                    <th class="text-right">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body"></tbody>
+                        </table>
                     </div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>用户信息</th>
-                                <th>邮箱</th>
-                                <th class="text-right">余额 (CNY)</th>
-                                <th class="text-center">Token数</th>
-                                <th class="text-center">状态</th>
-                                <th class="text-right">操作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="users-table-body"></tbody>
-                    </table>
-                    <div class="pagination-wrapper" id="users-pagination"></div>
+                    <div id="users-pagination" class="pagination-wrapper"></div>
                 </div>
             </div>
 
@@ -622,33 +413,28 @@
                 <div class="page-header">
                     <div>
                         <h2 class="page-title">密钥管理</h2>
-                        <p class="page-subtitle">管理所有API访问密钥与配额</p>
+                        <p class="page-subtitle">管理所有用户的 API 密钥</p>
                     </div>
-                    <button
-                        class="btn btn-primary"
-                        onclick="showCreateTokenModal()"
-                    >
-                        创建新Token
-                    </button>
+                    <button class="btn btn-primary" onclick="showCreateTokenModal()">创建新Token</button>
                 </div>
                 <div class="card">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Token</th>
-                                <th>用户</th>
-                                <th>名称</th>
-                                <th class="text-right">余额</th>
-                                <th class="text-center">状态</th>
-                                <th class="text-right">操作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tokens-table-body"></tbody>
-                    </table>
-                    <div
-                        class="pagination-wrapper"
-                        id="tokens-pagination"
-                    ></div>
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Token名称</th>
+                                    <th>Token</th>
+                                    <th>所属用户</th>
+                                    <th class="text-right">余额</th>
+                                    <th class="text-center">状态</th>
+                                    <th>创建时间</th>
+                                    <th class="text-right">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tokens-table-body"></tbody>
+                        </table>
+                    </div>
+                    <div id="tokens-pagination" class="pagination-wrapper"></div>
                 </div>
             </div>
 
@@ -657,60 +443,26 @@
                 <div class="page-header">
                     <div>
                         <h2 class="page-title">流量指数</h2>
-                        <p class="page-subtitle">API调用统计与消耗分析</p>
-                    </div>
-                </div>
-                <div
-                    style="
-                        display: grid;
-                        grid-template-columns: 1fr 1fr;
-                        gap: var(--space-lg);
-                        margin-bottom: var(--space-lg);
-                    "
-                >
-                    <div class="card">
-                        <div class="card-header"><h3 class="card-title">每日消耗趋势</h3></div>
-                        <div class="card-body" id="daily-usage-chart">
-                            <p
-                                style="
-                                    color: var(--text-muted);
-                                    font-size: 13px;
-                                "
-                            >
-                                加载中...
-                            </p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header"><h3 class="card-title">软件消耗分布</h3></div>
-                        <div class="card-body" id="software-stats">
-                            <p
-                                style="
-                                    color: var(--text-muted);
-                                    font-size: 13px;
-                                "
-                            >
-                                加载中...
-                            </p>
-                        </div>
+                        <p class="page-subtitle">实时监控 API 请求明细</p>
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-header"><h3 class="card-title">详细调用记录</h3></div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>时间</th>
-                                <th>模型</th>
-                                <th>软件</th>
-                                <th class="text-right">Tokens</th>
-                                <th class="text-right">费用</th>
-                                <th class="text-center">状态</th>
-                            </tr>
-                        </thead>
-                        <tbody id="usage-table-body"></tbody>
-                    </table>
-                    <div class="pagination-wrapper" id="usage-pagination"></div>
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>时间</th>
+                                    <th>模型/渠道</th>
+                                    <th>来源软件</th>
+                                    <th class="text-right">消耗Token</th>
+                                    <th class="text-right">扣费金额</th>
+                                    <th class="text-center">状态</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usage-table-body"></tbody>
+                        </table>
+                    </div>
+                    <div id="usage-pagination" class="pagination-wrapper"></div>
                 </div>
             </div>
 
@@ -719,11 +471,26 @@
                 <div class="page-header">
                     <div>
                         <h2 class="page-title">定价策略</h2>
-                        <p class="page-subtitle">配置各模型的计费标准</p>
+                        <p class="page-subtitle">管理 API 模型的计费规则</p>
                     </div>
+                    <button class="btn btn-primary" onclick="showAddPricingModal()">添加定价规则</button>
                 </div>
                 <div class="card">
-                    <div class="card-body" id="pricing-table"></div>
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>模型名称</th>
+                                    <th class="text-right">输入倍率</th>
+                                    <th class="text-right">输出倍率</th>
+                                    <th class="text-right">单次计费(元)</th>
+                                    <th class="text-center">渠道</th>
+                                    <th class="text-right">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pricing-table-body"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -732,23 +499,23 @@
                 <div class="page-header">
                     <div>
                         <h2 class="page-title">系统审计</h2>
-                        <p class="page-subtitle">操作日志与安全审计</p>
+                        <p class="page-subtitle">系统操作日志记录</p>
                     </div>
                 </div>
                 <div class="card">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>时间</th>
-                                <th>操作人</th>
-                                <th>操作</th>
-                                <th>目标</th>
-                                <th>详情</th>
-                            </tr>
-                        </thead>
-                        <tbody id="logs-table-body"></tbody>
-                    </table>
-                    <div class="pagination-wrapper" id="logs-pagination"></div>
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>时间</th>
+                                    <th>操作类型</th>
+                                    <th>详细信息</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logs-table-body"></tbody>
+                        </table>
+                    </div>
+                    <div id="logs-pagination" class="pagination-wrapper"></div>
                 </div>
             </div>
 
@@ -756,17 +523,12 @@
             <div id="page-projects" class="page-content hidden">
                 <div class="page-header">
                     <div>
-                        <h2 class="page-title">项目大全</h2>
+                        <h2 class="page-title">项目管理</h2>
                         <p class="page-subtitle">管理所有项目信息与海报</p>
                     </div>
-                    <button
-                        class="btn btn-primary"
-                        onclick="showAddProjectModal()"
-                    >
-                        添加新项目
-                    </button>
+                    <button class="btn btn-primary" onclick="showAddProjectModal()">添加新项目</button>
                 </div>
-                <div class="project-grid" id="projects-grid"></div>
+                <div id="projects-grid" class="project-grid"></div>
             </div>
 
             <!-- Tutorials -->
@@ -774,76 +536,47 @@
                 <div class="page-header">
                     <div>
                         <h2 class="page-title">使用说明</h2>
-                        <p class="page-subtitle">
-                            为每个项目添加视频教程和文字说明
-                        </p>
+                        <p class="page-subtitle">管理系统功能的使用教程</p>
                     </div>
-                    <button
-                        class="btn btn-primary"
-                        onclick="showAddTutorialModal()"
-                    >
-                        添加使用说明
-                    </button>
+                    <button class="btn btn-primary" onclick="showAddTutorialModal()">添加教程</button>
                 </div>
                 <div class="card">
-                    <div class="card-header">
-                        <select
-                            id="tutorial-project-filter"
-                            class="form-select"
-                            style="width: auto"
-                            onchange="loadTutorials()"
-                        >
-                            <option value="">全部项目</option>
-                        </select>
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>排序</th>
+                                    <th>教程标题</th>
+                                    <th>关联项目</th>
+                                    <th>价格信息</th>
+                                    <th class="text-right">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tutorials-table-body"></tbody>
+                        </table>
                     </div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>项目</th>
-                                <th>标题</th>
-                                <th>视频</th>
-                                <th>计费说明</th>
-                                <th class="text-right">操作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tutorials-table-body"></tbody>
-                    </table>
-                    <div
-                        class="pagination-wrapper"
-                        id="tutorials-pagination"
-                    ></div>
                 </div>
             </div>
 
-            <footer class="app-footer">© 2026 API Nexus Infrastructure. Build 2.0.0</footer>
-                </main>
+            <footer class="app-footer">
+                © 2026 API Nexus NexGen Infrastructure. All rights reserved.
+            </footer>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal" class="modal-overlay">
+        <div class="modal-dialog">
+            <h3 id="modal-title" class="modal-title"></h3>
+            <div id="modal-content"></div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" id="modal-confirm">确认</button>
             </div>
         </div>
+    </div>
 
-        <div id="modal" class="modal-overlay">
-            <div class="modal-dialog">
-                <h3 id="modal-title" class="modal-title"></h3>
-                <div id="modal-content"></div>
-                <div class="modal-footer">
-                    <button
-                        type="button"
-                        onclick="closeModal()"
-                        class="btn btn-outline"
-                    >
-                        取消
-                    </button>
-                    <button
-                        type="button"
-                        id="modal-confirm"
-                        class="btn btn-primary"
-                    >
-                        确认
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <script>
+<script>
             const API_BASE = "https://api-gateway.juliamashitlova1.workers.dev";
             let currentUser = null;
             let currentPage = "dashboard";
@@ -1589,15 +1322,15 @@
                         function getProviderBadge(text) {
                 var lower = (text || '').toLowerCase();
                 if (lower.includes('openai') || lower.includes('gpt')) {
-                    return '<span class="badge" style="background:#e0f2fe; color:#0284c7; padding:2px 8px; font-size:12px; font-weight:600;">' + text + '</span>';
+                    return '<span class="badge" style="background:rgba(0,229,255,0.2); color:#00B8D4; padding:2px 8px; font-size:12px; font-weight:700; font-family:var(--font-display);">' + text + '</span>';
                 } else if (lower.includes('claude') || lower.includes('anthropic')) {
-                    return '<span class="badge" style="background:#f3e8ff; color:#9333ea; padding:2px 8px; font-size:12px; font-weight:600;">' + text + '</span>';
+                    return '<span class="badge" style="background:rgba(67,24,255,0.15); color:var(--c-brand); padding:2px 8px; font-size:12px; font-weight:700; font-family:var(--font-display);">' + text + '</span>';
                 } else if (lower.includes('gemini') || lower.includes('google')) {
-                    return '<span class="badge" style="background:#ccfbf1; color:#0f766e; padding:2px 8px; font-size:12px; font-weight:600;">' + text + '</span>';
+                    return '<span class="badge" style="background:rgba(255,46,147,0.15); color:var(--c-accent-1); padding:2px 8px; font-size:12px; font-weight:700; font-family:var(--font-display);">' + text + '</span>';
                 } else if (lower.includes('midjourney') || lower.includes('mj')) {
-                    return '<span class="badge" style="background:#fef08a; color:#a16207; padding:2px 8px; font-size:12px; font-weight:600;">' + text + '</span>';
+                    return '<span class="badge" style="background:rgba(255,171,0,0.2); color:#E65100; padding:2px 8px; font-size:12px; font-weight:700; font-family:var(--font-display);">' + text + '</span>';
                 } else {
-                    return '<span class="badge" style="background:var(--bg-canvas); color:var(--text-secondary); padding:2px 8px; font-size:12px; font-weight:600;">' + text + '</span>';
+                    return '<span class="badge" style="background:var(--bg-canvas); color:var(--text-secondary); padding:2px 8px; font-size:12px; font-weight:700; font-family:var(--font-display);">' + text + '</span>';
                 }
             }
             function formatNumber(num) {
@@ -1694,7 +1427,7 @@
                                 imgHtml +
                                 '<div class="project-card-body"><div class="project-card-title">' +
                                 p.name +
-                                '</div><div class="project-card-desc line-clamp-2">' +
+                                '</div><div class="project-card-desc">' +
                                 (p.description || "暂无描述") +
                                 '</div><div class="project-card-footer"><span class="project-card-count">' +
                                 (p.tutorialCount || 0) +
@@ -2084,5 +1817,3 @@
                 if (currentPage === 'dashboard') loadDashboard();
             }
         </script>
-    </body>
-</html>
