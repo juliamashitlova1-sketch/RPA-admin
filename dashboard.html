@@ -1975,6 +1975,10 @@
                                 status: status,
                             }),
                         });
+                        if (result && result.success) {
+                            alert("项目更新成功");
+                            closeModal();
+                            loadProjects();
                         } else {
                             throw new Error(
                                 result && result.error
