@@ -186,12 +186,18 @@
 
         /* Project Cards */
         .project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
-        .project-card { background: var(--glass-bg); backdrop-filter: blur(24px); border: 1px solid var(--glass-border); border-radius: 16px; overflow: hidden; box-shadow: var(--glass-shadow); display: flex; flex-direction: column; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        .project-card:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 20px 50px rgba(112, 144, 176, 0.3); border-color: rgba(255,255,255,1); }
-        .project-card-img { height: 140px; width: 100%; overflow: hidden; background: linear-gradient(135deg, var(--c-brand), var(--c-accent-1)); display: flex; justify-content: center; align-items: center; position: relative; }
+        .project-card { 
+            background: var(--glass-bg); backdrop-filter: blur(24px); border: 1px solid var(--glass-border); 
+            border-radius: 20px; overflow: hidden; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+            display: flex; flex-direction: column; cursor: pointer;
+        }
+        .project-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px -10px rgba(67, 24, 255, 0.2); }
+        .project-card.active { border-color: var(--c-brand); background: rgba(255, 255, 255, 0.8); box-shadow: 0 0 0 3px rgba(67, 24, 255, 0.2); }
+        
+        .project-card-img { width: 100%; aspect-ratio: 16/9; overflow: hidden; position: relative; }
         .project-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
         .project-card:hover .project-card-img img { transform: scale(1.05); }
-        .project-card-placeholder { font-family: var(--font-display); font-size: 48px; font-weight: 900; color: rgba(255,255,255,0.5); }
+        .project-card-placeholder { font-family: var(--font-display); font-size: 48px; font-weight: 900; color: rgba(255,255,255,0.5); width: 100%; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--c-brand), var(--c-accent-1)); }
         .project-card-body { padding: 14px 16px; display: flex; flex-direction: column; flex: 1; }
         .project-card-title { font-family: var(--font-display); font-size: 16px; font-weight: 800; color: var(--t-dark); margin-bottom: 12px; letter-spacing: -0.5px; }
         .project-card-desc { font-size: 12px; color: var(--t-muted); margin-bottom: 16px; line-height: 1.6; flex: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -590,15 +596,61 @@
             </div>
 
             <!-- Projects -->
-            <div id="page-projects" class="page-content hidden">
+            <div id="page-projects" class="page-content hidden" style="max-width: 100%;">
                 <div class="page-header">
                     <div>
                         <h2 class="page-title">项目管理</h2>
-                        <p class="page-subtitle">管理所有项目信息与海报</p>
+                        <p class="page-subtitle">管理项目详情、视频介绍及客户真实评价</p>
                     </div>
                     <button class="btn btn-primary" onclick="showAddProjectModal()">添加新项目</button>
                 </div>
-                <div id="projects-grid" class="project-grid"></div>
+                
+                <div class="project-split-container" style="display: grid; grid-template-columns: 1fr 420px; gap: 24px; align-items: start;">
+                    <!-- Left: Project Grid -->
+                    <div id="projects-grid" class="project-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));"></div>
+                    
+                    <!-- Right: Detail & Review Panel -->
+                    <div id="project-detail-panel" class="card" style="position: sticky; top: 20px; min-height: 600px; display: flex; padding: 20px; flex-direction: column; gap: 20px; transition: all 0.3s;">
+                        <div id="project-detail-empty" style="text-align: center; padding: 100px 20px; color: var(--t-muted);">
+                            <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-bottom: 16px; opacity: 0.3;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <p style="font-weight: 500;">点击左侧项目卡片<br>查看视频介绍与客户评价</p>
+                        </div>
+                        <div id="project-detail-content" style="display: none;">
+                            <!-- Project Info -->
+                            <div class="detail-section">
+                                <h3 id="detail-project-name" class="card-title" style="font-size: 22px; margin-bottom: 8px;"></h3>
+                                <p id="detail-project-desc" style="font-size: 13px; color: var(--t-muted); line-height: 1.6; margin-bottom: 16px;"></p>
+                            </div>
+                            
+                            <!-- Video Section -->
+                            <div class="detail-section">
+                                <h4 class="section-title" style="font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; color: var(--t-dark);">
+                                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                    视频演示
+                                </h4>
+                                <div id="detail-video-container" class="video-wrapper" style="width: 100%; aspect-ratio: 16/9; background: #1a1a1a; border-radius: 12px; overflow: hidden; margin-bottom: 16px; box-shadow: inset 0 0 40px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;">
+                                    <!-- Video element will be inserted here -->
+                                </div>
+                            </div>
+
+                            <hr style="border: none; border-top: 1px solid var(--glass-border); margin: 20px 0;">
+
+                            <!-- Review Section -->
+                            <div class="detail-section">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                    <h4 class="section-title" style="font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; color: var(--t-dark);">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                                        客户真实反馈
+                                    </h4>
+                                    <button class="btn btn-outline btn-xs" id="add-review-btn" style="padding: 4px 10px; font-size: 11px;">发表评价</button>
+                                </div>
+                                <div id="detail-reviews-list" style="display: flex; flex-direction: column; gap: 16px; max-height: 500px; overflow-y: auto; padding-right: 8px; scrollbar-width: thin;">
+                                    <!-- Reviews will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Tutorials -->
@@ -680,6 +732,7 @@
             const API_BASE = "https://api-gateway.juliamashitlova1.workers.dev";
             let currentUser = null;
             let usageChart = null;
+            let selectedProjectId = null;
             let currentPage = "dashboard";
             let projectsData = {};
             
@@ -818,6 +871,7 @@
                         break;
                     case "projects":
                         await loadProjects();
+                        document.getElementById('project-detail-panel').style.display = 'flex';
                         break;
                     case "tutorials":
                         await loadTutorialProjects();
@@ -1817,8 +1871,9 @@
                                 : '<div class="project-card-placeholder"><span>' +
                                   p.name.charAt(0) +
                                   "</span></div>";
+                            var activeClass = selectedProjectId === p.project_id ? " active" : "";
                             return (
-                                '<div class="project-card">' +
+                                '<div class="project-card' + activeClass + '" onclick="showProjectDetail(\'' + p.project_id + '\')">' +
                                 imgHtml +
                                 '<div class="project-card-body"><div class="project-card-title">' +
                                 p.name +
@@ -1826,9 +1881,9 @@
                                 (p.description || "暂无描述") +
                                 '</div><div class="project-card-footer"><span class="project-card-count">' +
                                 (p.tutorialCount || 0) +
-                                ' 个教程</span><div style="display:flex;gap:4px"><button class="icon-btn" onclick="editProject(\'' +
+                                ' 个教程</span><div style="display:flex;gap:4px"><button class="icon-btn" onclick="event.stopPropagation(); editProject(\'' +
                                 p.project_id +
-                                '\')" title="编辑"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></button><button class="icon-btn" onclick="deleteProject(\'' +
+                                '\')" title="编辑"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></button><button class="icon-btn" onclick="event.stopPropagation(); deleteProject(\'' +
                                 p.project_id +
                                 "','" +
                                 p.name +
@@ -1844,7 +1899,7 @@
             function showAddProjectModal() {
                 showModal(
                     "添加新项目",
-                    '<div class="form-group"><label class="form-label">项目名称</label><input type="text" id="project-name" class="form-input" required></div><div class="form-group"><label class="form-label">项目描述</label><textarea id="project-description" class="form-textarea" rows="3"></textarea></div><div class="form-group"><label class="form-label">海报图片 (16:9)</label><div class="upload-area aspect-video" onclick="document.getElementById(\'project-poster-file\').click()"><input type="file" id="project-poster-file" accept="image/*" class="hidden" onchange="previewImage(this)"><img class="hidden pointer-events-none"><div id="project-poster-placeholder" class="upload-placeholder"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg><span class="upload-text">点击上传图片</span><span class="upload-hint">支持 JPG、PNG，自动裁剪为 16:9</span></div></div></div>',
+                    '<div class="form-group"><label class="form-label">项目名称</label><input type="text" id="project-name" class="form-input" required></div><div class="form-group"><label class="form-label">项目描述</label><textarea id="project-description" class="form-textarea" rows="2"></textarea></div><div class="form-group"><label class="form-label">演示视频链接</label><input type="text" id="project-video" class="form-input" placeholder="MP4 链接"></div><div class="form-group"><label class="form-label">海报图片 (16:9)</label><div class="upload-area aspect-video" onclick="document.getElementById(\'project-poster-file\').click()"><input type="file" id="project-poster-file" accept="image/*" class="hidden" onchange="previewImage(this)"><img class="hidden pointer-events-none"><div id="project-poster-placeholder" class="upload-placeholder"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg><span class="upload-text">点击上传图片</span></div></div></div>',
                     async function () {
                         var name =
                             document.getElementById("project-name").value;
@@ -1861,6 +1916,7 @@
                                 name: name,
                                 description: description,
                                 posterUrl: posterUrl,
+                                videoUrl: document.getElementById("project-video").value,
                             }),
                         });
                         if (result && result.success) {
@@ -1889,15 +1945,15 @@
                     "编辑项目",
                     '<div class="form-group"><label class="form-label">项目名称</label><input type="text" id="edit-project-name" class="form-input" value="' +
                         project.name +
-                        '" required></div><div class="form-group"><label class="form-label">项目描述</label><textarea id="edit-project-description" class="form-textarea" rows="3">' +
+                        '" required></div><div class="form-group"><label class="form-label">项目描述</label><textarea id="edit-project-description" class="form-textarea" rows="2">' +
                         (project.description || "") +
-                        '</textarea></div><div class="form-group"><label class="form-label">海报图片 (16:9)</label><div class="upload-area aspect-video" onclick="document.getElementById(\'edit-project-poster-file\').click()"><input type="file" id="edit-project-poster-file" accept="image/*" class="hidden" onchange="previewImage(this)"><img class="pointer-events-none' +
+                        '</textarea></div><div class="form-group"><label class="form-label">演示视频链接</label><input type="text" id="edit-project-video" class="form-input" value="' + (project.video_url || "") + '" placeholder="MP4 链接"></div><div class="form-group"><label class="form-label">海报图片 (16:9)</label><div class="upload-area aspect-video" onclick="document.getElementById(\'edit-project-poster-file\').click()"><input type="file" id="edit-project-poster-file" accept="image/*" class="hidden" onchange="previewImage(this)"><img class="pointer-events-none' +
                         imgClass +
                         '"' +
                         imgSrc +
                         '><div id="edit-project-poster-placeholder" class="upload-placeholder' +
                         phClass +
-                        '"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg><span class="upload-text">点击上传新图片</span><span class="upload-hint">支持 JPG、PNG，自动裁剪为 16:9</span></div></div></div>',
+                        '"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg><span class="upload-text">点击上传新图片</span></div></div></div>',
                     async function () {
                         var newName =
                             document.getElementById("edit-project-name").value;
@@ -1915,12 +1971,10 @@
                                 name: newName,
                                 description: newDescription,
                                 posterUrl: newPosterUrl,
+                                videoUrl: document.getElementById("edit-project-video").value,
+                                status: status,
                             }),
                         });
-                        if (result && result.success) {
-                            alert("项目更新成功");
-                            closeModal();
-                            loadProjects();
                         } else {
                             throw new Error(
                                 result && result.error
@@ -1930,6 +1984,118 @@
                         }
                     },
                 );
+            }
+
+            async function showProjectDetail(projectId) {
+                selectedProjectId = projectId;
+                const project = projectsData[projectId];
+                if (!project) return;
+
+                document.getElementById('project-detail-empty').style.display = 'none';
+                document.getElementById('project-detail-content').style.display = 'block';
+                document.getElementById('detail-project-name').textContent = project.name;
+                document.getElementById('detail-project-desc').textContent = project.description || "暂无详细描述";
+
+                const videoContainer = document.getElementById('detail-video-container');
+                if (project.video_url) {
+                    videoContainer.innerHTML = `<video src="${project.video_url}" controls style="width:100%; height:100%; object-fit: contain;"></video>`;
+                } else {
+                    videoContainer.innerHTML = `<div style="text-align:center; color:rgba(255,255,255,0.4);"><svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg><p style="margin-top:8px; font-size:12px;">暂无演示视频</p></div>`;
+                }
+
+                loadProjectReviews(projectId);
+                
+                document.querySelectorAll('.project-card').forEach(card => {
+                    card.classList.remove('active');
+                    if (card.outerHTML.includes(projectId)) card.classList.add('active');
+                });
+                
+                document.getElementById('add-review-btn').onclick = () => showAddReviewModal(projectId);
+            }
+
+            async function loadProjectReviews(projectId) {
+                const list = document.getElementById('detail-reviews-list');
+                list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--t-muted); font-size:12px;">加载中...</div>';
+                try {
+                    const result = await api(`/api/projects/reviews?projectId=${projectId}`);
+                    if (result && result.success) {
+                        if (result.data.length === 0) {
+                            list.innerHTML = '<div style="text-align:center; padding:40px 0; color:var(--t-muted); font-size:12px;">暂无客户反馈</div>';
+                        } else {
+                            list.innerHTML = result.data.map(r => `
+                                <div class="review-item" style="background:rgba(255,255,255,0.4); padding:16px; border-radius:16px; border:1px solid var(--glass-border); box-shadow:0 4px 12px rgba(0,0,0,0.03);">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                                        <div style="display:flex; align-items:center; gap:8px;">
+                                            <div style="width:24px; height:24px; border-radius:6px; background:linear-gradient(135deg, var(--c-brand), var(--c-accent-1)); display:flex; align-items:center; justify-content:center; color:white; font-size:10px; font-weight:900;">${(r.username || 'U').charAt(0)}</div>
+                                            <span style="font-weight:700; font-size:13px; color:var(--t-dark);">${r.username || '匿名客户'}</span>
+                                        </div>
+                                        <div style="color:#FFC107; font-size:12px; letter-spacing:2px;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+                                    </div>
+                                    <div style="font-size:12px; color:var(--t-main); line-height:1.6; margin-bottom:12px; font-weight:500;">${r.content || ''}</div>
+                                    ${r.image_url ? `<img src="${r.image_url}" style="width:100%; border-radius:10px; margin-bottom:12px; cursor:zoom-in; border:1px solid var(--glass-border);" onclick="window.open(this.src)">` : ''}
+                                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                                        <div style="display:flex; gap:10px; font-size:11px; color:var(--t-muted); font-weight:500;">
+                                            <span>⏱ 时长: ${r.usage_duration || '-'}</span>
+                                            <span>📅 开始: ${r.start_date || '-'}</span>
+                                        </div>
+                                        ${currentUser.username === 'admin' ? `<button onclick="deleteReview('${r.review_id}', '${projectId}')" style="color:var(--c-accent-1); background:none; border:none; cursor:pointer; font-size:11px; font-weight:600;">删除</button>` : ''}
+                                    </div>
+                                </div>
+                            `).join('');
+                        }
+                    }
+                } catch (e) {
+                    list.innerHTML = '加载评价失败';
+                }
+            }
+
+            async function showAddReviewModal(projectId) {
+                showModal(
+                    "发表客户真实评价",
+                    '<div class="form-group"><label class="form-label">评分 (1-5星)</label><select id="review-rating" class="form-select"><option value="5">★★★★★ 5星</option><option value="4">★★★★ 4星</option><option value="3">★★★ 3星</option><option value="2">★★ 2星</option><option value="1">★ 1星</option></select></div><div class="form-group"><label class="form-label">评价内容</label><textarea id="review-content" class="form-textarea" rows="3" placeholder="写下客户的真实反馈..."></textarea></div><div class="form-row"><div class="form-group" style="flex:1"><label class="form-label">使用时长</label><input type="text" id="review-duration" class="form-input" placeholder="例: 3个月"></div><div class="form-group" style="flex:1"><label class="form-label">开始使用时间</label><input type="date" id="review-start" class="form-input"></div></div><div class="form-group"><label class="form-label">实拍图片</label><div class="upload-area" style="aspect-ratio:3/2" onclick="document.getElementById(\'review-image-file\').click()"><input type="file" id="review-image-file" accept="image/*" class="hidden" onchange="previewImage(this)"><img class="hidden pointer-events-none"><div id="review-image-placeholder" class="upload-placeholder"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg><span class="upload-text">点击上传实拍图</span></div></div></div>',
+                    async function () {
+                        const rating = document.getElementById('review-rating').value;
+                        const content = document.getElementById('review-content').value;
+                        const duration = document.getElementById('review-duration').value;
+                        const startDate = document.getElementById('review-start').value;
+                        const imageUrl = document.getElementById('review-image-file').dataset.base64 || "";
+
+                        const result = await api("/api/projects/reviews", {
+                            method: "POST",
+                            body: JSON.stringify({
+                                projectId,
+                                rating: parseInt(rating),
+                                content,
+                                usageDuration: duration,
+                                startDate,
+                                imageUrl
+                            })
+                        });
+
+                        if (result && result.success) {
+                            alert("评价发布成功");
+                            closeModal();
+                            loadProjectReviews(projectId);
+                        } else {
+                            throw new Error(result?.error?.message || "发布失败");
+                        }
+                    }
+                );
+            }
+
+            async function deleteReview(reviewId, projectId) {
+                if (!confirm("确定要删除这条评价吗?")) return;
+                try {
+                    const result = await api("/api/projects/reviews/delete", {
+                        method: "POST",
+                        body: JSON.stringify({ reviewId })
+                    });
+                    if (result && result.success) {
+                        loadProjectReviews(projectId);
+                    }
+                } catch (e) {
+                    alert("删除失败: " + e.message);
+                }
             }
 
             async function deleteProject(projectId, name) {
