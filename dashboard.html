@@ -288,37 +288,52 @@
                 margin-bottom: var(--space-xl);
             }
             .stat-card {
-                background: var(--bg-card);
-                padding: var(--space-lg);
-                border-radius: var(--radius-lg);
-                border: 1px solid var(--border-color);
-                box-shadow: var(--shadow-card);
+                background: #ffffff;
+                border: 1px solid #edf2f7;
+                border-radius: 8px;
+                padding: 16px;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+                transition: transform 0.2s ease;
             }
-            .stat-card-icon {
-                width: 40px;
-                height: 40px;
-                border-radius: var(--radius-md);
+            .stat-header {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 12px;
+            }
+            .stat-icon {
+                width: 28px;
+                height: 28px;
+                border-radius: 6px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                margin-bottom: var(--space-md);
                 color: white;
             }
-            .stat-card-icon svg {
-                width: 20px;
-                height: 20px;
+            .stat-icon svg {
+                width: 14px;
+                height: 14px;
             }
-            .stat-card-label {
+            .stat-label {
                 font-size: 12px;
                 color: var(--text-secondary);
                 font-weight: 500;
-                margin-bottom: var(--space-xs);
             }
-            .stat-card-value {
-                font-size: 22px;
-                font-weight: 800;
-                color: var(--text-main);
-                letter-spacing: -0.02em;
+            .stat-value-group {
+                display: flex;
+                align-items: baseline;
+                gap: 2px;
+            }
+            .stat-currency {
+                font-size: 14px;
+                font-weight: 600;
+                color: #1a202c;
+            }
+            .stat-number {
+                font-size: 24px;
+                font-weight: 700;
+                color: #1a202c;
+                letter-spacing: -0.5px;
             }
 
             .card {
@@ -952,85 +967,49 @@
                 </div>
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div
-                            class="stat-card-icon"
-                            style="background: var(--color-primary)"
-                        >
-                            <svg
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                                ></path>
-                            </svg>
+                        <div class="stat-header">
+                            <div class="stat-icon" style="background: var(--color-primary)">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            </div>
+                            <span class="stat-label">今日调用量</span>
                         </div>
-                        <div class="stat-card-label">今日调用量</div>
-                        <div class="stat-card-value" id="stat-calls">0</div>
+                        <div class="stat-value-group">
+                            <span class="stat-number" id="stat-calls">0</span>
+                        </div>
                     </div>
                     <div class="stat-card">
-                        <div
-                            class="stat-card-icon"
-                            style="background: var(--color-info)"
-                        >
-                            <svg
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                ></path>
-                            </svg>
+                        <div class="stat-header">
+                            <div class="stat-icon" style="background: var(--color-info)">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <span class="stat-label">今日消耗</span>
                         </div>
-                        <div class="stat-card-label">今日消耗</div>
-                        <div class="stat-card-value" id="stat-cost">¥0.00</div>
+                        <div class="stat-value-group">
+                            <span class="stat-currency">¥</span>
+                            <span class="stat-number" id="stat-cost">0.00</span>
+                        </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-card-icon" style="background: #6366f1">
-                            <svg
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                                ></path>
-                            </svg>
+                        <div class="stat-header">
+                            <div class="stat-icon" style="background: #6366f1">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                            </div>
+                            <span class="stat-label">活跃用户</span>
                         </div>
-                        <div class="stat-card-label">活跃用户</div>
-                        <div class="stat-card-value" id="stat-users">0</div>
+                        <div class="stat-value-group">
+                            <span class="stat-number" id="stat-users">0</span>
+                        </div>
                     </div>
                     <div class="stat-card">
-                        <div
-                            class="stat-card-icon"
-                            style="background: var(--color-success)"
-                        >
-                            <svg
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                                ></path>
-                            </svg>
+                        <div class="stat-header">
+                            <div class="stat-icon" style="background: var(--color-success)">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                            </div>
+                            <span class="stat-label">成功率</span>
                         </div>
-                        <div class="stat-card-label">成功率</div>
-                        <div class="stat-card-value" id="stat-success">0%</div>
+                        <div class="stat-value-group">
+                            <span class="stat-number" id="stat-success">0%</span>
+                        </div>
                     </div>
                 </div>
                 <div
@@ -1476,7 +1455,7 @@
                     document.getElementById("stat-calls").textContent =
                         formatNumber(s.today.total_calls);
                     document.getElementById("stat-cost").textContent =
-                        "¥" + s.today.total_cost.toFixed(2);
+                        s.today.total_cost.toFixed(2);
                     document.getElementById("stat-users").textContent =
                         s.today.active_users;
                     document.getElementById("stat-success").textContent =
