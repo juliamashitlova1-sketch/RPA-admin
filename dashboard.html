@@ -604,11 +604,12 @@
                 color: white;
             }
 
-            .ranking-item {
+            .rank-item {
+                border-bottom: 1px solid var(--border-subtle);
+                padding: 10px 0;
                 display: flex;
                 align-items: center;
-                gap: var(--space-md);
-                padding: var(--space-sm) 0;
+                font-size: 12px;
             }
             .ranking-rank {
                 width: 28px;
@@ -622,17 +623,17 @@
                 color: var(--text-main);
                 font-size: 13px;
             }
-            .bar-track {
+            .progress-bar-container {
                 flex: 1;
-                height: 8px;
-                background: #f6f8fa;
-                border-radius: 4px;
+                height: 6px;
+                background: #edf2f7;
+                border-radius: 999px;
                 overflow: hidden;
             }
-            .bar-fill {
+            .progress-progress-bar-fill {
                 height: 100%;
-                border-radius: 4px;
-                background: var(--color-primary);
+                border-radius: 999px;
+                background: linear-gradient(90deg, #4299e1, #3182ce);
                 transition: width 0.6s ease;
             }
             .ranking-value {
@@ -1533,11 +1534,11 @@
                         rc.innerHTML = s.userRanking
                             .map(
                                 (u, i) =>
-                                    '<div class="ranking-item"><span class="ranking-rank">#' +
+                                    '<div class="rank-item"><span class="ranking-rank">#' +
                                     (i + 1) +
                                     '</span><span class="ranking-name">' +
                                     u.username +
-                                    '</span><div class="bar-track"><div class="bar-fill" style="width:' +
+                                    '</span><div class="progress-bar-container"><div class="progress-progress-bar-fill" style="width:' +
                                     (u.cost / mx) * 100 +
                                     '%"></div></div><span class="ranking-value">¥' +
                                     u.cost.toFixed(2) +
@@ -1563,7 +1564,7 @@
                                     m.model +
                                     '</span><span class="model-stat-pct">' +
                                     ((m.cost / tc) * 100).toFixed(1) +
-                                    '%</span></div><div class="bar-track"><div class="bar-fill" style="width:' +
+                                    '%</span></div><div class="progress-bar-container"><div class="progress-progress-bar-fill" style="width:' +
                                     (m.cost / tc) * 100 +
                                     "%;background:" +
                                     cl[i % cl.length] +
@@ -2059,7 +2060,7 @@
                                 return (
                                     '<div class="trend-item"><span class="trend-label">' +
                                     day.date.substring(5) +
-                                    '</span><div class="bar-track"><div class="bar-fill" style="width:' +
+                                    '</span><div class="progress-bar-container"><div class="progress-progress-bar-fill" style="width:' +
                                     (maxCost > 0
                                         ? (day.cost / maxCost) * 100
                                         : 0) +
@@ -2100,7 +2101,7 @@
                                         "未知") +
                                     '</span><span class="model-stat-pct">' +
                                     ((s.cost / totalCost) * 100).toFixed(1) +
-                                    '%</span></div><div class="bar-track"><div class="bar-fill" style="width:' +
+                                    '%</span></div><div class="progress-bar-container"><div class="progress-progress-bar-fill" style="width:' +
                                     (s.cost / totalCost) * 100 +
                                     "%;background:" +
                                     colors[i % colors.length] +
