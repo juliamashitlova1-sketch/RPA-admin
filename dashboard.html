@@ -40,10 +40,10 @@
                 --radius-full: 9999px;
                 --space-xs: 4px;
                 --space-sm: 8px;
-                --space-md: 12px;
-                --space-lg: 20px;
-                --space-xl: 24px;
-                --space-2xl: 32px;
+                --space-md: 10px;
+                --space-lg: 16px;
+                --space-xl: 20px;
+                --space-2xl: 24px;
                 --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
                 --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
             }
@@ -71,18 +71,18 @@
                 height: 100%;
             }
             .sidebar {
-                width: 68px;
+                width: 60px;
                 background: transparent;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 padding: var(--space-xl) 0;
-                gap: 16px;
+                gap: 12px;
                 z-index: 10;
             }
             .sidebar-icon {
-                width: 40px;
-                height: 40px;
+                width: 36px;
+                height: 36px;
                 border-radius: var(--radius-md);
                 display: flex;
                 align-items: center;
@@ -93,9 +93,11 @@
                 box-shadow: 0 2px 8px rgba(0,0,0,0.04);
                 color: white;
                 font-weight: bold;
-                font-size: 14px;
+                font-size: 13px;
+                opacity: 0.7;
             }
-            .sidebar-icon:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+            .sidebar-icon:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); opacity: 1; }
+            .sidebar-icon.active { opacity: 1; box-shadow: 0 0 0 2px var(--color-primary); transform: scale(1.05); }
             
             .main-area {
                 flex: 1;
@@ -105,7 +107,7 @@
             }
 
             .top-nav {
-                height: 80px;
+                height: 60px;
                 padding: 0 var(--space-xl);
                 display: flex;
                 align-items: center;
@@ -365,12 +367,12 @@
         <body>
         <div class="app-wrapper">
             <!-- New Sidebar Design -->
-            <aside class="sidebar">
-                <div class="sidebar-icon" style="background: var(--color-info);">AN</div>
-                <div class="sidebar-icon" style="background: var(--color-success);">S1</div>
-                <div class="sidebar-icon" style="background: var(--color-warning);">P2</div>
-                <div class="sidebar-icon" style="background: var(--color-danger);">D3</div>
-                <div class="sidebar-icon" style="background: var(--tag-bg-purple); color: var(--tag-text-purple);">M4</div>
+            <aside class="sidebar" id="sidebar-nav">
+                <div class="sidebar-icon active" onclick="switchWorkspace(this, 'AN')" style="background: var(--color-info);">AN</div>
+                <div class="sidebar-icon" onclick="switchWorkspace(this, 'S1')" style="background: var(--color-success);">S1</div>
+                <div class="sidebar-icon" onclick="switchWorkspace(this, 'P2')" style="background: var(--color-warning);">P2</div>
+                <div class="sidebar-icon" onclick="switchWorkspace(this, 'D3')" style="background: var(--color-danger);">D3</div>
+                <div class="sidebar-icon" onclick="switchWorkspace(this, 'M4')" style="background: var(--tag-bg-purple); color: var(--tag-text-purple);">M4</div>
             </aside>
 
             <div class="main-area">
@@ -2044,6 +2046,25 @@
                             : "删除失败",
                     );
                 }
+            }
+            function switchWorkspace(element, name) {
+                document.querySelectorAll('.sidebar-icon').forEach(el => el.classList.remove('active'));
+                element.classList.add('active');
+                
+                // Show a quick toast or alert to confirm interaction
+                var toast = document.createElement('div');
+                toast.textContent = "已切换至工作区: " + name;
+                toast.style.cssText = "position:fixed;bottom:20px;right:20px;background:var(--color-primary);color:white;padding:12px 24px;border-radius:var(--radius-md);box-shadow:var(--shadow-md);z-index:9999;animation:fadeIn 0.3s ease-out;";
+                document.body.appendChild(toast);
+                
+                setTimeout(function() {
+                    toast.style.opacity = "0";
+                    toast.style.transition = "opacity 0.3s";
+                    setTimeout(function() { toast.remove(); }, 300);
+                }, 2000);
+                
+                // Reload dashboard data
+                if (currentPage === 'dashboard') loadDashboard();
             }
         </script>
     </body>
