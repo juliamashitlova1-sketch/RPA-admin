@@ -1,59 +1,10 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>API Nexus - NexGen Interface</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js">
-            let selectedAmount = 50;
-            let selectedPayMethod = 'alipay';
-
-            function selectRechargeAmount(amount) {
-                selectedAmount = amount;
-                document.querySelectorAll('.recharge-card').forEach(card => {
-                    card.classList.remove('active');
-                    if (card.querySelector('.amount').textContent === '￥' + amount) {
-                        card.classList.add('active');
-                    }
-                });
-                document.getElementById('recharge-total-price').textContent = '￥' + amount + '.00';
-            }
-
-            function selectPayMethod(method) {
-                selectedPayMethod = method;
-                document.querySelectorAll('.pay-method').forEach(btn => {
-                    btn.classList.remove('active');
-                    if (btn.innerHTML.includes(method === 'alipay' ? 'alipay' : 'wechat-pay')) {
-                        btn.classList.add('active');
-                    }
-                });
-            }
-
-            async function executeRecharge() {
-                const btn = event.target;
-                const originalText = btn.innerHTML;
-                btn.innerHTML = '<span class="loading-spinner"></span> 正在建立支付安全连接...';
-                btn.disabled = true;
-
-                try {
-                    // 模拟支付跳转逻辑
-                    setTimeout(() => {
-                        const mockUrl = selectedPayMethod === 'alipay' 
-                            ? 'https://render.alipay.com/p/s/i?scheme=alipays%3A%2F%2Fplatformapi%2Fstartapp%2Fsa%3FappId%3D20000067' 
-                            : 'https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb';
-                            
-                        alert('【模拟支付跳转】\n支付金额：￥' + selectedAmount + '\n支付方式：' + (selectedPayMethod === 'alipay' ? '支付宝' : '微信') + '\n\n系统即将尝试拉起支付 App 或跳转至支付网关。');
-                        
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
-                    }, 1800);
-                } catch (e) {
-                    alert('建立支付连接失败: ' + e.message);
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                }
-            }
-        </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;700;900&display=swap');
         
@@ -391,43 +342,43 @@
         <div class="nav-menu">
             <button class="nav-link nav-active" onclick="showPage('dashboard')" data-page="dashboard">
                 <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                鎺у埗闈㈡澘
+                控制面板
             </button>
             <button class="nav-link" onclick="showPage('users')" data-page="users">
                 <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                瀹㈡埛绠＄悊
+                客户管理
             </button>
             <button class="nav-link" onclick="showPage('tokens')" data-page="tokens">
                 <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
-                瀵嗛挜绠＄悊
+                密钥管理
             </button>
             <button class="nav-link" onclick="showPage('usage')" data-page="usage">
                 <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                娴侀噺鎸囨暟
+                流量指数
             </button>
             <button class="nav-link" onclick="showPage('pricing')" data-page="pricing">
                 <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                瀹氫环绛栫暐
+                定价策略
             </button>
             <button class="nav-link" onclick="showPage('logs')" data-page="logs">
                 <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                绯荤粺瀹¤
+                系统审计
             </button>
             <button class="nav-link" onclick="showPage('projects')" data-page="projects">
                 <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                椤圭洰绠＄悊
+                项目管理
             </button>
             <button class="nav-link" onclick="showPage('tutorials')" data-page="tutorials">
                 <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                浣跨敤璇存槑
+                使用说明
             </button>
             <button class="nav-link" id="nav-recharge" onclick="showPage('recharge')" data-page="recharge">
                 <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                鍏呭€间腑蹇?
+                充值中心
             </button>
             <button class="nav-link" id="nav-permissions" onclick="showPage('permissions')" data-page="permissions">
                 <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                鏉冮檺绠＄悊
+                权限管理
             </button>
         </div>
 
@@ -439,7 +390,7 @@
                     <div style="font-size: 12px; font-weight: 500; color: var(--t-muted);">System Operator</div>
                 </div>
             </div>
-            <button class="icon-btn" onclick="logout()" title="閫€鍑虹郴缁?>
+            <button class="icon-btn" onclick="logout()" title="退出系统">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
             </button>
         </div>
@@ -458,12 +409,12 @@
             <div id="page-dashboard" class="page-content">
                 <div class="page-header">
                     <div>
-                        <h2 class="page-title">鏁版嵁姒傝</h2>
-                        <p class="page-subtitle">瀹炴椂鐩戞帶鎮ㄧ殑 API 浣跨敤鎯呭喌鍜屾祦閲?/p>
+                        <h2 class="page-title">数据概览</h2>
+                        <p class="page-subtitle">实时监控您的 API 使用情况和流量</p>
                     </div>
                     <button class="btn btn-outline" onclick="loadDashboard()">
                         <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                        鍒锋柊鏁版嵁
+                        刷新数据
                     </button>
                 </div>
                 
@@ -471,35 +422,35 @@
                     <div class="stat-card" style="--accent-color: var(--c-brand);">
                         <div class="stat-header">
                             <div class="stat-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div>
-                            浠婃棩璋冪敤閲?
+                            今日调用量
                         </div>
                         <div class="stat-value" id="stat-calls">0</div>
                     </div>
                     <div class="stat-card" style="--accent-color: var(--c-accent-3);">
                         <div class="stat-header">
                             <div class="stat-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
-                            浠婃棩娑堣€?
+                            今日消耗
                         </div>
-                        <div class="stat-value"><span class="stat-currency">楼</span><span id="stat-cost">0.00</span></div>
+                        <div class="stat-value"><span class="stat-currency">¥</span><span id="stat-cost">0.00</span></div>
                     </div>
                     <div class="stat-card" style="--accent-color: var(--c-accent-1);">
                         <div class="stat-header">
                             <div class="stat-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg></div>
-                            娲昏穬鐢ㄦ埛
+                            活跃用户
                         </div>
                         <div class="stat-value" id="stat-users">0</div>
                     </div>
                     <div class="stat-card" style="--accent-color: var(--c-success);">
                         <div class="stat-header">
                             <div class="stat-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div>
-                            璇锋眰鎴愬姛鐜?
+                            请求成功率
                         </div>
                         <div class="stat-value" id="stat-success">0%</div>
                     </div>
                     <div class="stat-card" style="--accent-color: var(--c-accent-2);">
                         <div class="stat-header">
                             <div class="stat-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg></div>
-                            浠婃棩鎬绘祦閲?
+                            今日总流量
                         </div>
                         <div class="stat-value" id="stat-traffic">0 B</div>
                     </div>
@@ -509,20 +460,20 @@
                     <div class="dashboard-col">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">鐢ㄦ埛娑堣€楁帓鍚?<span style="color:var(--t-muted); font-size: 14px;">(TOP 10)</span></h3>
+                                <h3 class="card-title">用户消耗排名 <span style="color:var(--t-muted); font-size: 14px;">(TOP 10)</span></h3>
                             </div>
                             <div id="user-ranking">
-                                <p style="color: var(--t-muted); font-weight: 500;">鏆傛棤鏁版嵁</p>
+                                <p style="color: var(--t-muted); font-weight: 500;">暂无数据</p>
                             </div>
                         </div>
                     </div>
                     <div class="dashboard-col">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">妯″瀷璋冪敤鍒嗗竷</h3>
+                                <h3 class="card-title">模型调用分布</h3>
                             </div>
                             <div id="model-stats">
-                                <p style="color: var(--t-muted); font-weight: 500;">鏆傛棤鏁版嵁</p>
+                                <p style="color: var(--t-muted); font-weight: 500;">暂无数据</p>
                             </div>
                         </div>
                     </div>
@@ -533,22 +484,22 @@
             <div id="page-users" class="page-content hidden">
                 <div class="page-header">
                     <div>
-                        <h2 class="page-title">瀹㈡埛绠＄悊</h2>
-                        <p class="page-subtitle">绠＄悊绯荤粺鐢ㄦ埛鍙婂叾鍏呭€肩姸鎬?/p>
+                        <h2 class="page-title">客户管理</h2>
+                        <p class="page-subtitle">管理系统用户及其充值状态</p>
                     </div>
-                    <button class="btn btn-primary" onclick="showAddUserModal()">娣诲姞鏂扮敤鎴?/button>
+                    <button class="btn btn-primary" onclick="showAddUserModal()">添加新用户</button>
                 </div>
                 <div class="card">
                     <div style="overflow-x:auto;">
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>鐢ㄦ埛鍚?/th>
-                                    <th>閭</th>
-                                    <th class="text-right">浣欓</th>
-                                    <th class="text-center">鐘舵€?/th>
-                                    <th>娉ㄥ唽鏃堕棿</th>
-                                    <th class="text-right">鎿嶄綔</th>
+                                    <th>用户名</th>
+                                    <th>邮箱</th>
+                                    <th class="text-right">余额</th>
+                                    <th class="text-center">状态</th>
+                                    <th>注册时间</th>
+                                    <th class="text-right">操作</th>
                                 </tr>
                             </thead>
                             <tbody id="users-table-body"></tbody>
@@ -562,23 +513,23 @@
             <div id="page-tokens" class="page-content hidden">
                 <div class="page-header">
                     <div>
-                        <h2 class="page-title">瀵嗛挜绠＄悊</h2>
-                        <p class="page-subtitle">绠＄悊鎵€鏈夌敤鎴风殑 API 瀵嗛挜</p>
+                        <h2 class="page-title">密钥管理</h2>
+                        <p class="page-subtitle">管理所有用户的 API 密钥</p>
                     </div>
-                    <button class="btn btn-primary" onclick="showCreateTokenModal()">鍒涘缓鏂癟oken</button>
+                    <button class="btn btn-primary" onclick="showCreateTokenModal()">创建新Token</button>
                 </div>
                 <div class="card">
                     <div style="overflow-x:auto;">
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Token鍚嶇О</th>
+                                    <th>Token名称</th>
                                     <th>Token</th>
-                                    <th>鎵€灞炵敤鎴?/th>
-                                    <th class="text-right">浣欓</th>
-                                    <th class="text-center">鐘舵€?/th>
-                                    <th>鍒涘缓鏃堕棿</th>
-                                    <th class="text-right">鎿嶄綔</th>
+                                    <th>所属用户</th>
+                                    <th class="text-right">余额</th>
+                                    <th class="text-center">状态</th>
+                                    <th>创建时间</th>
+                                    <th class="text-right">操作</th>
                                 </tr>
                             </thead>
                             <tbody id="tokens-table-body"></tbody>
@@ -592,19 +543,19 @@
             <div id="page-usage" class="page-content hidden">
                 <div class="page-header">
                     <div>
-                        <h2 class="page-title">娴侀噺鎸囨暟</h2>
-                        <p class="page-subtitle">澶氱淮搴︾洃鎺?API 璋冪敤涓?Token 娑堣€楄鎯?/p>
+                        <h2 class="page-title">流量指数</h2>
+                        <p class="page-subtitle">多维度监控 API 调用与 Token 消耗详情</p>
                     </div>
                     <div id="usage-filter-group" style="display:flex; gap:12px; align-items:center;">
                         <div id="usage-user-filter" class="hidden" style="display:flex; gap:8px; align-items:center;">
-                            <span style="font-size:12px; font-weight:700; color:var(--t-muted)">瀹㈡埛:</span>
+                            <span style="font-size:12px; font-weight:700; color:var(--t-muted)">客户:</span>
                             <select id="usage-user-select" class="form-select" style="width:160px; padding:6px 10px; font-size:12px;" onchange="reloadUsageData()">
-                                <option value="">褰撳墠绠＄悊鍛?/option>
+                                <option value="">当前管理员</option>
                             </select>
                         </div>
                         <button class="btn btn-outline btn-sm" onclick="reloadUsageData()">
                             <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                            鍒锋柊
+                            刷新
                         </button>
                     </div>
                 </div>
@@ -612,27 +563,27 @@
                 <!-- Token Breakdown Cards -->
                 <div class="stats-grid" style="margin-bottom: 24px;">
                     <div class="stat-card" style="--accent-color: var(--c-brand);">
-                        <div class="stat-header">杈撳叆 Token (Prompt)</div>
+                        <div class="stat-header">输入 Token (Prompt)</div>
                         <div class="stat-value" id="usage-stat-input">0</div>
                     </div>
                     <div class="stat-card" style="--accent-color: var(--c-accent-1);">
-                        <div class="stat-header">杈撳嚭 Token (Completion)</div>
+                        <div class="stat-header">输出 Token (Completion)</div>
                         <div class="stat-value" id="usage-stat-output">0</div>
                     </div>
                     <div class="stat-card" style="--accent-color: var(--c-success);">
-                        <div class="stat-header">缂撳瓨鍛戒腑 (Cache)</div>
+                        <div class="stat-header">缓存命中 (Cache)</div>
                         <div class="stat-value" id="usage-stat-cache">0</div>
                     </div>
                     <div class="stat-card" style="--accent-color: var(--c-accent-3);">
-                        <div class="stat-header">绱鎬婚 (Cost)</div>
-                        <div class="stat-value"><span class="stat-currency">楼</span><span id="usage-stat-cost">0.00</span></div>
+                        <div class="stat-header">累计总额 (Cost)</div>
+                        <div class="stat-value"><span class="stat-currency">¥</span><span id="usage-stat-cost">0.00</span></div>
                     </div>
                 </div>
 
                 <!-- Usage Trend Chart -->
                 <div class="card" style="padding: 24px;">
                     <div class="card-header">
-                        <h3 class="card-title">24灏忔椂娴侀噺瓒嬪娍 (Token 娑堣€楀垎甯?</h3>
+                        <h3 class="card-title">24小时流量趋势 (Token 消耗分布)</h3>
                     </div>
                     <div style="height: 300px; position: relative;">
                         <canvas id="usage-trend-chart"></canvas>
@@ -642,20 +593,20 @@
                 <!-- Detailed Table -->
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">璋冪敤璁板綍鏄庣粏</h3>
+                        <h3 class="card-title">调用记录明细</h3>
                     </div>
                     <div style="overflow-x:auto;">
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>鏃堕棿</th>
-                                    <th>妯″瀷/娓犻亾</th>
-                                    <th class="text-right">杈撳叆(I)</th>
-                                    <th class="text-right">杈撳嚭(O)</th>
-                                    <th class="text-right">缂撳瓨(C)</th>
-                                    <th class="text-right">娴侀噺(涓?涓?</th>
-                                    <th class="text-right">閲戦</th>
-                                    <th class="text-center">鐘舵€?/th>
+                                    <th>时间</th>
+                                    <th>模型/渠道</th>
+                                    <th class="text-right">输入(I)</th>
+                                    <th class="text-right">输出(O)</th>
+                                    <th class="text-right">缓存(C)</th>
+                                    <th class="text-right">流量(上/下)</th>
+                                    <th class="text-right">金额</th>
+                                    <th class="text-center">状态</th>
                                 </tr>
                             </thead>
                             <tbody id="usage-table-body"></tbody>
@@ -669,22 +620,22 @@
             <div id="page-pricing" class="page-content hidden">
                 <div class="page-header">
                     <div>
-                        <h2 class="page-title">瀹氫环绛栫暐</h2>
-                        <p class="page-subtitle">绠＄悊 API 妯″瀷鐨勮璐硅鍒?/p>
+                        <h2 class="page-title">定价策略</h2>
+                        <p class="page-subtitle">管理 API 模型的计费规则</p>
                     </div>
-                    <button class="btn btn-primary" onclick="showAddPricingModal()">娣诲姞瀹氫环瑙勫垯</button>
+                    <button class="btn btn-primary" onclick="showAddPricingModal()">添加定价规则</button>
                 </div>
                 <div class="card">
                     <div style="overflow-x:auto;">
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>妯″瀷鍚嶇О</th>
-                                    <th class="text-right">杈撳叆鍊嶇巼</th>
-                                    <th class="text-right">杈撳嚭鍊嶇巼</th>
-                                    <th class="text-right">鍗曟璁¤垂(鍏?</th>
-                                    <th class="text-center">娓犻亾</th>
-                                    <th class="text-right">鎿嶄綔</th>
+                                    <th>模型名称</th>
+                                    <th class="text-right">输入倍率</th>
+                                    <th class="text-right">输出倍率</th>
+                                    <th class="text-right">单次计费(元)</th>
+                                    <th class="text-center">渠道</th>
+                                    <th class="text-right">操作</th>
                                 </tr>
                             </thead>
                             <tbody id="pricing-table-body"></tbody>
@@ -696,33 +647,33 @@
             <!-- Recharge -->
             <div id="page-recharge" class="page-content hidden">
                 <div class="page-header">
-                    <h1 class="page-title">鍏呭€间腑蹇?/h1>
-                    <p class="page-subtitle">鍗冲埢鍏呭€奸搴︼紝鐣呬韩鏃犻檺鍒?AI 鏈嶅姟</p>
+                    <h1 class="page-title">充值中心</h1>
+                    <p class="page-subtitle">即刻充值额度，畅享无限制 AI 服务</p>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 380px; gap: var(--space-lg); align-items: start;">
                     <div class="glass-card" style="padding: 32px; border-radius: 24px;">
-                        <h3 style="font-size: 18px; margin-bottom: 24px; color: var(--t-dark); font-weight: 800;">閫夋嫨鍏呭€奸噾棰?/h3>
+                        <h3 style="font-size: 18px; margin-bottom: 24px; color: var(--t-dark); font-weight: 800;">选择充值金额</h3>
                         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px;">
                             <div class="recharge-card" onclick="selectRechargeAmount(10)">
-                                <div class="amount">锟?0</div>
-                                <div class="tokens">10,000 棰濆害</div>
-                                <div class="bonus">鍏ラ棬娆?/div>
+                                <div class="amount">￥10</div>
+                                <div class="tokens">10,000 额度</div>
+                                <div class="bonus">入门款</div>
                             </div>
                             <div class="recharge-card active" onclick="selectRechargeAmount(50)">
-                                <div class="amount">锟?0</div>
-                                <div class="tokens">55,000 棰濆害</div>
-                                <div class="bonus">瓒呭€兼帹鑽?/div>
+                                <div class="amount">￥50</div>
+                                <div class="tokens">55,000 额度</div>
+                                <div class="bonus">超值推荐</div>
                             </div>
                             <div class="recharge-card" onclick="selectRechargeAmount(100)">
-                                <div class="amount">锟?00</div>
-                                <div class="tokens">120,000 棰濆害</div>
-                                <div class="bonus">璧犻€?20%</div>
+                                <div class="amount">￥100</div>
+                                <div class="tokens">120,000 额度</div>
+                                <div class="bonus">赠送 20%</div>
                             </div>
                             <div class="recharge-card" onclick="selectRechargeAmount(500)">
-                                <div class="amount">锟?00</div>
-                                <div class="tokens">650,000 棰濆害</div>
-                                <div class="bonus">鑷冲皧杩斿埄</div>
+                                <div class="amount">￥500</div>
+                                <div class="tokens">650,000 额度</div>
+                                <div class="bonus">至尊返利</div>
                             </div>
                         </div>
 
@@ -731,44 +682,44 @@
                                 <div style="width:32px; height:32px; border-radius:50%; background:var(--c-brand); color:white; display:flex; align-items:center; justify-content:center;">
                                     <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 </div>
-                                <h4 style="color: var(--t-dark); font-weight:800;">鍏呭€煎崗璁?/h4>
+                                <h4 style="color: var(--t-dark); font-weight:800;">充值协议</h4>
                             </div>
                             <ul style="font-size: 13px; color: var(--t-dark); opacity: 0.7; line-height: 2; font-weight:500;">
-                                <li>鎵€鏈夊厖鍊奸噾棰濆皢绔嬪嵆瀹炴椂鍒拌处涓鸿处鎴峰彲鐢ㄩ搴︺€?/li>
-                                <li>鏀寔鏀粯瀹濆強寰俊鏀粯鍏ㄥ钩鍙拌嚜鍔ㄨ烦杞紝瀹夊叏蹇嵎銆?/li>
-                                <li>鏈钩鍙版彁渚?7x24 灏忔椂鎶€鏈敮鎸侊紝濡傞亣鍏呭€煎紓甯歌闅忔椂鑱旂郴銆?/li>
+                                <li>所有充值金额将立即实时到账为账户可用额度。</li>
+                                <li>支持支付宝及微信支付全平台自动跳转，安全快捷。</li>
+                                <li>本平台提供 7x24 小时技术支持，如遇充值异常请随时联系。</li>
                             </ul>
                         </div>
                     </div>
 
                     <div class="glass-card" style="padding: 32px; border-radius: 24px; position: sticky; top: 24px;">
-                        <h3 style="font-size: 18px; margin-bottom: 24px; color: var(--t-dark); font-weight:800;">纭璁㈠崟</h3>
+                        <h3 style="font-size: 18px; margin-bottom: 24px; color: var(--t-dark); font-weight:800;">确认订单</h3>
                         <div style="display: flex; flex-direction: column; gap: 20px;">
                             <div style="display: flex; justify-content: space-between; font-size: 14px;">
-                                <span style="color: var(--t-muted); font-weight:600;">鍟嗗搧鍐呭</span>
-                                <span style="color: var(--t-dark); font-weight:700;">API 璋冪敤棰濆害鍖?/span>
+                                <span style="color: var(--t-muted); font-weight:600;">商品内容</span>
+                                <span style="color: var(--t-dark); font-weight:700;">API 调用额度包</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; font-size: 14px;">
-                                <span style="color: var(--t-muted); font-weight:600;">鏀粯閲戦</span>
-                                <span id="recharge-total-price" style="color: var(--c-brand); font-weight: 900; font-size: 24px; font-family: var(--font-display);">锟?0.00</span>
+                                <span style="color: var(--t-muted); font-weight:600;">支付金额</span>
+                                <span id="recharge-total-price" style="color: var(--c-brand); font-weight: 900; font-size: 24px; font-family: var(--font-display);">￥50.00</span>
                             </div>
                             
                             <div style="margin-top: 10px;">
-                                <label style="font-size: 12px; color: var(--t-muted); display: block; margin-bottom: 12px; font-weight:600; text-transform:uppercase; letter-spacing:1px;">鏀粯鏂瑰紡</label>
+                                <label style="font-size: 12px; color: var(--t-muted); display: block; margin-bottom: 12px; font-weight:600; text-transform:uppercase; letter-spacing:1px;">支付方式</label>
                                 <div style="display: flex; flex-direction: column; gap: 12px;">
                                     <button class="pay-method active" onclick="selectPayMethod('alipay')">
                                         <img src="https://img.icons8.com/color/48/alipay.png" width="28">
-                                        <span>鏀粯瀹濅竴閿敮浠?/span>
+                                        <span>支付宝一键支付</span>
                                     </button>
                                     <button class="pay-method" onclick="selectPayMethod('wechat')">
                                         <img src="https://img.icons8.com/color/48/wechat-pay.png" width="28">
-                                        <span>寰俊鏀粯</span>
+                                        <span>微信支付</span>
                                     </button>
                                 </div>
                             </div>
 
                             <button onclick="executeRecharge()" class="btn btn-primary" style="width: 100%; height: 56px; font-size: 16px; margin-top: 20px; border-radius: 18px; font-weight:800; box-shadow: 0 10px 20px rgba(67, 24, 255, 0.2);">
-                                绔嬪嵆璺宠浆鏀粯
+                                立即跳转支付
                             </button>
                         </div>
                     </div>
@@ -779,8 +730,8 @@
             <div id="page-logs" class="page-content hidden">
                 <div class="page-header">
                     <div>
-                        <h2 class="page-title">绯荤粺瀹¤</h2>
-                        <p class="page-subtitle">绯荤粺鎿嶄綔鏃ュ織璁板綍</p>
+                        <h2 class="page-title">系统审计</h2>
+                        <p class="page-subtitle">系统操作日志记录</p>
                     </div>
                 </div>
                 <div class="card">
@@ -788,9 +739,9 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>鏃堕棿</th>
-                                    <th>鎿嶄綔绫诲瀷</th>
-                                    <th>璇︾粏淇℃伅</th>
+                                    <th>时间</th>
+                                    <th>操作类型</th>
+                                    <th>详细信息</th>
                                 </tr>
                             </thead>
                             <tbody id="logs-table-body"></tbody>
@@ -804,10 +755,10 @@
             <div id="page-projects" class="page-content hidden" style="max-width: 100%;">
                 <div class="page-header">
                     <div>
-                        <h2 class="page-title">椤圭洰绠＄悊</h2>
-                        <p class="page-subtitle">绠＄悊椤圭洰璇︽儏銆佽棰戜粙缁嶅強瀹㈡埛鐪熷疄璇勪环</p>
+                        <h2 class="page-title">项目管理</h2>
+                        <p class="page-subtitle">管理项目详情、视频介绍及客户真实评价</p>
                     </div>
-                    <button class="btn btn-primary" onclick="showAddProjectModal()">娣诲姞鏂伴」鐩?/button>
+                    <button class="btn btn-primary" onclick="showAddProjectModal()">添加新项目</button>
                 </div>
                 
                 <div class="project-split-container" style="display: grid; grid-template-columns: 1fr 420px; gap: 24px; align-items: start;">
@@ -818,7 +769,7 @@
                     <div id="project-detail-panel" class="card" style="position: sticky; top: 20px; min-height: 600px; display: flex; padding: 20px; flex-direction: column; gap: 20px; transition: all 0.3s;">
                         <div id="project-detail-empty" style="text-align: center; padding: 100px 20px; color: var(--t-muted);">
                             <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-bottom: 16px; opacity: 0.3;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <p style="font-weight: 500;">鐐瑰嚮宸︿晶椤圭洰鍗＄墖<br>鏌ョ湅瑙嗛浠嬬粛涓庡鎴疯瘎浠?/p>
+                            <p style="font-weight: 500;">点击左侧项目卡片<br>查看视频介绍与客户评价</p>
                         </div>
                         <div id="project-detail-content" style="display: none;">
                             <!-- Project Info -->
@@ -831,7 +782,7 @@
                             <div class="detail-section">
                                 <h4 class="section-title" style="font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; color: var(--t-dark);">
                                     <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                                    瑙嗛婕旂ず
+                                    视频演示
                                 </h4>
                                 <div id="detail-video-container" class="video-wrapper" style="width: 100%; aspect-ratio: 16/9; background: #1a1a1a; border-radius: 12px; overflow: hidden; margin-bottom: 16px; box-shadow: inset 0 0 40px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;">
                                     <!-- Video element will be inserted here -->
@@ -845,9 +796,9 @@
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                                     <h4 class="section-title" style="font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; color: var(--t-dark);">
                                         <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-                                        瀹㈡埛鐪熷疄鍙嶉
+                                        客户真实反馈
                                     </h4>
-                                    <button class="btn btn-outline btn-xs" id="add-review-btn" style="padding: 4px 10px; font-size: 11px;">鍙戣〃璇勪环</button>
+                                    <button class="btn btn-outline btn-xs" id="add-review-btn" style="padding: 4px 10px; font-size: 11px;">发表评价</button>
                                 </div>
                                 <div id="detail-reviews-list" style="display: flex; flex-direction: column; gap: 16px; max-height: 500px; overflow-y: auto; padding-right: 8px; scrollbar-width: thin;">
                                     <!-- Reviews will be loaded here -->
@@ -862,21 +813,21 @@
             <div id="page-tutorials" class="page-content hidden">
                 <div class="page-header">
                     <div>
-                        <h2 class="page-title">浣跨敤璇存槑</h2>
-                        <p class="page-subtitle">绠＄悊绯荤粺鍔熻兘鐨勪娇鐢ㄦ暀绋?/p>
+                        <h2 class="page-title">使用说明</h2>
+                        <p class="page-subtitle">管理系统功能的使用教程</p>
                     </div>
-                    <button class="btn btn-primary" onclick="showAddTutorialModal()">娣诲姞鏁欑▼</button>
+                    <button class="btn btn-primary" onclick="showAddTutorialModal()">添加教程</button>
                 </div>
                 <div class="card">
                     <div style="overflow-x:auto;">
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>鎺掑簭</th>
-                                    <th>鏁欑▼鏍囬</th>
-                                    <th>鍏宠仈椤圭洰</th>
-                                    <th>浠锋牸淇℃伅</th>
-                                    <th class="text-right">鎿嶄綔</th>
+                                    <th>排序</th>
+                                    <th>教程标题</th>
+                                    <th>关联项目</th>
+                                    <th>价格信息</th>
+                                    <th class="text-right">操作</th>
                                 </tr>
                             </thead>
                             <tbody id="tutorials-table-body"></tbody>
@@ -889,8 +840,8 @@
             <div id="page-permissions" class="page-content hidden">
                 <div class="page-header">
                     <div>
-                        <h2 class="page-title">鏉冮檺绠＄悊</h2>
-                        <p class="page-subtitle">璁剧疆涓嶅悓鐢ㄦ埛鍙煡鐪嬬殑渚ц竟鏍忔ā鍧?/p>
+                        <h2 class="page-title">权限管理</h2>
+                        <p class="page-subtitle">设置不同用户可查看的侧边栏模块</p>
                     </div>
                 </div>
                 <div class="card">
@@ -898,13 +849,15 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>鐢ㄦ埛鍚?/th>
-                                    <th>鎺у埗闈㈡澘</th>
-                                    <th>瀹㈡埛绠＄悊</th>
-                                    <th>绯荤粺瀹¤</th>
-                                    <th>椤圭洰绠＄悊</th>
-                                    <th>浣跨敤璇存槑</th>
-                                    <th>鍏呭€间腑蹇?/th>
+                                    <th>用户名</th>
+                                    <th>控制面板</th>
+                                    <th>客户管理</th>
+                                    <th>密钥管理</th>
+                                    <th>流量指数</th>
+                                    <th>定价策略</th>
+                                    <th>系统审计</th>
+                                    <th>项目管理</th>
+                                    <th>使用说明</th>
                                 </tr>
                             </thead>
                             <tbody id="permissions-table-body"></tbody>
@@ -914,7 +867,7 @@
             </div>
 
             <footer class="app-footer">
-                漏 2026 API Nexus NexGen Infrastructure. All rights reserved.
+                © 2026 API Nexus NexGen Infrastructure. All rights reserved.
             </footer>
         </main>
     </div>
@@ -925,8 +878,8 @@
             <h3 id="modal-title" class="modal-title"></h3>
             <div id="modal-content"></div>
             <div class="modal-footer">
-                <button class="btn btn-outline" onclick="closeModal()">鍙栨秷</button>
-                <button class="btn btn-primary" id="modal-confirm">纭</button>
+                <button class="btn btn-outline" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" id="modal-confirm">确认</button>
             </div>
         </div>
     </div>
@@ -940,15 +893,15 @@
             let projectsData = {};
             
             const MANAGEABLE_PAGES = [
-                { id: "dashboard", name: "鎺у埗闈㈡澘" },
-                { id: "users", name: "鐢ㄦ埛绠＄悊" },
-                { id: "tokens", name: "浠ょ墝绠＄悊" },
-                { id: "usage", name: "娴侀噺缁熻" },
-                { id: "pricing", name: "瀹氫环绛栫暐" },
-                { id: "logs", name: "绯荤粺瀹¤" },
-                { id: "projects", name: "椤圭洰绠＄悊" },
-                { id: "tutorials", name: "浣跨敤璇存槑" },
-                { id: "recharge", name: "鍏呭€间腑蹇? },
+                { id: "dashboard", name: "控制面板" },
+                { id: "users", name: "用户管理" },
+                { id: "tokens", name: "令牌管理" },
+                { id: "usage", name: "流量统计" },
+                { id: "pricing", name: "定价策略" },
+                { id: "logs", name: "系统审计" },
+                { id: "projects", name: "项目管理" },
+                { id: "tutorials", name: "使用说明" },
+                { id: "recharge", name: "充值中心" }
             ];
 
             document.addEventListener("DOMContentLoaded", () => {
@@ -1015,7 +968,7 @@
                     return data;
                 } catch (err) {
                     console.error("API Error:", err);
-                    throw new Error("缃戠粶璇锋眰澶辫触");
+                    throw new Error("网络请求失败");
                 }
             }
 
@@ -1030,7 +983,7 @@
                     const allPermissions = JSON.parse(localStorage.getItem('system_rbac_permissions') || '{}');
                     const userPermissions = allPermissions[currentUser.username] || MANAGEABLE_PAGES.map(p => p.id);
                     if (page !== 'dashboard' && !userPermissions.includes(page)) {
-                        alert('鎮ㄦ病鏈夋潈闄愯闂椤甸潰');
+                        alert('您没有权限访问此页面');
                         return;
                     }
                 }
@@ -1135,7 +1088,7 @@
                                     u.username +
                                     '</span><div class="progress-bar-container"><div class="progress-bar-fill" style="width:' +
                                     (u.cost / mx) * 100 +
-                                    '%"></div></div><span class="ranking-value">楼' +
+                                    '%"></div></div><span class="ranking-value">¥' +
                                     u.cost.toFixed(2) +
                                     "</span></div>",
                             )
@@ -1189,8 +1142,8 @@
                     .map(function (u) {
                         var statusBadge =
                             u.status === "active"
-                                ? '<span class="badge badge-success">姝ｅ父</span>'
-                                : '<span class="badge badge-danger">灏佺</span>';
+                                ? '<span class="badge badge-success">正常</span>'
+                                : '<span class="badge badge-danger">封禁</span>';
                         var toggleIcon =
                             u.status === "active"
                                 ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>'
@@ -1206,7 +1159,7 @@
                             '<td><span style="font-size:13px;color:var(--text-secondary)">' +
                             (u.email || "-") +
                             "</span></td>" +
-                            '<td class="text-right"><span class="cell-mono">楼' +
+                            '<td class="text-right"><span class="cell-mono">¥' +
                             u.balance.toFixed(2) +
                             "</span></td>" +
                             '<td class="text-center"><span class="badge badge-muted">' +
@@ -1217,13 +1170,13 @@
                             "</td>" +
                             '<td><div class="cell-actions"><button class="icon-btn" onclick="rechargeUser(\'' +
                             u.user_id +
-                            '\')" title="鍏呭€?><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></button>' +
+                            '\')" title="充值"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></button>' +
                             '<button class="icon-btn" onclick="toggleUserStatus(\'' +
                             u.user_id +
                             "','" +
                             u.status +
                             '\')" title="' +
-                            (u.status === "active" ? "灏佺" : "瑙ｅ皝") +
+                            (u.status === "active" ? "封禁" : "解封") +
                             '"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
                             toggleIcon +
                             "</svg></button></div></td></tr>"
@@ -1249,12 +1202,12 @@
                         var copyBtn = t.token_plain
                             ? '<button class="icon-btn" onclick="copyToken(\'' +
                               t.token_plain +
-                              '\')" title="澶嶅埗"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></button>'
+                              '\')" title="复制"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></button>'
                             : "";
                         var statusBadge =
                             t.status === "active"
-                                ? '<span class="badge badge-success">姝ｅ父</span>'
-                                : '<span class="badge badge-muted">宸插悐閿€</span>';
+                                ? '<span class="badge badge-success">正常</span>'
+                                : '<span class="badge badge-muted">已吊销</span>';
                         return (
                             '<tr><td><div style="display:flex;align-items:center;gap:6px"><span class="mono" style="font-size:13px;font-weight:600;color:var(--text-secondary)">' +
                             (t.token_plain || t.token_prefix) +
@@ -1267,7 +1220,7 @@
                             '<td><span style="font-size:13px;color:var(--text-secondary)">' +
                             (t.token_name || "-") +
                             "</span></td>" +
-                            '<td class="text-right"><span class="cell-mono">楼' +
+                            '<td class="text-right"><span class="cell-mono">¥' +
                             t.balance.toFixed(2) +
                             "</span></td>" +
                             '<td class="text-center">' +
@@ -1275,7 +1228,7 @@
                             "</td>" +
                             '<td class="text-right"><button class="icon-btn" onclick="rechargeToken(\'' +
                             t.token_id +
-                            '\')" title="鍏呭€?><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></button></td></tr>'
+                            '\')" title="充值"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></button></td></tr>'
                         );
                     })
                     .join("");
@@ -1290,7 +1243,7 @@
                 navigator.clipboard
                     .writeText(token)
                     .then(function () {
-                        alert("Token宸插鍒跺埌鍓创鏉?);
+                        alert("Token已复制到剪贴板");
                     })
                     .catch(function () {
                         var ta = document.createElement("textarea");
@@ -1299,21 +1252,21 @@
                         ta.select();
                         document.execCommand("copy");
                         document.body.removeChild(ta);
-                        alert("Token宸插鍒跺埌鍓创鏉?);
+                        alert("Token已复制到剪贴板");
                     });
             }
 
             function rechargeToken(tokenId) {
                 showModal(
-                    "Token鍏呭€?,
-                    '<div class="form-group"><label class="form-label">鍏呭€奸噾棰?(鍏?</label><input type="number" id="token-recharge-amount" class="form-input" min="0.01" step="0.01"></div>',
+                    "Token充值",
+                    '<div class="form-group"><label class="form-label">充值金额 (元)</label><input type="number" id="token-recharge-amount" class="form-input" min="0.01" step="0.01"></div>',
                     async function () {
                         var amount = parseFloat(
                             document.getElementById("token-recharge-amount")
                                 .value,
                         );
                         if (!amount || amount <= 0)
-                            throw new Error("璇疯緭鍏ユ湁鏁堥噾棰?);
+                            throw new Error("请输入有效金额");
                         var result = await api("/api/token/recharge", {
                             method: "POST",
                             body: JSON.stringify({
@@ -1322,14 +1275,14 @@
                             }),
                         });
                         if (result && result.success) {
-                            alert("鍏呭€兼垚鍔?);
+                            alert("充值成功");
                             closeModal();
                             loadTokens();
                         } else {
                             throw new Error(
                                 result && result.error
                                     ? result.error.message
-                                    : "鍏呭€煎け璐?,
+                                    : "充值失败",
                             );
                         }
                     },
@@ -1345,8 +1298,8 @@
                     
                     if (result.data.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">' +
-                            '<p style="color:var(--t-muted);margin-bottom:16px;">鏆傛棤瀹氫环瑙勫垯</p>' +
-                            '<button class="btn btn-outline btn-sm" onclick="addSamplePricing()">涓€閿坊鍔犲父鐢ㄦā鍨?/button>' +
+                            '<p style="color:var(--t-muted);margin-bottom:16px;">暂无定价规则</p>' +
+                            '<button class="btn btn-outline btn-sm" onclick="addSamplePricing()">一键添加常用模型</button>' +
                             '</td></tr>';
                         return;
                     }
@@ -1360,11 +1313,11 @@
                                 '<span class="cell-primary">' + p.model + '</span></div></td>' +
                                 '<td class="text-right"><span class="cell-mono">' + (p.price_per_1k_prompt || 0).toFixed(4) + '</span></td>' +
                                 '<td class="text-right"><span class="cell-mono">' + (p.price_per_1k_completion || 0).toFixed(4) + '</span></td>' +
-                                '<td class="text-right"><span class="cell-mono">楼' + (p.fixed_price || 0).toFixed(2) + '</span></td>' +
-                                '<td class="text-center"><span class="badge badge-info">' + (p.channel_id || "榛樿") + '</span></td>' +
+                                '<td class="text-right"><span class="cell-mono">¥' + (p.fixed_price || 0).toFixed(2) + '</span></td>' +
+                                '<td class="text-center"><span class="badge badge-info">' + (p.channel_id || "默认") + '</span></td>' +
                                 '<td class="text-right"><div class="cell-actions">' +
-                                '<button class="icon-btn" onclick="editPricing(\'' + p.pricing_id + '\')" title="缂栬緫"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></button>' +
-                                '<button class="icon-btn" onclick="deletePricing(\'' + p.pricing_id + '\', \'' + p.model + '\')" title="鍒犻櫎"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>' +
+                                '<button class="icon-btn" onclick="editPricing(\'' + p.pricing_id + '\')" title="编辑"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></button>' +
+                                '<button class="icon-btn" onclick="deletePricing(\'' + p.pricing_id + '\', \'' + p.model + '\')" title="删除"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>' +
                                 '</div></td></tr>'
                             );
                         })
@@ -1376,13 +1329,13 @@
 
             function showAddPricingModal() {
                 showModal(
-                    "娣诲姞瀹氫环瑙勫垯",
-                    '<div class="form-group"><label class="form-label">鎻愪緵鍟?/label><select id="price-provider" class="form-select"><option value="OpenAI">OpenAI</option><option value="Anthropic">Anthropic</option><option value="Google">Google</option><option value="Midjourney">Midjourney</option><option value="Other">鍏朵粬</option></select></div>' +
-                    '<div class="form-group"><label class="form-label">妯″瀷鍚嶇О</label><input type="text" id="price-model" class="form-input" placeholder="渚嬪: gpt-4o" required></div>' +
-                    '<div class="form-group"><label class="form-label">杈撳叆鍊嶇巼 (姣?K tokens)</label><input type="number" id="price-input" class="form-input" step="0.0001" value="0"></div>' +
-                    '<div class="form-group"><label class="form-label">杈撳嚭鍊嶇巼 (姣?K tokens)</label><input type="number" id="price-output" class="form-input" step="0.0001" value="0"></div>' +
-                    '<div class="form-group"><label class="form-label">鍗曟璁¤垂 (鍏?</label><input type="number" id="price-fixed" class="form-input" step="0.01" value="0"></div>' +
-                    '<div class="form-group"><label class="form-label">娓犻亾ID (鍙€?</label><input type="text" id="price-channel" class="form-input" placeholder="榛樿"></div>',
+                    "添加定价规则",
+                    '<div class="form-group"><label class="form-label">提供商</label><select id="price-provider" class="form-select"><option value="OpenAI">OpenAI</option><option value="Anthropic">Anthropic</option><option value="Google">Google</option><option value="Midjourney">Midjourney</option><option value="Other">其他</option></select></div>' +
+                    '<div class="form-group"><label class="form-label">模型名称</label><input type="text" id="price-model" class="form-input" placeholder="例如: gpt-4o" required></div>' +
+                    '<div class="form-group"><label class="form-label">输入倍率 (每1K tokens)</label><input type="number" id="price-input" class="form-input" step="0.0001" value="0"></div>' +
+                    '<div class="form-group"><label class="form-label">输出倍率 (每1K tokens)</label><input type="number" id="price-output" class="form-input" step="0.0001" value="0"></div>' +
+                    '<div class="form-group"><label class="form-label">单次计费 (元)</label><input type="number" id="price-fixed" class="form-input" step="0.01" value="0"></div>' +
+                    '<div class="form-group"><label class="form-label">渠道ID (可选)</label><input type="text" id="price-channel" class="form-input" placeholder="默认"></div>',
                     async function () {
                         const provider = document.getElementById("price-provider").value;
                         const model = document.getElementById("price-model").value;
@@ -1391,7 +1344,7 @@
                         const fixedPrice = parseFloat(document.getElementById("price-fixed").value) || 0;
                         const channel = document.getElementById("price-channel").value || "default";
 
-                        if (!model) throw new Error("妯″瀷鍚嶇О涓嶈兘涓虹┖");
+                        if (!model) throw new Error("模型名称不能为空");
 
                         const result = await api("/api/admin/pricing", {
                             method: "POST",
@@ -1407,11 +1360,11 @@
                         });
 
                         if (result && result.success) {
-                            alert("瀹氫环瑙勫垯娣诲姞鎴愬姛");
+                            alert("定价规则添加成功");
                             closeModal();
                             loadPricing();
                         } else {
-                            throw new Error(result && result.error ? result.error.message : "娣诲姞澶辫触");
+                            throw new Error(result && result.error ? result.error.message : "添加失败");
                         }
                     }
                 );
@@ -1425,13 +1378,13 @@
                 if (!p) return;
 
                 showModal(
-                    "缂栬緫瀹氫环瑙勫垯",
-                    '<div class="form-group"><label class="form-label">鎻愪緵鍟?/label><input type="text" id="edit-price-provider" class="form-input" value="' + p.provider + '"></div>' +
-                    '<div class="form-group"><label class="form-label">妯″瀷鍚嶇О</label><input type="text" id="edit-price-model" class="form-input" value="' + p.model + '" required></div>' +
-                    '<div class="form-group"><label class="form-label">杈撳叆鍊嶇巼</label><input type="number" id="edit-price-input" class="form-input" step="0.0001" value="' + (p.price_per_1k_prompt || 0) + '"></div>' +
-                    '<div class="form-group"><label class="form-label">杈撳嚭鍊嶇巼</label><input type="number" id="edit-price-output" class="form-input" step="0.0001" value="' + (p.price_per_1k_completion || 0) + '"></div>' +
-                    '<div class="form-group"><label class="form-label">鍗曟璁¤垂</label><input type="number" id="edit-price-fixed" class="form-input" step="0.01" value="' + (p.fixed_price || 0) + '"></div>' +
-                    '<div class="form-group"><label class="form-label">娓犻亾ID</label><input type="text" id="edit-price-channel" class="form-input" value="' + (p.channel_id || "") + '"></div>',
+                    "编辑定价规则",
+                    '<div class="form-group"><label class="form-label">提供商</label><input type="text" id="edit-price-provider" class="form-input" value="' + p.provider + '"></div>' +
+                    '<div class="form-group"><label class="form-label">模型名称</label><input type="text" id="edit-price-model" class="form-input" value="' + p.model + '" required></div>' +
+                    '<div class="form-group"><label class="form-label">输入倍率</label><input type="number" id="edit-price-input" class="form-input" step="0.0001" value="' + (p.price_per_1k_prompt || 0) + '"></div>' +
+                    '<div class="form-group"><label class="form-label">输出倍率</label><input type="number" id="edit-price-output" class="form-input" step="0.0001" value="' + (p.price_per_1k_completion || 0) + '"></div>' +
+                    '<div class="form-group"><label class="form-label">单次计费</label><input type="number" id="edit-price-fixed" class="form-input" step="0.01" value="' + (p.fixed_price || 0) + '"></div>' +
+                    '<div class="form-group"><label class="form-label">渠道ID</label><input type="text" id="edit-price-channel" class="form-input" value="' + (p.channel_id || "") + '"></div>',
                     async function () {
                         const provider = document.getElementById("edit-price-provider").value;
                         const model = document.getElementById("edit-price-model").value;
@@ -1454,27 +1407,27 @@
                         });
 
                         if (r && r.success) {
-                            alert("鏇存柊鎴愬姛");
+                            alert("更新成功");
                             closeModal();
                             loadPricing();
                         } else {
-                            throw new Error(r && r.error ? r.error.message : "鏇存柊澶辫触");
+                            throw new Error(r && r.error ? r.error.message : "更新失败");
                         }
                     }
                 );
             }
 
             async function deletePricing(pricingId, modelName) {
-                if (!confirm('纭畾瑕佸垹闄ゆā鍨?"' + modelName + '" 鐨勫畾浠疯鍒欏悧锛?)) return;
+                if (!confirm('确定要删除模型 "' + modelName + '" 的定价规则吗？')) return;
                 const result = await api("/api/admin/pricing/delete", {
                     method: "POST",
                     body: JSON.stringify({ pricingId }),
                 });
                 if (result && result.success) {
-                    alert("鍒犻櫎鎴愬姛");
+                    alert("删除成功");
                     loadPricing();
                 } else {
-                    alert(result && result.error ? result.error.message : "鍒犻櫎澶辫触");
+                    alert(result && result.error ? result.error.message : "删除失败");
                 }
             }
 
@@ -1489,7 +1442,7 @@
                     { provider: "Midjourney", model: "mj-v6", input: 0, output: 0, fixed: 0.5 }
                 ];
                 
-                if (!confirm("纭畾瑕佹坊鍔?" + samples.length + " 涓父鐢ㄦā鍨嬪畾浠疯鍒欏悧锛?)) return;
+                if (!confirm("确定要添加 " + samples.length + " 个常用模型定价规则吗？")) return;
                 
                 let count = 0;
                 for (const s of samples) {
@@ -1511,7 +1464,7 @@
                         console.error("Failed to add sample:", s.model, e);
                     }
                 }
-                alert("宸叉垚鍔熸坊鍔?" + count + " 涓畾浠疯鍒?);
+                alert("已成功添加 " + count + " 个定价规则");
                 loadPricing();
             }
 
@@ -1556,23 +1509,23 @@
                     return;
                 }
                 var html =
-                    '<span class="pagination-info">鏄剧ず ' +
+                    '<span class="pagination-info">显示 ' +
                     ((pagination.page - 1) * pagination.pageSize + 1) +
-                    " 鍒?" +
+                    " 到 " +
                     Math.min(
                         pagination.page * pagination.pageSize,
                         pagination.total,
                     ) +
-                    " 鍏?" +
+                    " 共 " +
                     pagination.total +
-                    ' 鏉?/span><div class="pagination-btns">';
+                    ' 条</span><div class="pagination-btns">';
                 if (pagination.page > 1)
                     html +=
                         '<button onclick="(' +
                         loadFn.name +
                         ")(" +
                         (pagination.page - 1) +
-                        ')" class="page-btn">涓婁竴椤?/button>';
+                        ')" class="page-btn">上一页</button>';
                 for (var i = 1; i <= Math.min(pagination.totalPages, 5); i++)
                     html +=
                         '<button onclick="(' +
@@ -1590,7 +1543,7 @@
                         loadFn.name +
                         ")(" +
                         (pagination.page + 1) +
-                        ')" class="page-btn">涓嬩竴椤?/button>';
+                        ')" class="page-btn">下一页</button>';
                 c.innerHTML = html + "</div>";
             }
 
@@ -1611,7 +1564,7 @@
                     const isSystemAdmin = u.username === 'admin';
 
                     return '<tr>' +
-                        '<td><div style="font-weight:700;color:var(--t-dark)">' + u.username + (isSystemAdmin ? ' <span class="badge badge-success">瓒呯骇绠＄悊鍛?/span>' : '') + '</div></td>' +
+                        '<td><div style="font-weight:700;color:var(--t-dark)">' + u.username + (isSystemAdmin ? ' <span class="badge badge-success">超级管理员</span>' : '') + '</div></td>' +
                         MANAGEABLE_PAGES.map(p => {
                             const checked = userPerms.includes(p.id) ? 'checked' : '';
                             const disabled = isSystemAdmin ? 'disabled' : '';
@@ -1646,8 +1599,8 @@
 
             function rechargeUser(userId) {
                 showModal(
-                    "鐢ㄦ埛鍏呭€?,
-                    '<div class="form-group"><label class="form-label">鍏呭€奸噾棰?(鍏?</label><input type="number" id="recharge-amount" class="form-input" min="0.01" step="0.01"></div><div class="form-group"><label class="form-label">澶囨敞</label><input type="text" id="recharge-notes" class="form-input"></div>',
+                    "用户充值",
+                    '<div class="form-group"><label class="form-label">充值金额 (元)</label><input type="number" id="recharge-amount" class="form-input" min="0.01" step="0.01"></div><div class="form-group"><label class="form-label">备注</label><input type="text" id="recharge-notes" class="form-input"></div>',
                     async function () {
                         var amount = parseFloat(
                             document.getElementById("recharge-amount").value,
@@ -1663,14 +1616,14 @@
                             }),
                         });
                         if (result && result.success) {
-                            alert("鍏呭€兼垚鍔?);
+                            alert("充值成功");
                             closeModal();
                             loadUsers();
                         } else {
                             alert(
                                 result && result.error
                                     ? result.error.message
-                                    : "鍏呭€煎け璐?,
+                                    : "充值失败",
                             );
                         }
                     },
@@ -1680,8 +1633,8 @@
             async function toggleUserStatus(userId, currentStatus) {
                 var newStatus =
                     currentStatus === "active" ? "suspended" : "active";
-                var action = newStatus === "suspended" ? "灏佺" : "瑙ｅ皝";
-                if (!confirm("纭畾瑕? + action + "璇ョ敤鎴峰悧锛?)) return;
+                var action = newStatus === "suspended" ? "封禁" : "解封";
+                if (!confirm("确定要" + action + "该用户吗？")) return;
                 var result = await api("/api/admin/user/status", {
                     method: "POST",
                     body: JSON.stringify({ userId: userId, status: newStatus }),
@@ -1691,7 +1644,7 @@
                     alert(
                         result && result.error
                             ? result.error.message
-                            : action + "澶辫触",
+                            : action + "失败",
                     );
             }
 
@@ -1706,13 +1659,13 @@
                 newBtn.addEventListener("click", async function () {
                     try {
                         newBtn.disabled = true;
-                        newBtn.textContent = "澶勭悊涓?..";
+                        newBtn.textContent = "处理中...";
                         await onConfirm();
                     } catch (err) {
-                        alert("鎿嶄綔澶辫触: " + err.message);
+                        alert("操作失败: " + err.message);
                     } finally {
                         newBtn.disabled = false;
-                        newBtn.textContent = "纭";
+                        newBtn.textContent = "确认";
                     }
                 });
                 var form = document.querySelector("#modal-content form");
@@ -1732,8 +1685,8 @@
 
             function showAddUserModal() {
                 showModal(
-                    "娣诲姞鏂扮敤鎴?,
-                    '<div class="form-group"><label class="form-label">鐢ㄦ埛鍚?/label><input type="text" id="new-username" class="form-input" required></div><div class="form-group"><label class="form-label">瀵嗙爜</label><input type="password" id="new-password" class="form-input" required></div><div class="form-group"><label class="form-label">閭</label><input type="email" id="new-email" class="form-input"></div>',
+                    "添加新用户",
+                    '<div class="form-group"><label class="form-label">用户名</label><input type="text" id="new-username" class="form-input" required></div><div class="form-group"><label class="form-label">密码</label><input type="password" id="new-password" class="form-input" required></div><div class="form-group"><label class="form-label">邮箱</label><input type="email" id="new-email" class="form-input"></div>',
                     async function () {
                         var username =
                             document.getElementById("new-username").value;
@@ -1741,7 +1694,7 @@
                             document.getElementById("new-password").value;
                         var email = document.getElementById("new-email").value;
                         if (!username || !password)
-                            throw new Error("鐢ㄦ埛鍚嶅拰瀵嗙爜涓嶈兘涓虹┖");
+                            throw new Error("用户名和密码不能为空");
                         var result = await api("/api/user/register", {
                             method: "POST",
                             body: JSON.stringify({
@@ -1751,14 +1704,14 @@
                             }),
                         });
                         if (result && result.success) {
-                            alert("鐢ㄦ埛鍒涘缓鎴愬姛");
+                            alert("用户创建成功");
                             closeModal();
                             loadUsers();
                         } else {
                             throw new Error(
                                 result && result.error
                                     ? result.error.message
-                                    : "鍒涘缓澶辫触",
+                                    : "创建失败",
                             );
                         }
                     },
@@ -1771,7 +1724,7 @@
                         "/api/admin/users?page=1&pageSize=100",
                     );
                     if (!result || !result.success) {
-                        alert("鍔犺浇鐢ㄦ埛鍒楄〃澶辫触");
+                        alert("加载用户列表失败");
                         return;
                     }
                     var userOpts = result.data
@@ -1786,26 +1739,26 @@
                         })
                         .join("");
                     if (!userOpts) {
-                        alert("璇峰厛娣诲姞鐢ㄦ埛");
+                        alert("请先添加用户");
                         return;
                     }
                     showModal(
-                        "鍒涘缓鏂癟oken",
-                        '<div class="form-group"><label class="form-label">閫夋嫨鐢ㄦ埛</label><select id="token-user-id" class="form-select">' +
+                        "创建新Token",
+                        '<div class="form-group"><label class="form-label">选择用户</label><select id="token-user-id" class="form-select">' +
                             userOpts +
-                            '</select></div><div class="form-group"><label class="form-label">Token鍚嶇О</label><input type="text" id="token-name" class="form-input" placeholder="渚嬪: 榛樿Token"></div><div class="form-group"><label class="form-label">鍒濆浣欓 (鍏?</label><input type="number" id="token-balance" class="form-input" min="0" step="0.01" value="0"></div>',
+                            '</select></div><div class="form-group"><label class="form-label">Token名称</label><input type="text" id="token-name" class="form-input" placeholder="例如: 默认Token"></div><div class="form-group"><label class="form-label">初始余额 (元)</label><input type="number" id="token-balance" class="form-input" min="0" step="0.01" value="0"></div>',
                         async function () {
                             var userId =
                                 document.getElementById("token-user-id").value;
                             var name =
                                 document.getElementById("token-name").value ||
-                                "榛樿Token";
+                                "默认Token";
                             var balance =
                                 parseFloat(
                                     document.getElementById("token-balance")
                                         .value,
                                 ) || 0;
-                            if (!userId) throw new Error("璇烽€夋嫨鐢ㄦ埛");
+                            if (!userId) throw new Error("请选择用户");
                             var r = await api("/api/token/create", {
                                 method: "POST",
                                 headers: { "X-User-Id": userId },
@@ -1816,21 +1769,21 @@
                             });
                             if (r && r.success) {
                                 alert(
-                                    "Token鍒涘缓鎴愬姛锛乗n\nToken: " +
+                                    "Token创建成功！\n\nToken: " +
                                         r.data.token +
-                                        "\n\n璇峰Ε鍠勪繚瀛樻Token锛屽畠鍙細鏄剧ず涓€娆★紒",
+                                        "\n\n请妥善保存此Token，它只会显示一次！",
                                 );
                                 closeModal();
                                 loadTokens();
                             } else {
                                 throw new Error(
-                                    r && r.error ? r.error.message : "鍒涘缓澶辫触",
+                                    r && r.error ? r.error.message : "创建失败",
                                 );
                             }
                         },
                     );
                 } catch (err) {
-                    alert("鍔犺浇鐢ㄦ埛鍒楄〃澶辫触: " + err.message);
+                    alert("加载用户列表失败: " + err.message);
                 }
             }
 
@@ -1866,14 +1819,14 @@
                     if (!result || !result.success) return;
                     const data = result.data;
 
-                    // 鏇存柊鍗＄墖鏁版嵁
+                    // 更新卡片数据
                     document.getElementById("usage-stat-input").textContent = formatNumber(data.today.total_prompt_tokens);
                     document.getElementById("usage-stat-output").textContent = formatNumber(data.today.total_completion_tokens);
-                    // 鍋囪鍚庣杩斿洖浜?cache_tokens锛屾垨鑰呮垜浠彲浠ヨ绠楀畠
+                    // 假设后端返回了 cache_tokens，或者我们可以计算它
                     document.getElementById("usage-stat-cache").textContent = formatNumber(data.today.total_tokens - data.today.total_prompt_tokens - data.today.total_completion_tokens);
                     document.getElementById("usage-stat-cost").textContent = data.today.total_cost.toFixed(2);
 
-                    // 鏇存柊鍥捐〃
+                    // 更新图表
                     const ctx = document.getElementById('usage-trend-chart').getContext('2d');
                     
                     if (usageChart) {
@@ -1891,7 +1844,7 @@
                             labels: labels,
                             datasets: [
                                 {
-                                    label: '杈撳叆 (Prompt)',
+                                    label: '输入 (Prompt)',
                                     data: promptData,
                                     borderColor: '#4318FF',
                                     backgroundColor: 'rgba(67, 24, 255, 0.1)',
@@ -1899,7 +1852,7 @@
                                     tension: 0.4
                                 },
                                 {
-                                    label: '杈撳嚭 (Completion)',
+                                    label: '输出 (Completion)',
                                     data: completionData,
                                     borderColor: '#FF2E93',
                                     backgroundColor: 'rgba(255, 46, 147, 0.1)',
@@ -1907,7 +1860,7 @@
                                     tension: 0.4
                                 },
                                 {
-                                    label: '缂撳瓨 (Cache)',
+                                    label: '缓存 (Cache)',
                                     data: cacheData,
                                     borderColor: '#05CD99',
                                     backgroundColor: 'rgba(5, 205, 153, 0.1)',
@@ -1958,12 +1911,12 @@
                             formatNumber(r.prompt_cache_hit_tokens || 0) +
                             '</span></td><td class="text-right"><span class="mono" style="font-size:11px;color:var(--t-muted)">' +
                             formatTraffic(r.request_size) + ' / ' + formatTraffic(r.response_size) +
-                            '</span></td><td class="text-right"><span class="cell-mono" style="font-size:12px">楼' +
+                            '</span></td><td class="text-right"><span class="cell-mono" style="font-size:12px">¥' +
                             r.cost_cny.toFixed(4) +
                             '</span></td><td class="text-center"><span class="badge ' +
                             (r.is_success ? "badge-success" : "badge-danger") +
                             '">' +
-                            (r.is_success ? "鎴愬姛" : "澶辫触") +
+                            (r.is_success ? "成功" : "失败") +
                             "</span></td></tr>"
                         );
                     })
@@ -2049,7 +2002,7 @@
                     if (placeholder) placeholder.classList.add("hidden");
                     input.dataset.base64 = base64;
                 } catch (err) {
-                    alert("鍥剧墖澶勭悊澶辫触: " + err.message);
+                    alert("图片处理失败: " + err.message);
                 }
             }
 
@@ -2057,7 +2010,7 @@
                 if (input.files && input.files[0]) {
                     var file = input.files[0];
                     if (file.size > 1 * 1024 * 1024) {
-                        alert("鐢变簬鏁版嵁搴撻檺鍒讹紝鏈湴涓婁紶瑙嗛璇蜂繚鎸佸湪 1MB 浠ュ唴銆傚瑙嗛杈冨ぇ锛岃鍦ㄤ笅鏂圭洿鎺ヨ緭鍏ヨ棰戦摼鎺ャ€?);
+                        alert("由于数据库限制，本地上传视频请保持在 1MB 以内。如视频较大，请在下方直接输入视频链接。");
                         input.value = "";
                         return;
                     }
@@ -2100,7 +2053,7 @@
                     var container = document.getElementById("projects-grid");
                     if (result.data.length === 0) {
                         container.innerHTML =
-                            '<div class="empty-state"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg><p>鏆傛棤椤圭洰</p><p class="hint">鐐瑰嚮"娣诲姞鏂伴」鐩?寮€濮嬪垱寤?/p></div>';
+                            '<div class="empty-state"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg><p>暂无项目</p><p class="hint">点击"添加新项目"开始创建</p></div>';
                         return;
                     }
                     container.innerHTML = result.data
@@ -2121,16 +2074,16 @@
                                 '<div class="project-card-body"><div class="project-card-title">' +
                                 p.name +
                                 '</div><div class="project-card-desc">' +
-                                (p.description || "鏆傛棤鎻忚堪") +
+                                (p.description || "暂无描述") +
                                 '</div><div class="project-card-footer"><span class="project-card-count">' +
                                 (p.tutorialCount || 0) +
-                                ' 涓暀绋?/span><div style="display:flex;gap:4px"><button class="icon-btn" onclick="event.stopPropagation(); editProject(\'' +
+                                ' 个教程</span><div style="display:flex;gap:4px"><button class="icon-btn" onclick="event.stopPropagation(); editProject(\'' +
                                 p.project_id +
-                                '\')" title="缂栬緫"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></button><button class="icon-btn" onclick="event.stopPropagation(); deleteProject(\'' +
+                                '\')" title="编辑"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></button><button class="icon-btn" onclick="event.stopPropagation(); deleteProject(\'' +
                                 p.project_id +
                                 "','" +
                                 p.name +
-                                '\')" title="鍒犻櫎"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></div></div></div></div>'
+                                '\')" title="删除"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></div></div></div></div>'
                             );
                         })
                         .join("");
@@ -2141,15 +2094,15 @@
 
             function showAddProjectModal() {
                 showModal(
-                    "娣诲姞鏂伴」鐩?,
-                    '<div class="form-group"><label class="form-label">椤圭洰鍚嶇О</label><input type="text" id="project-name" class="form-input" required></div><div class="form-group"><label class="form-label">椤圭洰鎻忚堪</label><textarea id="project-description" class="form-textarea" rows="2"></textarea></div><div class="form-row" style="display:flex; gap:16px;"><div class="form-group" style="flex:1"><label class="form-label">娴锋姤鍥剧墖 (16:9)</label><div class="upload-area aspect-video" onclick="document.getElementById(\'project-poster-file\').click()"><input type="file" id="project-poster-file" accept="image/*" class="hidden" onchange="previewImage(this)"><img class="hidden pointer-events-none"><div id="project-poster-placeholder" class="upload-placeholder"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg><span class="upload-text">閫夋嫨娴锋姤</span></div></div></div><div class="form-group" style="flex:1"><label class="form-label">鏈湴瑙嗛 (寤鸿<1MB)</label><div class="upload-area aspect-video" onclick="document.getElementById(\'project-video-file\').click()"><input type="file" id="project-video-file" accept="video/mp4" class="hidden" onchange="previewVideo(this)"><video class="hidden w-full h-full object-contain pointer-events-none"></video><div id="project-video-placeholder" class="upload-placeholder"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg><span class="upload-text">閫夋嫨瑙嗛</span></div></div></div></div><div class="form-group"><label class="form-label">婕旂ず瑙嗛閾炬帴 (澶ц棰戣濉摼鎺?</label><input type="text" id="project-video-url" class="form-input" placeholder="MP4 閾炬帴"></div>',
+                    "添加新项目",
+                    '<div class="form-group"><label class="form-label">项目名称</label><input type="text" id="project-name" class="form-input" required></div><div class="form-group"><label class="form-label">项目描述</label><textarea id="project-description" class="form-textarea" rows="2"></textarea></div><div class="form-row" style="display:flex; gap:16px;"><div class="form-group" style="flex:1"><label class="form-label">海报图片 (16:9)</label><div class="upload-area aspect-video" onclick="document.getElementById(\'project-poster-file\').click()"><input type="file" id="project-poster-file" accept="image/*" class="hidden" onchange="previewImage(this)"><img class="hidden pointer-events-none"><div id="project-poster-placeholder" class="upload-placeholder"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg><span class="upload-text">选择海报</span></div></div></div><div class="form-group" style="flex:1"><label class="form-label">本地视频 (建议<1MB)</label><div class="upload-area aspect-video" onclick="document.getElementById(\'project-video-file\').click()"><input type="file" id="project-video-file" accept="video/mp4" class="hidden" onchange="previewVideo(this)"><video class="hidden w-full h-full object-contain pointer-events-none"></video><div id="project-video-placeholder" class="upload-placeholder"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg><span class="upload-text">选择视频</span></div></div></div></div><div class="form-group"><label class="form-label">演示视频链接 (大视频请填链接)</label><input type="text" id="project-video-url" class="form-input" placeholder="MP4 链接"></div>',
                     async function () {
                         var name = document.getElementById("project-name").value;
                         var description = document.getElementById("project-description").value;
                         var posterUrl = document.getElementById("project-poster-file").dataset.base64 || "";
                         var localVideo = document.getElementById("project-video-file").dataset.base64 || "";
                         var videoUrl = document.getElementById("project-video-url").value || localVideo;
-                        if (!name) throw new Error("椤圭洰鍚嶇О涓嶈兘涓虹┖");
+                        if (!name) throw new Error("项目名称不能为空");
                         var result = await api("/api/projects", {
                             method: "POST",
                             body: JSON.stringify({
@@ -2160,14 +2113,14 @@
                             }),
                         });
                         if (result && result.success) {
-                            alert("椤圭洰鍒涘缓鎴愬姛");
+                            alert("项目创建成功");
                             closeModal();
                             loadProjects();
                         } else {
                             throw new Error(
                                 result && result.error
                                     ? result.error.message
-                                    : "鍒涘缓澶辫触",
+                                    : "创建失败",
                             );
                         }
                     },
@@ -2188,25 +2141,25 @@
                 var vidPhClass = videoUrl ? " hidden" : "";
 
                 showModal(
-                    "缂栬緫椤圭洰",
-                    '<div class="form-group"><label class="form-label">椤圭洰鍚嶇О</label><input type="text" id="edit-project-name" class="form-input" value="' +
+                    "编辑项目",
+                    '<div class="form-group"><label class="form-label">项目名称</label><input type="text" id="edit-project-name" class="form-input" value="' +
                         project.name +
-                        '" required></div><div class="form-group"><label class="form-label">椤圭洰鎻忚堪</label><textarea id="edit-project-description" class="form-textarea" rows="2">' +
+                        '" required></div><div class="form-group"><label class="form-label">项目描述</label><textarea id="edit-project-description" class="form-textarea" rows="2">' +
                         (project.description || "") +
-                        '</textarea></div><div class="form-row" style="display:flex; gap:16px;"><div class="form-group" style="flex:1"><label class="form-label">娴锋姤鍥剧墖</label><div class="upload-area aspect-video" onclick="document.getElementById(\'edit-project-poster-file\').click()"><input type="file" id="edit-project-poster-file" accept="image/*" class="hidden" onchange="previewImage(this)"><img class="pointer-events-none' +
+                        '</textarea></div><div class="form-row" style="display:flex; gap:16px;"><div class="form-group" style="flex:1"><label class="form-label">海报图片</label><div class="upload-area aspect-video" onclick="document.getElementById(\'edit-project-poster-file\').click()"><input type="file" id="edit-project-poster-file" accept="image/*" class="hidden" onchange="previewImage(this)"><img class="pointer-events-none' +
                         imgClass +
                         '"' +
                         imgSrc +
                         ' style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0;"><div class="upload-placeholder' +
                         phClass +
-                        '"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg><span style="font-size:10px;">鍥剧墖</span></div></div></div><div class="form-group" style="flex:1"><label class="form-label">鏈湴瑙嗛</label><div class="upload-area aspect-video" onclick="document.getElementById(\'edit-project-video-file\').click()"><input type="file" id="edit-project-video-file" accept="video/mp4" class="hidden" onchange="previewVideo(this)"><video class="pointer-events-none' + vidClass + '"' + vidSrc + ' style="width:100%; height:100%; object-fit:contain; position:absolute; inset:0;"></video><div class="upload-placeholder' + vidPhClass + '"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg><span style="font-size:10px;">瑙嗛</span></div></div></div></div><div class="form-group"><label class="form-label">婕旂ず瑙嗛閾炬帴</label><input type="text" id="edit-project-video-url" class="form-input" value="' + (videoUrl.startsWith('data:') ? '' : videoUrl) + '" placeholder="MP4 閾炬帴"></div>',
+                        '"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg><span style="font-size:10px;">图片</span></div></div></div><div class="form-group" style="flex:1"><label class="form-label">本地视频</label><div class="upload-area aspect-video" onclick="document.getElementById(\'edit-project-video-file\').click()"><input type="file" id="edit-project-video-file" accept="video/mp4" class="hidden" onchange="previewVideo(this)"><video class="pointer-events-none' + vidClass + '"' + vidSrc + ' style="width:100%; height:100%; object-fit:contain; position:absolute; inset:0;"></video><div class="upload-placeholder' + vidPhClass + '"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg><span style="font-size:10px;">视频</span></div></div></div></div><div class="form-group"><label class="form-label">演示视频链接</label><input type="text" id="edit-project-video-url" class="form-input" value="' + (videoUrl.startsWith('data:') ? '' : videoUrl) + '" placeholder="MP4 链接"></div>',
                     async function () {
                         var newName = document.getElementById("edit-project-name").value;
                         var newDescription = document.getElementById("edit-project-description").value;
                         var newPosterUrl = document.getElementById("edit-project-poster-file").dataset.base64 || posterUrl;
                         var localVideo = document.getElementById("edit-project-video-file").dataset.base64 || "";
                         var newVideoUrl = document.getElementById("edit-project-video-url").value || localVideo || videoUrl;
-                        if (!newName) throw new Error("椤圭洰鍚嶇О涓嶈兘涓虹┖");
+                        if (!newName) throw new Error("项目名称不能为空");
                         var result = await api("/api/projects/update", {
                             method: "POST",
                             body: JSON.stringify({
@@ -2218,11 +2171,11 @@
                             }),
                         });
                         if (result && result.success) {
-                            alert("椤圭洰鏇存柊鎴愬姛");
+                            alert("项目更新成功");
                             closeModal();
                             loadProjects();
                         } else {
-                            throw new Error(result?.error?.message || "鏇存柊澶辫触");
+                            throw new Error(result?.error?.message || "更新失败");
                         }
                     },
                 );
@@ -2236,18 +2189,18 @@
                 document.getElementById('project-detail-empty').style.display = 'none';
                 document.getElementById('project-detail-content').style.display = 'block';
                 document.getElementById('detail-project-name').textContent = project.name;
-                document.getElementById('detail-project-desc').textContent = project.description || "鏆傛棤璇︾粏鎻忚堪";
+                document.getElementById('detail-project-desc').textContent = project.description || "暂无详细描述";
 
                 const videoContainer = document.getElementById('detail-video-container');
                 if (project.video_url) {
                     videoContainer.innerHTML = `
                         <div style="width:100%; height:100%; position:relative;">
                             <video id="project-detail-video" src="${project.video_url}" controls style="width:100%; height:100%; object-fit: contain; cursor:pointer;" onclick="this.paused ? this.play() : this.pause()"></video>
-                            <button onclick="toggleFullscreen()" style="position:absolute; bottom:12px; right:45px; background:rgba(0,0,0,0.5); color:white; border:none; border-radius:4px; padding:4px 8px; font-size:10px; cursor:pointer; backdrop-filter:blur(4px);">鍏ㄥ睆鎾斁</button>
+                            <button onclick="toggleFullscreen()" style="position:absolute; bottom:12px; right:45px; background:rgba(0,0,0,0.5); color:white; border:none; border-radius:4px; padding:4px 8px; font-size:10px; cursor:pointer; backdrop-filter:blur(4px);">全屏播放</button>
                         </div>
                     `;
                 } else {
-                    videoContainer.innerHTML = `<div style="text-align:center; color:rgba(255,255,255,0.4);"><svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg><p style="margin-top:8px; font-size:12px;">鏆傛棤婕旂ず瑙嗛</p></div>`;
+                    videoContainer.innerHTML = `<div style="text-align:center; color:rgba(255,255,255,0.4);"><svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg><p style="margin-top:8px; font-size:12px;">暂无演示视频</p></div>`;
                 }
 
                 loadProjectReviews(projectId);
@@ -2262,44 +2215,44 @@
 
             async function loadProjectReviews(projectId) {
                 const list = document.getElementById('detail-reviews-list');
-                list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--t-muted); font-size:12px;">鍔犺浇涓?..</div>';
+                list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--t-muted); font-size:12px;">加载中...</div>';
                 try {
                     const result = await api(`/api/projects/reviews?projectId=${projectId}`);
                     if (result && result.success) {
                         if (result.data.length === 0) {
-                            list.innerHTML = '<div style="text-align:center; padding:40px 0; color:var(--t-muted); font-size:12px;">鏆傛棤瀹㈡埛鍙嶉</div>';
+                            list.innerHTML = '<div style="text-align:center; padding:40px 0; color:var(--t-muted); font-size:12px;">暂无客户反馈</div>';
                         } else {
                             list.innerHTML = result.data.map(r => `
                                 <div class="review-item" style="background:rgba(255,255,255,0.4); padding:16px; border-radius:16px; border:1px solid var(--glass-border); box-shadow:0 4px 12px rgba(0,0,0,0.03);">
                                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                                         <div style="display:flex; align-items:center; gap:8px;">
                                             <div style="width:24px; height:24px; border-radius:6px; background:linear-gradient(135deg, var(--c-brand), var(--c-accent-1)); display:flex; align-items:center; justify-content:center; color:white; font-size:10px; font-weight:900;">${(r.username || 'U').charAt(0)}</div>
-                                            <span style="font-weight:700; font-size:13px; color:var(--t-dark);">${r.username || '鍖垮悕瀹㈡埛'}</span>
+                                            <span style="font-weight:700; font-size:13px; color:var(--t-dark);">${r.username || '匿名客户'}</span>
                                         </div>
-                                        <div style="color:#FFC107; font-size:12px; letter-spacing:2px;">${'鈽?.repeat(r.rating)}${'鈽?.repeat(5-r.rating)}</div>
+                                        <div style="color:#FFC107; font-size:12px; letter-spacing:2px;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
                                     </div>
                                     <div style="font-size:12px; color:var(--t-main); line-height:1.6; margin-bottom:12px; font-weight:500;">${r.content || ''}</div>
                                     ${r.image_url ? `<img src="${r.image_url}" style="width:100%; border-radius:10px; margin-bottom:12px; cursor:zoom-in; border:1px solid var(--glass-border);" onclick="window.open(this.src)">` : ''}
                                     <div style="display:flex; justify-content:space-between; align-items:center;">
                                         <div style="display:flex; gap:10px; font-size:11px; color:var(--t-muted); font-weight:500;">
-                                            <span>鈴?鏃堕暱: ${r.usage_duration || '-'}</span>
-                                            <span>馃搮 寮€濮? ${r.start_date || '-'}</span>
+                                            <span>⏱ 时长: ${r.usage_duration || '-'}</span>
+                                            <span>📅 开始: ${r.start_date || '-'}</span>
                                         </div>
-                                        ${currentUser.username === 'admin' ? `<button onclick="deleteReview('${r.review_id}', '${projectId}')" style="color:var(--c-accent-1); background:none; border:none; cursor:pointer; font-size:11px; font-weight:600;">鍒犻櫎</button>` : ''}
+                                        ${currentUser.username === 'admin' ? `<button onclick="deleteReview('${r.review_id}', '${projectId}')" style="color:var(--c-accent-1); background:none; border:none; cursor:pointer; font-size:11px; font-weight:600;">删除</button>` : ''}
                                     </div>
                                 </div>
                             `).join('');
                         }
                     }
                 } catch (e) {
-                    list.innerHTML = '鍔犺浇璇勪环澶辫触';
+                    list.innerHTML = '加载评价失败';
                 }
             }
 
             async function showAddReviewModal(projectId) {
                 showModal(
-                    "鍙戣〃瀹㈡埛鐪熷疄璇勪环",
-                    '<div class="form-group"><label class="form-label">璇勫垎 (1-5鏄?</label><select id="review-rating" class="form-select"><option value="5">鈽呪槄鈽呪槄鈽?5鏄?/option><option value="4">鈽呪槄鈽呪槄 4鏄?/option><option value="3">鈽呪槄鈽?3鏄?/option><option value="2">鈽呪槄 2鏄?/option><option value="1">鈽?1鏄?/option></select></div><div class="form-group"><label class="form-label">璇勪环鍐呭</label><textarea id="review-content" class="form-textarea" rows="3" placeholder="鍐欎笅瀹㈡埛鐨勭湡瀹炲弽棣?.."></textarea></div><div class="form-row"><div class="form-group" style="flex:1"><label class="form-label">浣跨敤鏃堕暱</label><input type="text" id="review-duration" class="form-input" placeholder="渚? 3涓湀"></div><div class="form-group" style="flex:1"><label class="form-label">寮€濮嬩娇鐢ㄦ椂闂?/label><input type="date" id="review-start" class="form-input"></div></div><div class="form-group"><label class="form-label">瀹炴媿鍥剧墖</label><div class="upload-area" style="aspect-ratio:3/2" onclick="document.getElementById(\'review-image-file\').click()"><input type="file" id="review-image-file" accept="image/*" class="hidden" onchange="previewImage(this)"><img class="hidden pointer-events-none"><div id="review-image-placeholder" class="upload-placeholder"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg><span class="upload-text">鐐瑰嚮涓婁紶瀹炴媿鍥?/span></div></div></div>',
+                    "发表客户真实评价",
+                    '<div class="form-group"><label class="form-label">评分 (1-5星)</label><select id="review-rating" class="form-select"><option value="5">★★★★★ 5星</option><option value="4">★★★★ 4星</option><option value="3">★★★ 3星</option><option value="2">★★ 2星</option><option value="1">★ 1星</option></select></div><div class="form-group"><label class="form-label">评价内容</label><textarea id="review-content" class="form-textarea" rows="3" placeholder="写下客户的真实反馈..."></textarea></div><div class="form-row"><div class="form-group" style="flex:1"><label class="form-label">使用时长</label><input type="text" id="review-duration" class="form-input" placeholder="例: 3个月"></div><div class="form-group" style="flex:1"><label class="form-label">开始使用时间</label><input type="date" id="review-start" class="form-input"></div></div><div class="form-group"><label class="form-label">实拍图片</label><div class="upload-area" style="aspect-ratio:3/2" onclick="document.getElementById(\'review-image-file\').click()"><input type="file" id="review-image-file" accept="image/*" class="hidden" onchange="previewImage(this)"><img class="hidden pointer-events-none"><div id="review-image-placeholder" class="upload-placeholder"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg><span class="upload-text">点击上传实拍图</span></div></div></div>',
                     async function () {
                         const rating = document.getElementById('review-rating').value;
                         const content = document.getElementById('review-content').value;
@@ -2320,18 +2273,18 @@
                         });
 
                         if (result && result.success) {
-                            alert("璇勪环鍙戝竷鎴愬姛");
+                            alert("评价发布成功");
                             closeModal();
                             loadProjectReviews(projectId);
                         } else {
-                            throw new Error(result?.error?.message || "鍙戝竷澶辫触");
+                            throw new Error(result?.error?.message || "发布失败");
                         }
                     }
                 );
             }
 
             async function deleteReview(reviewId, projectId) {
-                if (!confirm("纭畾瑕佸垹闄よ繖鏉¤瘎浠峰悧?")) return;
+                if (!confirm("确定要删除这条评价吗?")) return;
                 try {
                     const result = await api("/api/projects/reviews/delete", {
                         method: "POST",
@@ -2341,24 +2294,24 @@
                         loadProjectReviews(projectId);
                     }
                 } catch (e) {
-                    alert("鍒犻櫎澶辫触: " + e.message);
+                    alert("删除失败: " + e.message);
                 }
             }
 
             async function deleteProject(projectId, name) {
-                if (!confirm('纭畾瑕佸垹闄ら」鐩?' + name + '"鍚楋紵')) return;
+                if (!confirm('确定要删除项目"' + name + '"吗？')) return;
                 var result = await api("/api/projects/delete", {
                     method: "POST",
                     body: JSON.stringify({ projectId: projectId }),
                 });
                 if (result && result.success) {
-                    alert("椤圭洰鍒犻櫎鎴愬姛");
+                    alert("项目删除成功");
                     loadProjects();
                 } else {
                     alert(
                         result && result.error
                             ? result.error.message
-                            : "鍒犻櫎澶辫触",
+                            : "删除失败",
                     );
                 }
             }
@@ -2371,7 +2324,7 @@
                         "tutorial-project-filter",
                     );
                     select.innerHTML =
-                        '<option value="">鍏ㄩ儴椤圭洰</option>' +
+                        '<option value="">全部项目</option>' +
                         result.data
                             .map(function (p) {
                                 return (
@@ -2409,8 +2362,8 @@
                         var videoHtml = t.video_url
                             ? '<a href="' +
                               t.video_url +
-                              '" target="_blank" style="font-size:13px">鏌ョ湅瑙嗛</a>'
-                            : '<span style="font-size:13px;color:var(--text-muted)">鏃?/span>';
+                              '" target="_blank" style="font-size:13px">查看视频</a>'
+                            : '<span style="font-size:13px;color:var(--text-muted)">无</span>';
                         var content = (t.content || "").replace(/'/g, "\\'");
                         var pricing = (t.pricing_info || "").replace(
                             /'/g,
@@ -2424,7 +2377,7 @@
                             "</span></td><td>" +
                             videoHtml +
                             '</td><td><span style="font-size:13px;color:var(--text-secondary)">' +
-                            (t.pricing_info ? "宸查厤缃? : "鏈厤缃?) +
+                            (t.pricing_info ? "已配置" : "未配置") +
                             '</span></td><td><div class="cell-actions"><button class="icon-btn" onclick="editTutorial(\'' +
                             t.tutorial_id +
                             "','" +
@@ -2439,11 +2392,11 @@
                             pricing +
                             "'," +
                             t.sort_order +
-                            ')" title="缂栬緫"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></button><button class="icon-btn" onclick="deleteTutorial(\'' +
+                            ')" title="编辑"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></button><button class="icon-btn" onclick="deleteTutorial(\'' +
                             t.tutorial_id +
                             "','" +
                             t.title +
-                            '\')" title="鍒犻櫎"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></div></td></tr>'
+                            '\')" title="删除"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></div></td></tr>'
                         );
                     })
                     .join("");
@@ -2459,7 +2412,7 @@
                     "/api/projects?page=1&pageSize=100",
                 );
                 if (!projectsResult || !projectsResult.success) {
-                    alert("鍔犺浇椤圭洰鍒楄〃澶辫触");
+                    alert("加载项目列表失败");
                     return;
                 }
                 var projectOptions = projectsResult.data
@@ -2474,10 +2427,10 @@
                     })
                     .join("");
                 showModal(
-                    "娣诲姞浣跨敤璇存槑",
-                    '<div class="form-group"><label class="form-label">閫夋嫨椤圭洰</label><select id="tutorial-project" class="form-select">' +
+                    "添加使用说明",
+                    '<div class="form-group"><label class="form-label">选择项目</label><select id="tutorial-project" class="form-select">' +
                         projectOptions +
-                        '</select></div><div class="form-group"><label class="form-label">鏍囬</label><input type="text" id="tutorial-title" class="form-input" required></div><div class="form-group"><label class="form-label">鍐呭</label><textarea id="tutorial-content" class="form-textarea" rows="4"></textarea></div><div class="form-group"><label class="form-label">瑙嗛URL</label><input type="text" id="tutorial-video" class="form-input" placeholder="https://..."></div><div class="form-group"><label class="form-label">璁¤垂璇存槑</label><textarea id="tutorial-pricing" class="form-textarea" rows="2"></textarea></div><div class="form-group"><label class="form-label">鎺掑簭</label><input type="number" id="tutorial-sort" class="form-input" value="0" min="0"></div>',
+                        '</select></div><div class="form-group"><label class="form-label">标题</label><input type="text" id="tutorial-title" class="form-input" required></div><div class="form-group"><label class="form-label">内容</label><textarea id="tutorial-content" class="form-textarea" rows="4"></textarea></div><div class="form-group"><label class="form-label">视频URL</label><input type="text" id="tutorial-video" class="form-input" placeholder="https://..."></div><div class="form-group"><label class="form-label">计费说明</label><textarea id="tutorial-pricing" class="form-textarea" rows="2"></textarea></div><div class="form-group"><label class="form-label">排序</label><input type="number" id="tutorial-sort" class="form-input" value="0" min="0"></div>',
                     async function () {
                         var projectId =
                             document.getElementById("tutorial-project").value;
@@ -2494,7 +2447,7 @@
                                 document.getElementById("tutorial-sort").value,
                             ) || 0;
                         if (!projectId || !title)
-                            throw new Error("椤圭洰鍜屾爣棰樹笉鑳戒负绌?);
+                            throw new Error("项目和标题不能为空");
                         var result = await api("/api/tutorials", {
                             method: "POST",
                             body: JSON.stringify({
@@ -2507,14 +2460,14 @@
                             }),
                         });
                         if (result && result.success) {
-                            alert("浣跨敤璇存槑鍒涘缓鎴愬姛");
+                            alert("使用说明创建成功");
                             closeModal();
                             loadTutorials();
                         } else {
                             throw new Error(
                                 result && result.error
                                     ? result.error.message
-                                    : "鍒涘缓澶辫触",
+                                    : "创建失败",
                             );
                         }
                     },
@@ -2531,16 +2484,16 @@
                 sortOrder,
             ) {
                 showModal(
-                    "缂栬緫浣跨敤璇存槑",
-                    '<div class="form-group"><label class="form-label">鏍囬</label><input type="text" id="edit-tutorial-title" class="form-input" value="' +
+                    "编辑使用说明",
+                    '<div class="form-group"><label class="form-label">标题</label><input type="text" id="edit-tutorial-title" class="form-input" value="' +
                         title +
-                        '" required></div><div class="form-group"><label class="form-label">鍐呭</label><textarea id="edit-tutorial-content" class="form-textarea" rows="4">' +
+                        '" required></div><div class="form-group"><label class="form-label">内容</label><textarea id="edit-tutorial-content" class="form-textarea" rows="4">' +
                         content +
-                        '</textarea></div><div class="form-group"><label class="form-label">瑙嗛URL</label><input type="text" id="edit-tutorial-video" class="form-input" value="' +
+                        '</textarea></div><div class="form-group"><label class="form-label">视频URL</label><input type="text" id="edit-tutorial-video" class="form-input" value="' +
                         videoUrl +
-                        '"></div><div class="form-group"><label class="form-label">璁¤垂璇存槑</label><textarea id="edit-tutorial-pricing" class="form-textarea" rows="2">' +
+                        '"></div><div class="form-group"><label class="form-label">计费说明</label><textarea id="edit-tutorial-pricing" class="form-textarea" rows="2">' +
                         pricingInfo +
-                        '</textarea></div><div class="form-group"><label class="form-label">鎺掑簭</label><input type="number" id="edit-tutorial-sort" class="form-input" value="' +
+                        '</textarea></div><div class="form-group"><label class="form-label">排序</label><input type="number" id="edit-tutorial-sort" class="form-input" value="' +
                         sortOrder +
                         '" min="0"></div>',
                     async function () {
@@ -2561,7 +2514,7 @@
                                 document.getElementById("edit-tutorial-sort")
                                     .value,
                             ) || 0;
-                        if (!newTitle) throw new Error("鏍囬涓嶈兘涓虹┖");
+                        if (!newTitle) throw new Error("标题不能为空");
                         var result = await api("/api/tutorials/update", {
                             method: "POST",
                             body: JSON.stringify({
@@ -2574,14 +2527,14 @@
                             }),
                         });
                         if (result && result.success) {
-                            alert("浣跨敤璇存槑鏇存柊鎴愬姛");
+                            alert("使用说明更新成功");
                             closeModal();
                             loadTutorials();
                         } else {
                             throw new Error(
                                 result && result.error
                                     ? result.error.message
-                                    : "鏇存柊澶辫触",
+                                    : "更新失败",
                             );
                         }
                     },
@@ -2589,19 +2542,19 @@
             }
 
             async function deleteTutorial(tutorialId, title) {
-                if (!confirm('纭畾瑕佸垹闄や娇鐢ㄨ鏄?' + title + '"鍚楋紵')) return;
+                if (!confirm('确定要删除使用说明"' + title + '"吗？')) return;
                 var result = await api("/api/tutorials/delete", {
                     method: "POST",
                     body: JSON.stringify({ tutorialId: tutorialId }),
                 });
                 if (result && result.success) {
-                    alert("浣跨敤璇存槑鍒犻櫎鎴愬姛");
+                    alert("使用说明删除成功");
                     loadTutorials();
                 } else {
                     alert(
                         result && result.error
                             ? result.error.message
-                            : "鍒犻櫎澶辫触",
+                            : "删除失败",
                     );
                 }
             }
@@ -2611,7 +2564,7 @@
                 
                 // Show a quick toast or alert to confirm interaction
                 var toast = document.createElement('div');
-                toast.textContent = "宸插垏鎹㈣嚦宸ヤ綔鍖? " + name;
+                toast.textContent = "已切换至工作区: " + name;
                 toast.style.cssText = "position:fixed;bottom:20px;right:20px;background:var(--color-primary);color:white;padding:12px 24px;border-radius:var(--radius-md);box-shadow:var(--shadow-md);z-index:9999;animation:fadeIn 0.3s ease-out;";
                 document.body.appendChild(toast);
                 
@@ -2624,7 +2577,7 @@
                 // Reload dashboard data
                 if (currentPage === 'dashboard') loadDashboard();
             }
-        
+
             let selectedAmount = 50;
             let selectedPayMethod = 'alipay';
 
