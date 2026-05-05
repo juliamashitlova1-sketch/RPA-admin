@@ -1846,6 +1846,42 @@
                 }
             }
 
+            async function previewVideo(input) {
+                if (input.files && input.files[0]) {
+                    var file = input.files[0];
+                    if (file.size > 20 * 1024 * 1024) {
+                        alert("视频文件过大，请保持在 20MB 以内");
+                        input.value = "";
+                        return;
+                    }
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        var base64 = e.target.result;
+                        input.dataset.base64 = base64;
+                        var container = input.closest('.upload-area');
+                        var video = container.querySelector('video');
+                        var ph = container.querySelector('.upload-placeholder');
+                        
+                        video.src = base64;
+                        video.classList.remove('hidden');
+                        if (ph) ph.classList.add('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            function toggleFullscreen() {
+                const video = document.getElementById('project-detail-video');
+                if (!video) return;
+                if (video.requestFullscreen) {
+                    video.requestFullscreen();
+                } else if (video.webkitRequestFullscreen) {
+                    video.webkitRequestFullscreen();
+                } else if (video.msRequestFullscreen) {
+                    video.msRequestFullscreen();
+                }
+            }
+
             async function loadProjects() {
                 try {
                     var result = await api("/api/projects?page=1&pageSize=100");
@@ -1899,16 +1935,12 @@
             function showAddProjectModal() {
                 showModal(
                     "添加新项目",
-                    '<div class="form-group"><label class="form-label">项目名称</label><input type="text" id="project-name" class="form-input" required></div><div class="form-group"><label class="form-label">项目描述</label><textarea id="project-description" class="form-textarea" rows="2"></textarea></div><div class="form-group"><label class="form-label">演示视频链接</label><input type="text" id="project-video" class="form-input" placeholder="MP4 链接"></div><div class="form-group"><label class="form-label">海报图片 (16:9)</label><div class="upload-area aspect-video" onclick="document.getElementById(\'project-poster-file\').click()"><input type="file" id="project-poster-file" accept="image/*" class="hidden" onchange="previewImage(this)"><img class="hidden pointer-events-none"><div id="project-poster-placeholder" class="upload-placeholder"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg><span class="upload-text">点击上传图片</span></div></div></div>',
+                    '<div class="form-group"><label class="form-label">项目名称</label><input type="text" id="project-name" class="form-input" required></div><div class="form-group"><label class="form-label">项目描述</label><textarea id="project-description" class="form-textarea" rows="2"></textarea></div><div class="form-row"><div class="form-group" style="flex:1"><label class="form-label">海报图片 (16:9)</label><div class="upload-area aspect-video" onclick="document.getElementById(\'project-poster-file\').click()"><input type="file" id="project-poster-file" accept="image/*" class="hidden" onchange="previewImage(this)"><img class="hidden pointer-events-none"><div id="project-poster-placeholder" class="upload-placeholder"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg><span class="upload-text">选择海报</span></div></div></div><div class="form-group" style="flex:1"><label class="form-label">演示视频 (20MB内)</label><div class="upload-area aspect-video" onclick="document.getElementById(\'project-video-file\').click()"><input type="file" id="project-video-file" accept="video/mp4" class="hidden" onchange="previewVideo(this)"><video class="hidden w-full h-full object-contain pointer-events-none"></video><div id="project-video-placeholder" class="upload-placeholder"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg><span class="upload-text">选择视频</span></div></div></div></div>',
                     async function () {
-                        var name =
-                            document.getElementById("project-name").value;
-                        var description = document.getElementById(
-                            "project-description",
-                        ).value;
-                        var posterUrl =
-                            document.getElementById("project-poster-file")
-                                .dataset.base64 || "";
+                        var name = document.getElementById("project-name").value;
+                        var description = document.getElementById("project-description").value;
+                        var posterUrl = document.getElementById("project-poster-file").dataset.base64 || "";
+                        var videoUrl = document.getElementById("project-video-file").dataset.base64 || "";
                         if (!name) throw new Error("项目名称不能为空");
                         var result = await api("/api/projects", {
                             method: "POST",
@@ -1916,7 +1948,7 @@
                                 name: name,
                                 description: description,
                                 posterUrl: posterUrl,
-                                videoUrl: document.getElementById("project-video").value,
+                                videoUrl: videoUrl,
                             }),
                         });
                         if (result && result.success) {
@@ -1937,32 +1969,29 @@
             function editProject(projectId) {
                 var project = projectsData[projectId];
                 if (!project) return;
-                var posterUrl = project.poster_url || "";
-                var imgSrc = posterUrl ? ' src="' + posterUrl + '"' : "";
-                var imgClass = posterUrl ? "" : " hidden";
-                var phClass = posterUrl ? " hidden" : "";
+                var videoUrl = project.video_url || "";
+                var vidSrc = videoUrl ? ' src="' + videoUrl + '"' : "";
+                var vidClass = videoUrl ? "" : " hidden";
+                var vidPhClass = videoUrl ? " hidden" : "";
+
                 showModal(
                     "编辑项目",
                     '<div class="form-group"><label class="form-label">项目名称</label><input type="text" id="edit-project-name" class="form-input" value="' +
                         project.name +
                         '" required></div><div class="form-group"><label class="form-label">项目描述</label><textarea id="edit-project-description" class="form-textarea" rows="2">' +
                         (project.description || "") +
-                        '</textarea></div><div class="form-group"><label class="form-label">演示视频链接</label><input type="text" id="edit-project-video" class="form-input" value="' + (project.video_url || "") + '" placeholder="MP4 链接"></div><div class="form-group"><label class="form-label">海报图片 (16:9)</label><div class="upload-area aspect-video" onclick="document.getElementById(\'edit-project-poster-file\').click()"><input type="file" id="edit-project-poster-file" accept="image/*" class="hidden" onchange="previewImage(this)"><img class="pointer-events-none' +
+                        '</textarea></div><div class="form-row"><div class="form-group" style="flex:1"><label class="form-label">海报图片</label><div class="upload-area aspect-video" onclick="document.getElementById(\'edit-project-poster-file\').click()"><input type="file" id="edit-project-poster-file" accept="image/*" class="hidden" onchange="previewImage(this)"><img class="pointer-events-none' +
                         imgClass +
                         '"' +
                         imgSrc +
-                        '><div id="edit-project-poster-placeholder" class="upload-placeholder' +
+                        '><div class="upload-placeholder' +
                         phClass +
-                        '"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg><span class="upload-text">点击上传新图片</span></div></div></div>',
+                        '"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div></div></div><div class="form-group" style="flex:1"><label class="form-label">演示视频</label><div class="upload-area aspect-video" onclick="document.getElementById(\'edit-project-video-file\').click()"><input type="file" id="edit-project-video-file" accept="video/mp4" class="hidden" onchange="previewVideo(this)"><video class="w-full h-full object-contain pointer-events-none' + vidClass + '"' + vidSrc + '></video><div class="upload-placeholder' + vidPhClass + '"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></div></div></div></div>',
                     async function () {
-                        var newName =
-                            document.getElementById("edit-project-name").value;
-                        var newDescription = document.getElementById(
-                            "edit-project-description",
-                        ).value;
-                        var newPosterUrl =
-                            document.getElementById("edit-project-poster-file")
-                                .dataset.base64 || posterUrl;
+                        var newName = document.getElementById("edit-project-name").value;
+                        var newDescription = document.getElementById("edit-project-description").value;
+                        var newPosterUrl = document.getElementById("edit-project-poster-file").dataset.base64 || posterUrl;
+                        var newVideoUrl = document.getElementById("edit-project-video-file").dataset.base64 || videoUrl;
                         if (!newName) throw new Error("项目名称不能为空");
                         var result = await api("/api/projects/update", {
                             method: "POST",
@@ -1971,8 +2000,7 @@
                                 name: newName,
                                 description: newDescription,
                                 posterUrl: newPosterUrl,
-                                videoUrl: document.getElementById("edit-project-video").value,
-                                status: status,
+                                videoUrl: newVideoUrl,
                             }),
                         });
                         if (result && result.success) {
@@ -2002,7 +2030,12 @@
 
                 const videoContainer = document.getElementById('detail-video-container');
                 if (project.video_url) {
-                    videoContainer.innerHTML = `<video src="${project.video_url}" controls style="width:100%; height:100%; object-fit: contain;"></video>`;
+                    videoContainer.innerHTML = `
+                        <div style="width:100%; height:100%; position:relative;">
+                            <video id="project-detail-video" src="${project.video_url}" controls style="width:100%; height:100%; object-fit: contain; cursor:pointer;" onclick="this.paused ? this.play() : this.pause()"></video>
+                            <button onclick="toggleFullscreen()" style="position:absolute; bottom:12px; right:45px; background:rgba(0,0,0,0.5); color:white; border:none; border-radius:4px; padding:4px 8px; font-size:10px; cursor:pointer; backdrop-filter:blur(4px);">全屏播放</button>
+                        </div>
+                    `;
                 } else {
                     videoContainer.innerHTML = `<div style="text-align:center; color:rgba(255,255,255,0.4);"><svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg><p style="margin-top:8px; font-size:12px;">暂无演示视频</p></div>`;
                 }
