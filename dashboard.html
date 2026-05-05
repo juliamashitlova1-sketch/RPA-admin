@@ -1092,7 +1092,7 @@
                         break;
 
                     case "recharge":
-                        // No data needs to be loaded initially
+                        loadRechargeQRs();
                         break;
                 }
             }
@@ -2034,6 +2034,58 @@
                     };
                     reader.readAsDataURL(file);
                 }
+            }
+
+            function previewSpecificQR(input, type) {
+                var file = input.files[0];
+                if (!file) return;
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var base64 = e.target.result;
+                    // Save to localStorage so user.html can read
+                    var keyMap = {
+                        'contact': 'contact_qr_code',
+                        'wechat': 'wechat_pay_qr',
+                        'alipay': 'alipay_pay_qr'
+                    };
+                    if (keyMap[type]) {
+                        localStorage.setItem(keyMap[type], base64);
+                    }
+                    // Show preview
+                    var preview = document.getElementById(type + '-qr-preview');
+                    var placeholder = document.getElementById(type + '-qr-placeholder');
+                    if (preview) {
+                        preview.src = base64;
+                        preview.style.display = 'block';
+                        preview.style.width = '100%';
+                        preview.style.height = '100%';
+                        preview.style.objectFit = 'contain';
+                    }
+                    if (placeholder) placeholder.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function loadRechargeQRs() {
+                var qrMap = {
+                    'contact': localStorage.getItem('contact_qr_code'),
+                    'wechat': localStorage.getItem('wechat_pay_qr'),
+                    'alipay': localStorage.getItem('alipay_pay_qr')
+                };
+                Object.keys(qrMap).forEach(function(type) {
+                    if (qrMap[type]) {
+                        var preview = document.getElementById(type + '-qr-preview');
+                        var placeholder = document.getElementById(type + '-qr-placeholder');
+                        if (preview) {
+                            preview.src = qrMap[type];
+                            preview.style.display = 'block';
+                            preview.style.width = '100%';
+                            preview.style.height = '100%';
+                            preview.style.objectFit = 'contain';
+                        }
+                        if (placeholder) placeholder.style.display = 'none';
+                    }
+                });
             }
 
             function toggleFullscreen() {
