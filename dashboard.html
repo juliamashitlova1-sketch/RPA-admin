@@ -860,9 +860,14 @@
             <!-- Projects -->
             <div id="page-projects" class="page-content hidden" style="max-width: 100%;">
                 <div class="page-header">
-                    <div>
-                        <h2 class="page-title">项目管理</h2>
-                        <p class="page-subtitle">管理项目详情、视频介绍及客户真实评价</p>
+                    <div style="display:flex; align-items:flex-end; gap:16px;">
+                        <div>
+                            <h2 class="page-title">项目管理</h2>
+                            <p class="page-subtitle">管理项目详情、视频介绍及客户真实评价</p>
+                        </div>
+                        <div style="margin-bottom: 6px; padding: 4px 12px; background: rgba(238,93,80,0.1); border: 1px solid rgba(238,93,80,0.2); border-radius: 8px; color: var(--c-accent-1); font-size: 13px; font-weight: 600;">
+                            💡 免费开源软件请加微信领取，请尊重技术成果！
+                        </div>
                     </div>
                     <button class="btn btn-primary" onclick="showAddProjectModal()">添加新项目</button>
                 </div>
@@ -2178,6 +2183,8 @@
                             var rateHtml = '';
                             if (p.is_free) {
                                 rateHtml = '<span class="project-card-count" style="background:rgba(5,205,153,0.1); color:var(--c-success); margin-left:8px;">免费开源</span>';
+                            } else if (p.is_vip_free) {
+                                rateHtml = '<span class="project-card-count" style="background:rgba(67,24,255,0.1); color:var(--c-brand); margin-left:8px;">会员专享，免费使用</span>';
                             } else if (p.consumption_rate) {
                                 rateHtml = '<span class="project-card-count" style="background:rgba(238,93,80,0.1); color:var(--c-accent-1); margin-left:8px;">倍率: ' + p.consumption_rate + '</span>';
                             }
@@ -2209,12 +2216,13 @@
             function showAddProjectModal() {
                 showModal(
                     "添加新项目",
-                    '<div class="form-group"><label class="form-label">项目名称</label><input type="text" id="project-name" class="form-input" required></div><div class="form-group"><label class="form-label">项目描述</label><textarea id="project-description" class="form-textarea" rows="2"></textarea></div><div class="form-row" style="display:flex; gap:16px; margin-bottom: 16px;"><div class="form-group" style="flex:1"><label class="form-label">消耗倍率</label><input type="number" id="project-rate" class="form-input" value="1" step="0.1" min="0"></div><div class="form-group" style="flex:1; display:flex; align-items:center; gap:12px; padding-top:30px;"><input type="checkbox" id="project-is-free" style="width:20px; height:20px; cursor:pointer;"><label for="project-is-free" style="font-size:14px; font-weight:700; color:var(--t-dark); cursor:pointer;">标记为免费开源</label></div></div><div class="form-row" style="display:flex; gap:16px;"><div class="form-group" style="flex:1"><label class="form-label">海报图片 (16:9)</label><div class="upload-area aspect-video" onclick="document.getElementById(\'project-poster-file\').click()"><input type="file" id="project-poster-file" accept="image/*" class="hidden" onchange="previewImage(this)"><img class="hidden pointer-events-none"><div id="project-poster-placeholder" class="upload-placeholder"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2-2v12a2 2 0 002 2z"></path></svg><span class="upload-text">选择海报</span></div></div></div><div class="form-group" style="flex:1"><label class="form-label">本地视频 (建议<1MB)</label><div class="upload-area aspect-video" onclick="document.getElementById(\'project-video-file\').click()"><input type="file" id="project-video-file" accept="video/mp4" class="hidden" onchange="previewVideo(this)"><video class="hidden w-full h-full object-contain pointer-events-none"></video><div id="project-video-placeholder" class="upload-placeholder"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg><span class="upload-text">选择视频</span></div></div></div></div><div class="form-group"><label class="form-label">演示视频链接 (大视频请填链接)</label><input type="text" id="project-video-url" class="form-input" placeholder="MP4 链接"></div>',
+                    '<div class="form-group"><label class="form-label">项目名称</label><input type="text" id="project-name" class="form-input" required></div><div class="form-group"><label class="form-label">项目描述</label><textarea id="project-description" class="form-textarea" rows="2"></textarea></div><div class="form-row" style="display:flex; gap:16px; margin-bottom: 16px;"><div class="form-group" style="flex:1"><label class="form-label">消耗倍率</label><input type="number" id="project-rate" class="form-input" value="1" step="0.1" min="0"></div><div class="form-group" style="flex:2; display:flex; align-items:center; gap:12px; padding-top:30px;"><div style="display:flex; align-items:center; gap:6px;"><input type="checkbox" id="project-is-free" style="width:18px; height:18px; cursor:pointer;"><label for="project-is-free" style="font-size:12px; font-weight:700; color:var(--t-dark); cursor:pointer;">免费开源</label></div><div style="display:flex; align-items:center; gap:6px;"><input type="checkbox" id="project-is-vip-free" style="width:18px; height:18px; cursor:pointer;"><label for="project-is-vip-free" style="font-size:12px; font-weight:700; color:var(--t-dark); cursor:pointer;">会员专享,免费使用</label></div></div></div><div class="form-row" style="display:flex; gap:16px;"><div class="form-group" style="flex:1"><label class="form-label">海报图片 (16:9)</label><div class="upload-area aspect-video" onclick="document.getElementById(\'project-poster-file\').click()"><input type="file" id="project-poster-file" accept="image/*" class="hidden" onchange="previewImage(this)"><img class="hidden pointer-events-none"><div id="project-poster-placeholder" class="upload-placeholder"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2-2v12a2 2 0 002 2z"></path></svg><span class="upload-text">选择海报</span></div></div></div><div class="form-group" style="flex:1"><label class="form-label">本地视频 (建议<1MB)</label><div class="upload-area aspect-video" onclick="document.getElementById(\'project-video-file\').click()"><input type="file" id="project-video-file" accept="video/mp4" class="hidden" onchange="previewVideo(this)"><video class="hidden w-full h-full object-contain pointer-events-none"></video><div id="project-video-placeholder" class="upload-placeholder"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg><span class="upload-text">选择视频</span></div></div></div></div><div class="form-group"><label class="form-label">演示视频链接 (大视频请填链接)</label><input type="text" id="project-video-url" class="form-input" placeholder="MP4 链接"></div>',
                     async function () {
                         var name = document.getElementById("project-name").value;
                         var description = document.getElementById("project-description").value;
                         var rate = parseFloat(document.getElementById("project-rate").value) || 1;
                         var isFree = document.getElementById("project-is-free").checked ? 1 : 0;
+                        var isVipFree = document.getElementById("project-is-vip-free").checked ? 1 : 0;
                         var posterUrl = document.getElementById("project-poster-file").dataset.base64 || "";
                         var localVideo = document.getElementById("project-video-file").dataset.base64 || "";
                         var videoUrl = document.getElementById("project-video-url").value || localVideo;
@@ -2226,6 +2234,7 @@
                                 description: description,
                                 consumptionRate: rate,
                                 isFree: isFree,
+                                isVipFree: isVipFree,
                                 posterUrl: posterUrl,
                                 videoUrl: videoUrl,
                             }),
@@ -2235,11 +2244,7 @@
                             closeModal();
                             loadProjects();
                         } else {
-                            throw new Error(
-                                result && result.error
-                                    ? result.error.message
-                                    : "创建失败",
-                            );
+                            throw new Error(result?.error?.message || "创建失败");
                         }
                     },
                 );
@@ -2259,13 +2264,14 @@
                 var vidPhClass = videoUrl ? " hidden" : "";
 
                 var isFreeChecked = project.is_free ? "checked" : "";
+                var isVipFreeChecked = project.is_vip_free ? "checked" : "";
                 showModal(
                     "编辑项目",
                     '<div class="form-group"><label class="form-label">项目名称</label><input type="text" id="edit-project-name" class="form-input" value="' +
                         project.name +
                         '" required></div><div class="form-group"><label class="form-label">项目描述</label><textarea id="edit-project-description" class="form-textarea" rows="2">' +
                         (project.description || "") +
-                        '</textarea></div><div class="form-row" style="display:flex; gap:16px; margin-bottom: 16px;"><div class="form-group" style="flex:1"><label class="form-label">消耗倍率</label><input type="number" id="edit-project-rate" class="form-input" value="' + (project.consumption_rate || 1) + '" step="0.1" min="0"></div><div class="form-group" style="flex:1; display:flex; align-items:center; gap:12px; padding-top:30px;"><input type="checkbox" id="edit-project-is-free" style="width:20px; height:20px; cursor:pointer;" ' + isFreeChecked + '><label for="edit-project-is-free" style="font-size:14px; font-weight:700; color:var(--t-dark); cursor:pointer;">标记为免费开源</label></div></div><div class="form-row" style="display:flex; gap:16px;"><div class="form-group" style="flex:1"><label class="form-label">海报图片</label><div class="upload-area aspect-video" onclick="document.getElementById(\'edit-project-poster-file\').click()"><input type="file" id="edit-project-poster-file" accept="image/*" class="hidden" onchange="previewImage(this)"><img class="pointer-events-none' +
+                        '</textarea></div><div class="form-row" style="display:flex; gap:16px; margin-bottom: 16px;"><div class="form-group" style="flex:1"><label class="form-label">消耗倍率</label><input type="number" id="edit-project-rate" class="form-input" value="' + (project.consumption_rate || 1) + '" step="0.1" min="0"></div><div class="form-group" style="flex:2; display:flex; align-items:center; gap:12px; padding-top:30px;"><div style="display:flex; align-items:center; gap:6px;"><input type="checkbox" id="edit-project-is-free" style="width:18px; height:18px; cursor:pointer;" ' + isFreeChecked + '><label for="edit-project-is-free" style="font-size:12px; font-weight:700; color:var(--t-dark); cursor:pointer;">免费开源</label></div><div style="display:flex; align-items:center; gap:6px;"><input type="checkbox" id="edit-project-is-vip-free" style="width:18px; height:18px; cursor:pointer;" ' + isVipFreeChecked + '><label for="edit-project-is-vip-free" style="font-size:12px; font-weight:700; color:var(--t-dark); cursor:pointer;">会员专享,免费使用</label></div></div></div><div class="form-row" style="display:flex; gap:16px;"><div class="form-group" style="flex:1"><label class="form-label">海报图片</label><div class="upload-area aspect-video" onclick="document.getElementById(\'edit-project-poster-file\').click()"><input type="file" id="edit-project-poster-file" accept="image/*" class="hidden" onchange="previewImage(this)"><img class="pointer-events-none' +
                         imgClass +
                         '"' +
                         imgSrc +
@@ -2277,6 +2283,7 @@
                         var newDescription = document.getElementById("edit-project-description").value;
                         var newRate = parseFloat(document.getElementById("edit-project-rate").value) || 1;
                         var newIsFree = document.getElementById("edit-project-is-free").checked ? 1 : 0;
+                        var newIsVipFree = document.getElementById("edit-project-is-vip-free").checked ? 1 : 0;
                         var newPosterUrl = document.getElementById("edit-project-poster-file").dataset.base64 || posterUrl;
                         var localVideo = document.getElementById("edit-project-video-file").dataset.base64 || "";
                         var newVideoUrl = document.getElementById("edit-project-video-url").value || localVideo || videoUrl;
@@ -2289,6 +2296,7 @@
                                 description: newDescription,
                                 consumptionRate: newRate,
                                 isFree: newIsFree,
+                                isVipFree: newIsVipFree,
                                 posterUrl: newPosterUrl,
                                 videoUrl: newVideoUrl,
                             }),
@@ -2315,6 +2323,8 @@
                 var badgeHtml = '';
                 if (project.is_free) {
                     badgeHtml = '<span class="badge badge-success" style="margin-left:12px; vertical-align:middle;">免费开源</span>';
+                } else if (project.is_vip_free) {
+                    badgeHtml = '<span class="badge badge-success" style="margin-left:12px; vertical-align:middle; background:var(--c-brand);">会员专享，免费使用</span>';
                 } else if (project.consumption_rate) {
                     badgeHtml = '<span class="badge badge-danger" style="margin-left:12px; vertical-align:middle; background:var(--c-accent-1);">消耗倍率: ' + project.consumption_rate + '</span>';
                 }
