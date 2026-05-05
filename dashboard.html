@@ -557,14 +557,14 @@
             /* Project Cards */
             .project-grid {
                 display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-                gap: 20px;
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 12px;
             }
             .project-card {
                 background: var(--glass-bg);
                 backdrop-filter: blur(24px);
                 border: 1px solid var(--glass-border);
-                border-radius: 20px;
+                border-radius: 14px;
                 overflow: hidden;
                 transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
                 display: flex;
@@ -583,7 +583,7 @@
 
             .project-card-img {
                 width: 100%;
-                aspect-ratio: 16/9;
+                aspect-ratio: 16/8;
                 overflow: hidden;
                 position: relative;
             }
@@ -598,11 +598,11 @@
             }
             .project-card-placeholder {
                 font-family: var(--font-display);
-                font-size: 48px;
+                font-size: 32px;
                 font-weight: 900;
                 color: rgba(255, 255, 255, 0.5);
                 width: 100%;
-                aspect-ratio: 16/9;
+                aspect-ratio: 16/8;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -613,24 +613,24 @@
                 );
             }
             .project-card-body {
-                padding: 14px 16px;
+                padding: 10px 14px;
                 display: flex;
                 flex-direction: column;
                 flex: 1;
             }
             .project-card-title {
                 font-family: var(--font-display);
-                font-size: 16px;
+                font-size: 14px;
                 font-weight: 800;
                 color: var(--t-dark);
-                margin-bottom: 12px;
+                margin-bottom: 6px;
                 letter-spacing: -0.5px;
             }
             .project-card-desc {
-                font-size: 12px;
+                font-size: 11px;
                 color: var(--t-muted);
-                margin-bottom: 16px;
-                line-height: 1.6;
+                margin-bottom: 8px;
+                line-height: 1.5;
                 flex: 1;
                 display: -webkit-box;
                 -webkit-line-clamp: 2;
@@ -642,16 +642,16 @@
                 justify-content: space-between;
                 align-items: center;
                 border-top: 2px solid rgba(0, 0, 0, 0.03);
-                padding-top: 20px;
+                padding-top: 10px;
             }
             .project-card-count {
-                font-size: 14px;
+                font-size: 12px;
                 font-weight: 700;
                 color: var(--t-muted);
                 font-family: var(--font-display);
                 background: rgba(0, 0, 0, 0.04);
-                padding: 6px 12px;
-                border-radius: 12px;
+                padding: 4px 10px;
+                border-radius: 10px;
             }
 
             /* Specific Lists & Rows */
@@ -2582,16 +2582,7 @@
                         "
                     >
                         <!-- Left: Project Grid -->
-                        <div
-                            id="projects-grid"
-                            class="project-grid"
-                            style="
-                                grid-template-columns: repeat(
-                                    auto-fill,
-                                    minmax(300px, 1fr)
-                                );
-                            "
-                        ></div>
+                        <div id="projects-grid" class="project-grid"></div>
 
                         <!-- Right: Detail & Review Panel -->
                         <div
