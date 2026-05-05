@@ -169,26 +169,26 @@
                 justify-content: center;
                 overflow-x: auto;
             }
-            .nav-btn {
+            .nav-link {
                 padding: 8px 14px;
                 border-radius: var(--radius-sm);
                 font-size: 13px;
-                font-weight: 500;
+                font-weight: var(--fw-medium);
                 cursor: pointer;
                 transition: all 0.2s;
                 border: none;
                 background: transparent;
-                color: var(--text-secondary);
+                color: #4a5568;
                 white-space: nowrap;
             }
-            .nav-btn:hover {
+            .nav-link:hover {
                 background: #f7fafc;
                 color: var(--text-main);
             }
-            .nav-btn.nav-active {
+            .nav-link.nav-active {
                 background: var(--color-primary);
                 color: white;
-                font-weight: 600;
+                font-weight: var(--fw-semibold);
             }
             .nav-right {
                 display: flex;
@@ -329,11 +329,12 @@
                 font-weight: 600;
                 color: #1a202c;
             }
-            .stat-number {
+            .stat-value {
                 font-size: 24px;
-                font-weight: 700;
-                color: #1a202c;
+                font-weight: var(--fw-bold);
                 letter-spacing: -0.5px;
+                line-height: 1.2;
+                color: #1a202c;
             }
 
             .card {
@@ -352,10 +353,11 @@
                 justify-content: space-between;
                 align-items: center;
             }
-            .card-header h3 {
-                font-size: 15px;
-                font-weight: 700;
-                color: var(--text-main);
+            .card-title {
+                font-size: 13px;
+                font-weight: var(--fw-medium);
+                color: #718096;
+                margin-bottom: var(--space-sm);
             }
             .card-header p {
                 font-size: 11px;
@@ -891,56 +893,56 @@
                 </div>
                 <div class="nav-tabs">
                     <button
-                        class="btn nav-btn nav-active"
+                        class="btn nav-link nav-active"
                         onclick="showPage('dashboard')"
                         data-page="dashboard"
                     >
                         控制面板
                     </button>
                     <button
-                        class="btn nav-btn"
+                        class="btn nav-link"
                         onclick="showPage('users')"
                         data-page="users"
                     >
                         客户管理
                     </button>
                     <button
-                        class="btn nav-btn"
+                        class="btn nav-link"
                         onclick="showPage('tokens')"
                         data-page="tokens"
                     >
                         密钥管理
                     </button>
                     <button
-                        class="btn nav-btn"
+                        class="btn nav-link"
                         onclick="showPage('usage')"
                         data-page="usage"
                     >
                         流量指数
                     </button>
                     <button
-                        class="btn nav-btn"
+                        class="btn nav-link"
                         onclick="showPage('pricing')"
                         data-page="pricing"
                     >
                         定价策略
                     </button>
                     <button
-                        class="btn nav-btn"
+                        class="btn nav-link"
                         onclick="showPage('logs')"
                         data-page="logs"
                     >
                         系统审计
                     </button>
                     <button
-                        class="btn nav-btn"
+                        class="btn nav-link"
                         onclick="showPage('projects')"
                         data-page="projects"
                     >
                         项目管理
                     </button>
                     <button
-                        class="btn nav-btn"
+                        class="btn nav-link"
                         onclick="showPage('tutorials')"
                         data-page="tutorials"
                     >
@@ -990,7 +992,7 @@
                             <span class="stat-label">今日调用量</span>
                         </div>
                         <div class="stat-value-group">
-                            <span class="stat-number" id="stat-calls">0</span>
+                            <span class="stat-value" id="stat-calls">0</span>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -1016,7 +1018,7 @@
                         </div>
                         <div class="stat-value-group">
                             <span class="stat-currency">¥</span>
-                            <span class="stat-number" id="stat-cost">0.00</span>
+                            <span class="stat-value" id="stat-cost">0.00</span>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -1038,7 +1040,7 @@
                             <span class="stat-label">活跃用户</span>
                         </div>
                         <div class="stat-value-group">
-                            <span class="stat-number" id="stat-users">0</span>
+                            <span class="stat-value" id="stat-users">0</span>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -1063,7 +1065,7 @@
                             <span class="stat-label">成功率</span>
                         </div>
                         <div class="stat-value-group">
-                            <span class="stat-number" id="stat-success"
+                            <span class="stat-value" id="stat-success"
                                 >0%</span
                             >
                         </div>
@@ -1223,7 +1225,7 @@
                     "
                 >
                     <div class="card">
-                        <div class="card-header"><h3>每日消耗趋势</h3></div>
+                        <div class="card-header"><h3 class="card-title">每日消耗趋势</h3></div>
                         <div class="card-body" id="daily-usage-chart">
                             <p
                                 style="
@@ -1236,7 +1238,7 @@
                         </div>
                     </div>
                     <div class="card">
-                        <div class="card-header"><h3>软件消耗分布</h3></div>
+                        <div class="card-header"><h3 class="card-title">软件消耗分布</h3></div>
                         <div class="card-body" id="software-stats">
                             <p
                                 style="
@@ -1250,7 +1252,7 @@
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-header"><h3>详细调用记录</h3></div>
+                    <div class="card-header"><h3 class="card-title">详细调用记录</h3></div>
                     <table class="data-table">
                         <thead>
                             <tr>
@@ -1464,7 +1466,7 @@
                 document
                     .getElementById("page-" + page)
                     .classList.remove("hidden");
-                document.querySelectorAll(".nav-btn").forEach((btn) => {
+                document.querySelectorAll(".nav-link").forEach((btn) => {
                     btn.classList.toggle(
                         "nav-active",
                         btn.dataset.page === page,
