@@ -910,31 +910,182 @@
             }
 
             async function loadPricing() {
-                var result = await api("/api/admin/pricing");
-                if (!result || !result.success) return;
-                document.getElementById("pricing-table").innerHTML =
-                    '<table class="data-table"><thead><tr><th>提供商</th><th>模型</th><th class="text-right">输入价格</th><th class="text-right">输出价格</th><th class="text-center">状态</th></tr></thead><tbody>' +
-                    result.data
+                try {
+                    const result = await api("/api/admin/pricing");
+                    if (!result || !result.success) return;
+                    const tbody = document.getElementById("pricing-table-body");
+                    if (!tbody) return;
+                    
+                    if (result.data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">' +
+                            '<p style="color:var(--t-muted);margin-bottom:16px;">暂无定价规则</p>' +
+                            '<button class="btn btn-outline btn-sm" onclick="addSamplePricing()">一键添加常用模型</button>' +
+                            '</td></tr>';
+                        return;
+                    }
+
+                    tbody.innerHTML = result.data
                         .map(function (p) {
-                            var badge = p.is_active
-                                ? '<span class="badge badge-success">启用</span>'
-                                : '<span class="badge badge-muted">禁用</span>';
                             return (
-                                '<tr><td style="font-weight:600">' +
-                                p.provider +
-                                '</td><td><span class="mono">' +
-                                p.model +
-                                '</span></td><td class="text-right"><span class="mono">¥' +
-                                p.price_per_1k_prompt +
-                                '/千</span></td><td class="text-right"><span class="mono">¥' +
-                                p.price_per_1k_completion +
-                                '/千</span></td><td class="text-center">' +
-                                badge +
-                                "</td></tr>"
+                                '<tr>' +
+                                '<td><div style="display:flex;align-items:center;gap:8px;">' + 
+                                getProviderBadge(p.provider) + 
+                                '<span class="cell-primary">' + p.model + '</span></div></td>' +
+                                '<td class="text-right"><span class="cell-mono">' + (p.price_per_1k_prompt || 0).toFixed(4) + '</span></td>' +
+                                '<td class="text-right"><span class="cell-mono">' + (p.price_per_1k_completion || 0).toFixed(4) + '</span></td>' +
+                                '<td class="text-right"><span class="cell-mono">¥' + (p.fixed_price || 0).toFixed(2) + '</span></td>' +
+                                '<td class="text-center"><span class="badge badge-info">' + (p.channel_id || "默认") + '</span></td>' +
+                                '<td class="text-right"><div class="cell-actions">' +
+                                '<button class="icon-btn" onclick="editPricing(\'' + p.pricing_id + '\')" title="编辑"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></button>' +
+                                '<button class="icon-btn" onclick="deletePricing(\'' + p.pricing_id + '\', \'' + p.model + '\')" title="删除"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>' +
+                                '</div></td></tr>'
                             );
                         })
-                        .join("") +
-                    "</tbody></table>";
+                        .join("");
+                } catch (err) {
+                    console.error("Load pricing error:", err);
+                }
+            }
+
+            function showAddPricingModal() {
+                showModal(
+                    "添加定价规则",
+                    '<div class="form-group"><label class="form-label">提供商</label><select id="price-provider" class="form-select"><option value="OpenAI">OpenAI</option><option value="Anthropic">Anthropic</option><option value="Google">Google</option><option value="Midjourney">Midjourney</option><option value="Other">其他</option></select></div>' +
+                    '<div class="form-group"><label class="form-label">模型名称</label><input type="text" id="price-model" class="form-input" placeholder="例如: gpt-4o" required></div>' +
+                    '<div class="form-group"><label class="form-label">输入倍率 (每1K tokens)</label><input type="number" id="price-input" class="form-input" step="0.0001" value="0"></div>' +
+                    '<div class="form-group"><label class="form-label">输出倍率 (每1K tokens)</label><input type="number" id="price-output" class="form-input" step="0.0001" value="0"></div>' +
+                    '<div class="form-group"><label class="form-label">单次计费 (元)</label><input type="number" id="price-fixed" class="form-input" step="0.01" value="0"></div>' +
+                    '<div class="form-group"><label class="form-label">渠道ID (可选)</label><input type="text" id="price-channel" class="form-input" placeholder="默认"></div>',
+                    async function () {
+                        const provider = document.getElementById("price-provider").value;
+                        const model = document.getElementById("price-model").value;
+                        const inputPrice = parseFloat(document.getElementById("price-input").value) || 0;
+                        const outputPrice = parseFloat(document.getElementById("price-output").value) || 0;
+                        const fixedPrice = parseFloat(document.getElementById("price-fixed").value) || 0;
+                        const channel = document.getElementById("price-channel").value || "default";
+
+                        if (!model) throw new Error("模型名称不能为空");
+
+                        const result = await api("/api/admin/pricing", {
+                            method: "POST",
+                            body: JSON.stringify({
+                                provider,
+                                model,
+                                price_per_1k_prompt: inputPrice,
+                                price_per_1k_completion: outputPrice,
+                                fixed_price: fixedPrice,
+                                channel_id: channel,
+                                is_active: true
+                            }),
+                        });
+
+                        if (result && result.success) {
+                            alert("定价规则添加成功");
+                            closeModal();
+                            loadPricing();
+                        } else {
+                            throw new Error(result && result.error ? result.error.message : "添加失败");
+                        }
+                    }
+                );
+            }
+
+            async function editPricing(pricingId) {
+                // Fetch current data first
+                const result = await api("/api/admin/pricing");
+                if (!result || !result.success) return;
+                const p = result.data.find(item => item.pricing_id === pricingId);
+                if (!p) return;
+
+                showModal(
+                    "编辑定价规则",
+                    '<div class="form-group"><label class="form-label">提供商</label><input type="text" id="edit-price-provider" class="form-input" value="' + p.provider + '"></div>' +
+                    '<div class="form-group"><label class="form-label">模型名称</label><input type="text" id="edit-price-model" class="form-input" value="' + p.model + '" required></div>' +
+                    '<div class="form-group"><label class="form-label">输入倍率</label><input type="number" id="edit-price-input" class="form-input" step="0.0001" value="' + (p.price_per_1k_prompt || 0) + '"></div>' +
+                    '<div class="form-group"><label class="form-label">输出倍率</label><input type="number" id="edit-price-output" class="form-input" step="0.0001" value="' + (p.price_per_1k_completion || 0) + '"></div>' +
+                    '<div class="form-group"><label class="form-label">单次计费</label><input type="number" id="edit-price-fixed" class="form-input" step="0.01" value="' + (p.fixed_price || 0) + '"></div>' +
+                    '<div class="form-group"><label class="form-label">渠道ID</label><input type="text" id="edit-price-channel" class="form-input" value="' + (p.channel_id || "") + '"></div>',
+                    async function () {
+                        const provider = document.getElementById("edit-price-provider").value;
+                        const model = document.getElementById("edit-price-model").value;
+                        const inputPrice = parseFloat(document.getElementById("edit-price-input").value) || 0;
+                        const outputPrice = parseFloat(document.getElementById("edit-price-output").value) || 0;
+                        const fixedPrice = parseFloat(document.getElementById("edit-price-fixed").value) || 0;
+                        const channel = document.getElementById("edit-price-channel").value;
+
+                        const r = await api("/api/admin/pricing/update", {
+                            method: "POST",
+                            body: JSON.stringify({
+                                pricingId,
+                                provider,
+                                model,
+                                price_per_1k_prompt: inputPrice,
+                                price_per_1k_completion: outputPrice,
+                                fixed_price: fixedPrice,
+                                channel_id: channel
+                            }),
+                        });
+
+                        if (r && r.success) {
+                            alert("更新成功");
+                            closeModal();
+                            loadPricing();
+                        } else {
+                            throw new Error(r && r.error ? r.error.message : "更新失败");
+                        }
+                    }
+                );
+            }
+
+            async function deletePricing(pricingId, modelName) {
+                if (!confirm('确定要删除模型 "' + modelName + '" 的定价规则吗？')) return;
+                const result = await api("/api/admin/pricing/delete", {
+                    method: "POST",
+                    body: JSON.stringify({ pricingId }),
+                });
+                if (result && result.success) {
+                    alert("删除成功");
+                    loadPricing();
+                } else {
+                    alert(result && result.error ? result.error.message : "删除失败");
+                }
+            }
+
+            async function addSamplePricing() {
+                const samples = [
+                    { provider: "OpenAI", model: "gpt-4o", input: 0.035, output: 0.105, fixed: 0 },
+                    { provider: "OpenAI", model: "gpt-4-turbo", input: 0.07, output: 0.21, fixed: 0 },
+                    { provider: "OpenAI", model: "gpt-3.5-turbo", input: 0.0035, output: 0.0105, fixed: 0 },
+                    { provider: "Anthropic", model: "claude-3-5-sonnet", input: 0.021, output: 0.105, fixed: 0 },
+                    { provider: "Anthropic", model: "claude-3-opus", input: 0.105, output: 0.525, fixed: 0 },
+                    { provider: "Google", model: "gemini-1.5-pro", input: 0.0245, output: 0.0735, fixed: 0 },
+                    { provider: "Midjourney", model: "mj-v6", input: 0, output: 0, fixed: 0.5 }
+                ];
+                
+                if (!confirm("确定要添加 " + samples.length + " 个常用模型定价规则吗？")) return;
+                
+                let count = 0;
+                for (const s of samples) {
+                    try {
+                        await api("/api/admin/pricing", {
+                            method: "POST",
+                            body: JSON.stringify({
+                                provider: s.provider,
+                                model: s.model,
+                                price_per_1k_prompt: s.input,
+                                price_per_1k_completion: s.output,
+                                fixed_price: s.fixed,
+                                channel_id: "default",
+                                is_active: true
+                            }),
+                        });
+                        count++;
+                    } catch (e) {
+                        console.error("Failed to add sample:", s.model, e);
+                    }
+                }
+                alert("已成功添加 " + count + " 个定价规则");
+                loadPricing();
             }
 
             async function loadLogs(page) {
