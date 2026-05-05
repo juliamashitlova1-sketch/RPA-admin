@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>API Nexus - NexGen Interface</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;700;900&display=swap');
         
@@ -463,20 +464,56 @@
                 <div class="page-header">
                     <div>
                         <h2 class="page-title">流量指数</h2>
-                        <p class="page-subtitle">实时监控 API 请求明细</p>
+                        <p class="page-subtitle">多维度监控 API 调用与 Token 消耗详情</p>
                     </div>
                 </div>
+
+                <!-- Token Breakdown Cards -->
+                <div class="stats-grid" style="margin-bottom: 24px;">
+                    <div class="stat-card" style="--accent-color: var(--c-brand);">
+                        <div class="stat-header">输入 Token (Prompt)</div>
+                        <div class="stat-value" id="usage-stat-input">0</div>
+                    </div>
+                    <div class="stat-card" style="--accent-color: var(--c-accent-1);">
+                        <div class="stat-header">输出 Token (Completion)</div>
+                        <div class="stat-value" id="usage-stat-output">0</div>
+                    </div>
+                    <div class="stat-card" style="--accent-color: var(--c-success);">
+                        <div class="stat-header">缓存命中 (Cache)</div>
+                        <div class="stat-value" id="usage-stat-cache">0</div>
+                    </div>
+                    <div class="stat-card" style="--accent-color: var(--c-accent-3);">
+                        <div class="stat-header">累计总额 (Cost)</div>
+                        <div class="stat-value"><span class="stat-currency">¥</span><span id="usage-stat-cost">0.00</span></div>
+                    </div>
+                </div>
+
+                <!-- Usage Trend Chart -->
+                <div class="card" style="padding: 24px;">
+                    <div class="card-header">
+                        <h3 class="card-title">24小时流量趋势 (Token 消耗分布)</h3>
+                    </div>
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="usage-trend-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Detailed Table -->
                 <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">调用记录明细</h3>
+                    </div>
                     <div style="overflow-x:auto;">
                         <table class="data-table">
                             <thead>
                                 <tr>
                                     <th>时间</th>
                                     <th>模型/渠道</th>
-                                    <th>来源软件</th>
-                                    <th class="text-right">消耗Token</th>
+                                    <th class="text-right">输入(I)</th>
+                                    <th class="text-right">输出(O)</th>
+                                    <th class="text-right">缓存(C)</th>
                                     <th class="text-right">流量(上/下)</th>
-                                    <th class="text-right">扣费金额</th>
+                                    <th class="text-right">金额</th>
                                     <th class="text-center">状态</th>
                                 </tr>
                             </thead>
@@ -630,6 +667,7 @@
 <script>
             const API_BASE = "https://api-gateway.juliamashitlova1.workers.dev";
             let currentUser = null;
+            let usageChart = null;
             let currentPage = "dashboard";
             let projectsData = {};
             
@@ -1524,76 +1562,73 @@
 
             async function loadUsage() {
                 try {
-                    var result = await api("/api/admin/stats?days=30");
+                    const result = await api("/api/usage/realtime");
                     if (!result || !result.success) return;
-                    var dc = document.getElementById("daily-usage-chart");
-                    if (
-                        result.data.dailyTrend &&
-                        result.data.dailyTrend.length > 0
-                    ) {
-                        var maxCost = Math.max.apply(
-                            null,
-                            result.data.dailyTrend.map(function (d) {
-                                return d.cost;
-                            }),
-                        );
-                        dc.innerHTML = result.data.dailyTrend
-                            .slice(0, 7)
-                            .reverse()
-                            .map(function (day) {
-                                return (
-                                    '<div class="trend-item"><span class="trend-label">' +
-                                    day.date.substring(5) +
-                                    '</span><div class="progress-bar-container"><div class="progress-bar-fill" style="width:' +
-                                    (maxCost > 0
-                                        ? (day.cost / maxCost) * 100
-                                        : 0) +
-                                    '%"></div></div><span class="trend-value">¥' +
-                                    day.cost.toFixed(2) +
-                                    "</span></div>"
-                                );
-                            })
-                            .join("");
+                    const data = result.data;
+
+                    // 更新卡片数据
+                    document.getElementById("usage-stat-input").textContent = formatNumber(data.today.total_prompt_tokens);
+                    document.getElementById("usage-stat-output").textContent = formatNumber(data.today.total_completion_tokens);
+                    // 假设后端返回了 cache_tokens，或者我们可以计算它
+                    document.getElementById("usage-stat-cache").textContent = formatNumber(data.today.total_tokens - data.today.total_prompt_tokens - data.today.total_completion_tokens);
+                    document.getElementById("usage-stat-cost").textContent = data.today.total_cost.toFixed(2);
+
+                    // 更新图表
+                    const ctx = document.getElementById('usage-trend-chart').getContext('2d');
+                    
+                    if (usageChart) {
+                        usageChart.destroy();
                     }
-                    var sc = document.getElementById("software-stats");
-                    if (
-                        result.data.softwareStats &&
-                        result.data.softwareStats.length > 0
-                    ) {
-                        var totalCost = result.data.softwareStats.reduce(
-                            function (a, s) {
-                                return a + s.cost;
+
+                    const labels = data.hourlyTrend.map(d => d.hour + ':00');
+                    const promptData = data.hourlyTrend.map(d => d.prompt_tokens);
+                    const completionData = data.hourlyTrend.map(d => d.completion_tokens);
+                    const cacheData = data.hourlyTrend.map(d => d.cache_tokens);
+
+                    usageChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: '输入 (Prompt)',
+                                    data: promptData,
+                                    borderColor: '#4318FF',
+                                    backgroundColor: 'rgba(67, 24, 255, 0.1)',
+                                    fill: true,
+                                    tension: 0.4
+                                },
+                                {
+                                    label: '输出 (Completion)',
+                                    data: completionData,
+                                    borderColor: '#FF2E93',
+                                    backgroundColor: 'rgba(255, 46, 147, 0.1)',
+                                    fill: true,
+                                    tension: 0.4
+                                },
+                                {
+                                    label: '缓存 (Cache)',
+                                    data: cacheData,
+                                    borderColor: '#05CD99',
+                                    backgroundColor: 'rgba(5, 205, 153, 0.1)',
+                                    fill: true,
+                                    tension: 0.4
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'top', labels: { font: { family: 'Inter', weight: '600' } } }
                             },
-                            0,
-                        );
-                        var colors = [
-                            "var(--color-primary)",
-                            "var(--color-info)",
-                            "var(--tag-text-purple)",
-                        ];
-                        var names = {
-                            pricing: "核价软件",
-                            optimizer: "优化软件",
-                            collector: "采集助手",
-                        };
-                        sc.innerHTML = result.data.softwareStats
-                            .map(function (s, i) {
-                                return (
-                                    '<div class="model-stat-row"><div class="model-stat-header"><span class="model-stat-name">' +
-                                    (names[s.software] ||
-                                        s.software ||
-                                        "未知") +
-                                    '</span><span class="model-stat-pct">' +
-                                    ((s.cost / totalCost) * 100).toFixed(1) +
-                                    '%</span></div><div class="progress-bar-container"><div class="progress-bar-fill" style="width:' +
-                                    (s.cost / totalCost) * 100 +
-                                    "%;background:" +
-                                    colors[i % colors.length] +
-                                    '"></div></div></div>'
-                                );
-                            })
-                            .join("");
-                    }
+                            scales: {
+                                x: { grid: { display: false } },
+                                y: { beginAtZero: true, grid: { borderDash: [5, 5] } }
+                            }
+                        }
+                    });
+
                 } catch (err) {
                     console.error("Load usage error:", err);
                 }
@@ -1609,18 +1644,20 @@
                 tbody.innerHTML = result.data
                     .map(function (r) {
                         return (
-                            '<tr><td><span class="mono" style="font-size:12px;color:var(--text-muted)">' +
+                            '<tr><td><span class="mono" style="font-size:12px;color:var(--t-muted)">' +
                             formatTime(r.created_at) +
                             '</span></td><td>' +
-                            getProviderBadge(r.api_provider) + ' <span style="font-size:12px;color:var(--text-main);font-weight:500;">' +
+                            getProviderBadge(r.api_provider) + ' <span style="font-size:12px;color:var(--t-dark);font-weight:600;">' +
                             r.model +
-                            '</span></td><td><span style="font-size:13px;color:var(--text-secondary)">' +
-                            (r.software || "-") +
-                            '</span></td><td class="text-right"><span class="mono" style="font-size:13px;font-weight:600">' +
-                            formatNumber(r.total_tokens) +
-                            '</span></td><td class="text-right"><span class="mono" style="font-size:12px;color:var(--t-muted)">' +
+                            '</span></td><td class="text-right"><span class="mono" style="font-size:12px;font-weight:600;color:var(--c-brand)">' +
+                            formatNumber(r.prompt_tokens) +
+                            '</span></td><td class="text-right"><span class="mono" style="font-size:12px;font-weight:600;color:var(--c-accent-1)">' +
+                            formatNumber(r.completion_tokens) +
+                            '</span></td><td class="text-right"><span class="mono" style="font-size:12px;font-weight:600;color:var(--c-success)">' +
+                            formatNumber(r.prompt_cache_hit_tokens || 0) +
+                            '</span></td><td class="text-right"><span class="mono" style="font-size:11px;color:var(--t-muted)">' +
                             formatTraffic(r.request_size) + ' / ' + formatTraffic(r.response_size) +
-                            '</span></td><td class="text-right"><span class="cell-mono">¥' +
+                            '</span></td><td class="text-right"><span class="cell-mono" style="font-size:12px">¥' +
                             r.cost_cny.toFixed(4) +
                             '</span></td><td class="text-center"><span class="badge ' +
                             (r.is_success ? "badge-success" : "badge-danger") +
